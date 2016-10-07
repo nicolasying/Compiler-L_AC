@@ -2,15 +2,17 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "C++ Launch",
+            "name": "Calculate",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceRoot}/a.out",
+            "program": "${workspaceRoot}/Debug/calculate.out",
             "args": [],
             "stopAtEntry": false,
-            "cwd": "${workspaceRoot}",
+            "cwd": "${workspaceRoot}/Debug",
             "environment": [],
             "externalConsole": true,
+            "internalConsoleOptions": "openOnFirstSessionStart",
+            "preLaunchTask": "gcc",
             "linux": {
                 "MIMode": "gdb"
             },

@@ -18,7 +18,7 @@ lexeme lu;
 int main () {
     
     // Pour debug
-    printf("Expression à calculer : \n");
+    printf("Expression to calculate : \n");
     scanf("%49[^\n]s",s);
     
     // lexicale
