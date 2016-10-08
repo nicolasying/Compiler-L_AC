@@ -6,14 +6,38 @@
     "isShellCommand": true,
     "showOutput": "always",
     "tasks": [
-        { 
+        {
             "taskName": "Calculate",
-            "args": ["-g", "-o", "Debug/calculate.out", "calculate.c"],
+            "args": [
+                "-Wallg",
+                "-o",
+                "Debug/calculate.out",
+                "calculate.c"
+            ],
             "suppressTaskName": true
+            // "problemMatcher": {
+            //     "owner": "Nicolas",
+            //     "fileLocation": [
+            //         "relative",
+            //         "${workspaceRoot}"
+            //     ],
+            //     "pattern": {
+            //         "regexp": "^(.*):(\\d+):(\\d+):\\s+(warning|error):\\s+(.*)$",
+            //         "file": 1,
+            //         "line": 2,
+            //         "column": 3,
+            //         "severity": 4,
+            //         "message": 5
+            //     }
+            // }
         },
         {
             "taskName": "Test",
-            "args": ["-o", "Debug/test.out", "test.c"],
+            "args": [
+                "-o",
+                "Debug/test.out",
+                "test.c"
+            ],
             "suppressTaskName": true
         }
     ]

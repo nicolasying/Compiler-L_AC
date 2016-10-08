@@ -225,6 +225,5 @@ arbre somme (int d, int f) {
 //        printf("2 d = %d\n", d);
 //        printf("node: %s, left: %s,right: %s\n", resultat.tab[intSpe].valeur, "somme", rightChild->data->valeur);
         return assemble(&resultat.tab[intSpe], somme(d, intSpe-1), rightChild);
-        
     }
 }
