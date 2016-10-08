@@ -12,7 +12,29 @@
             "environment": [],
             "externalConsole": true,
             "internalConsoleOptions": "openOnFirstSessionStart",
-            "preLaunchTask": "gcc",
+            "preLaunchTask": "Calculate",
+            "linux": {
+                "MIMode": "gdb"
+            },
+            "osx": {
+                "MIMode": "lldb"
+            },
+            "windows": {
+                "MIMode": "gdb"
+            }
+        },
+        {
+            "name": "Test",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceRoot}/Debug/test.out",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceRoot}/Debug",
+            "environment": [],
+            "externalConsole": true,
+            "internalConsoleOptions": "openOnFirstSessionStart",
+            //"preLaunchTask": "Test",
             "linux": {
                 "MIMode": "gdb"
             },

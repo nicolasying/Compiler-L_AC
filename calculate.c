@@ -130,6 +130,7 @@ int findBalancingParen (int f) {
     }
     printf("didn't find a balanced opening parenthesis.\n");
     exit(102);
+    
 }
 
 struct returnFac facteur (int d, int f) {

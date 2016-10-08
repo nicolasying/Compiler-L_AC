@@ -1,9 +1,20 @@
 {
     // See https://go.microsoft.com/fwlink/?LinkId=733558
     // for the documentation about the tasks.json format
-    "version": "0.2.0",
+    "version": "0.1.0",
     "command": "gcc",
     "isShellCommand": true,
     "showOutput": "always",
-    "args": ["-g", "-o", "Debug/calculate.out", "calculate.c"]
+    "tasks": [
+        { 
+            "taskName": "Calculate",
+            "args": ["-g", "-o", "Debug/calculate.out", "calculate.c"],
+            "suppressTaskName": true
+        },
+        {
+            "taskName": "Test",
+            "args": ["-g", "-o", "Debug/test.out", "test.c"],
+            "suppressTaskName": true
+        }
+    ]
 }
