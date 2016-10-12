@@ -56,7 +56,7 @@
             "environment": [],
             "externalConsole": true,
             "internalConsoleOptions": "openOnFirstSessionStart",
-            //"preLaunchTask": "Test",
+            "preLaunchTask": "Test",
             "linux": {
                 "MIMode": "gdb"
             },

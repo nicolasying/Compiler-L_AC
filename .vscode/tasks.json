@@ -19,6 +19,7 @@
         {
             "taskName": "Test",
             "args": [
+                "-g",
                 "-o",
                 "Debug/test.out",
                 "test.c"

@@ -58,9 +58,12 @@ int main(int argc, char * argv[]) {
     printf("---main---\nPas d'Analyse Syntaxique.\n");
     
     // pass to inteprete and compile
+
+    ini
+
     compilateur(lexemes, t_c);
     printf("---main---\nFin d'interpreter.\n");
-    
+
     // freeing malloc allocated memory
     for (; t_c >= 0; t_c--) {
         //printf("---main---\nfreeing:\n%s\n",lexemes[t_c].lex);
