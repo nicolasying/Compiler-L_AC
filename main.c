@@ -10,6 +10,8 @@
 #define MAX_LEMEXE_NUMBER 100
 #include "analex.h"
 #include "analex.c"
+#include "interpreter.c"
+#include "processeur.c"
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -24,10 +26,10 @@ int main(int argc, char * argv[]) {
     long size_file;
     
     //
-    fp = fopen("/Users/soshy/Documents/TPLA/factorielle.txt", "r");
+    //fp = fopen("/Users/soshy/Documents/TPLA/factorielle.txt", "r");
     
     // get file size
-    //fp = fopen(argv[1], "r");
+    fp = fopen(argv[1], "r");
     fseek(fp, 0L, SEEK_END);
     size_file = ftell(fp);
     rewind(fp);
@@ -53,13 +55,18 @@ int main(int argc, char * argv[]) {
     // pass to analyse lexicale
     int t_c = analex(texte, lexemes);
     printf("---main---\nFin d'Analyse Lexicale!\n%d lexemes detected and stored in array.\n", t_c--);
+    printf("---main---\nPas d'Analyse Syntaxique.\n");
+    
+    // pass to inteprete and compile
+    compilateur(lexemes, t_c);
+    printf("---main---\nFin d'interpreter.\n");
     
     // freeing malloc allocated memory
     for (; t_c >= 0; t_c--) {
         //printf("---main---\nfreeing:\n%s\n",lexemes[t_c].lex);
         free(lexemes[t_c].lex);
     }
-    
+
     printf("---main---\nFin d'Analyse pour le moment.\n");
     
     return 0;

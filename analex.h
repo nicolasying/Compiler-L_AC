@@ -10,8 +10,8 @@
 #define Header_h
 
 typedef enum lex_Type {
-    C,
-    I
+    C, // chain de character
+    I // identificateur
 } lex_Type;
 
 typedef struct lexeme {
