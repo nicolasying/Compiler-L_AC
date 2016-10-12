@@ -14,16 +14,16 @@
 #include <string.h> // Fonction strncpy
 
 // Définition des types de lexème
-typedef enum lexeme_t {
+typedef enum lexeme_type {
     NOMBRE,
     PAREN_OU,
     PARENT_F,
     OP_LP,
     OP_HP,
-} lexeme_t;
+} lexeme_type;
 
 typedef struct lexeme {
-    lexeme_t type;
+    lexeme_type type;
     char valeur[20];
 } lexeme;
 
