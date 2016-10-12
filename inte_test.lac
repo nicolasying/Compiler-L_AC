@@ -4,21 +4,21 @@
 ( Ce fichier est un "exemple" étudié pour tester l'interpreteur
 écrit en phase 3 du projet)
 
-( : fact ( n -- n!)
-    dup 0= 
-    if
-        drop 1
-    else 
-        dup 1- recurse *
-    then ;
-
-: go ( n -- )
-    " Factor
-	ielle "count type
-    dup .
-    	" vaut : " count type
-    fact . cr ;
-
-6 go)
+\ : fact ( n -- n!)
+\    dup 0= 
+\    if
+\        drop 1
+\    else 
+\        dup 1- recurse *
+\    then ;
+\
+\ : go ( n -- )
+\   " Factor
+\ 	ielle "count type
+\    dup .
+\    	" vaut : " count type
+\    fact . cr ;
+\
+\ 6 go)
 
 1 2 + .

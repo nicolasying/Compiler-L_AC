@@ -29,7 +29,7 @@
         {
             "taskName": "debugMain",
             "args": [
-                "-Wallg", "-o", "Debug/main.out", "main.c"
+                "-Wall", "-g", "-o", "Debug/main.out", "main.c"
             ],
             "suppressTaskName": true
         }

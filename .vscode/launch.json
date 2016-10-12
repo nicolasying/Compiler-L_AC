@@ -28,7 +28,7 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceRoot}/Debug/main.out",
-            "args": ["${workspaceRoot}/test.lac"],
+            "args": ["${workspaceRoot}/inte_test.lac"],
             "stopAtEntry": false,
             "cwd": "${workspaceRoot}/Debug",
             "environment": [],

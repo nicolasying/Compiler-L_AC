@@ -9,18 +9,24 @@ Original from Cours8.pdf
 #include <stdio.h>
 #include "interpreter.c"
 
-int f (int x) {
-    return (x+1);
-}
 
+// static, auto return test
+// int f (int x) {
+//     return (x+1);
+// }
+//
 // int main () {
 //     auto int tab[3] = {1, 2, 3};
 //     // static int tab[3] = {1, 2, 3};
 //     return (f(tab));
 // }
 
+// addFunctionBase test
+// /*
 int main() {
-    int typeIn[] = {ENTIER, ENTIER}, typeOut[] = {ENTIER};
-    addFunctionBase(0, "+", 2, typeIn, 1, typeOut);
+    //int typeIn[] = {ENTIER, ENTIER}, typeOut[] = {ENTIER};
+    addFunctionBase(0, "+", 2, (int[]){ENTIER, ENTIER}, 1, (int[]){ENTIER});
     return 0;
 }
+// */
+

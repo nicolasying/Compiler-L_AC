@@ -32,7 +32,7 @@ int treatment (int debut, int fin, char* p, lexeme_t* lexeme) {
         lexeme->lex = (char*) malloc((fin - debut + 1) * sizeof(char));
         strncpy(lexeme->lex, p + debut, fin - debut);
         (lexeme->lex)[fin - debut] = '\0';
-        printf("---analex\\treatment---\nChar_chain detected:\n%s\n", (lexeme->lex));
+        //printf("---analex\\treatment---\nChar_chain detected:\n%s\n", (lexeme->lex));
         inner = 0;
         
     } else {
@@ -42,7 +42,7 @@ int treatment (int debut, int fin, char* p, lexeme_t* lexeme) {
         lexeme->lex = (char*) malloc((fin - debut + 1) * sizeof(char));
         strncpy(lexeme->lex, p + debut, fin - debut);
         (lexeme->lex)[fin - debut] = '\0';
-        printf("---analex\\treatment---\nIdentificateur detected:\n%s\n", (lexeme->lex));
+        //printf("---analex\\treatment---\nIdentificateur detected:\n%s\n", (lexeme->lex));
         inner = 0;
         
     }
@@ -54,7 +54,7 @@ int treatment (int debut, int fin, char* p, lexeme_t* lexeme) {
 int analex(char * wholetext, lexeme_t * lexemes) {
     
     //const char expr[] = "";
-    const char expr[] = "((^| )\" ([^()\"]*[\\].*|[^()\\]*[\\(][^()\\]*[\\)][^()\\]*)\")|((^|[ \t\n])[\\] [^\n]*($|\n))|((^|[ \t\n])[(] [^)]*[)])|((^|[ \t\n])[\"] [^\"]*[\"])|([-+/:;.\\=\\*0-9a-zA-Z[:punct:]]+)"; // ^ et \n.
+    const char expr[] = "((^| )\" ([^()\"]*[\\].*|[^()\\]*[\\(][^()\\]*[\\)][^()\\]*)\")|((^|[ \t\n])[\\]( |\t)[^\n]*($|\n))|((^|[ \t\n])[(] [^)]*[)])|((^|[ \t\n])[\"] [^\"]*[\"])|([-+/:;.\\=\\*0-9a-zA-Z[:punct:]]+)"; // ^ et \n.
     
     // ordre:
     // char chaine containing " and \, "(^|[ \t\n])[\"]((^|[ \t\n])[\\] [^()\n]*($|\n))*((^|[ \t\n])[(] [^)]*[)])*[\"]"

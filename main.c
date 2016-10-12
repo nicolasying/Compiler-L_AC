@@ -11,7 +11,6 @@
 #include "analex.h"
 #include "analex.c"
 #include "interpreter.c"
-#include "processeur.c"
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -50,7 +49,7 @@ int main(int argc, char * argv[]) {
     }
     
     fclose(fp);
-    printf("---main---\nRead Buffer: \n%s\n", texte);
+    //printf("---main---\nRead Buffer: \n%s\n", texte);
     
     // pass to analyse lexicale
     int t_c = analex(texte, lexemes);
@@ -59,8 +58,7 @@ int main(int argc, char * argv[]) {
     
     // pass to inteprete and compile
 
-    ini
-
+    initLACVMPro();
     compilateur(lexemes, t_c);
     printf("---main---\nFin d'interpreter.\n");
 
