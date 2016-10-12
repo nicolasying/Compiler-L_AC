@@ -22,13 +22,13 @@ struct pileBase // la première element dans la pile seront toujours négligé
     int data;
     pileBase * precedent;
 };
-void push (int data, pileBase * pileTop) {
+void pushStack (int data, pileBase * pileTop) {
     pileBase * new = malloc(sizeof(pileBase));
     new->data = data;
     new->precedent = pileTop;
     pileTop = new;
 }
-int pop (pileBase * pileTop) {
+int popStack (pileBase * pileTop) {
     pileBase * toDelete = pileTop;
     int data = toDelete->data;
     pileTop = pileTop->precedent;
@@ -39,15 +39,31 @@ int pop (pileBase * pileTop) {
 pileBase data, type, retourne;
 
 // definition temporaire de la table des symboles
-int LAC[] = [0, 1, '+', 2, ENTIER, ENTIER, 1, ENTIER, 0, 1, // 9
-             1, 4, 's', 'w', 'a', 'p', 2, ENTIER, ENTIER, 2, ENTIER, ENTIER, 2, 10, // 23
-             2, 1, '.', 1, ENTIER, 0, 4, 22, // 28
-             3, 5, '(', 'l', 'i', 't', ')', 0, 0, 6, 29, // 38
-             4, 5, '(', 'f', 'i', 'n', ')', 0, 0, 8, 39, // 48
-             5,  ];
-int VM[] = [0, 0, 0, 1, 0, 2, 0, 3, 0, 4];
+int LAC[2000] = [0];
+            // [0, 1, '+', 2, ENTIER, ENTIER, 1, ENTIER, 0, 1, // 9
+            //  1, 4, 's', 'w', 'a', 'p', 2, ENTIER, ENTIER, 2, ENTIER, ENTIER, 2, 10, // 23
+            //  2, 1, '.', 1, ENTIER, 0, 4, 22, // 28
+            //  3, 5, '(', 'l', 'i', 't', ')', 0, 0, 6, 29, // 38
+            //  4, 5, '(', 'f', 'i', 'n', ')', 0, 0, 8, 39, // 48
+            //  5,  ];
+int VM[200] = [0, 0, 0, 1, 0, 2, 0, 3, 0, 4];
 
-static int finLAC = 39;
+void addFunctionBase (const int finIndVM, cosnt int indProcesseur, const int finIndLAC, char * name, int paraIn, int typeIn[], int paraOut, int typeOut[]) {
+    // appending to LAC
+    LAC[finIndLAC + 1] = LAC[LAC[finIndLAC]] + 1; // sequence number of the function in LAC
+    LAC[finIndLAC + 2] = strlen(name);
+    strncpy(LAC[finIndLAC + 3], name, LAC[finIndLAC + 2]);
+    LAC[finIndLAC + 3 + LAC[finIndLAC + 2]] = paraIn;
+    strncpy(LAC[finIndLAC + 4 + LAC[finIndLAC + 2]], typeIn, paraIn);
+    LAC[finIndLAC + 4 + LAC[finIndLAC + 2] + paraIn] = paraOut;
+    strncpy(LAC[finIndLAC + 5 + LAC[finIndLAC + 2] + paraIn], typeOut, paraOut);
+    LAC[finIndLAC + 5 + LAC[finIndLAC + 2] + paraIn + paraOut] = finIndVM + 1// VM position;
+    LAC[finIndLAC + 6 + LAC[finIndLAC + 2] + paraIn + paraOut] = finIndLAC + 1;
+
+    //appending to VM
+    VM[finIndVM + 1] = 0;
+    VM[finIndVM + 2] = indProcesseur;
+}
 
 void (*foncBase)(void) processeur[] = [, ]
 
@@ -67,12 +83,15 @@ void initialisation () {
     type.suivant = NULL;
 }
 
-int isFunction (int i, lexeme_t * lexemes) {
-    int length = strlen(lexemes[i]);
+int isFunction (int i, lexeme_t * lexeme) {
+    // this function searches through from the end of table des symboles, returns the index of the beginning of the matching function,
+    // 0 if not.
+    int length = strlen(lexeme[i].lex);
     int position = finLac;
-    while (LAC[position + 1] != length && ) {
-
+    while (LAC[position + 1] != length && strncmp(lexeme[i].lex, (char *) LAC[position + 2], length) != 0 && position > 0) {
+        position = LAC[LAC[position - 1]];
     }
+    return position;
 }
 
 void compileur(int *VM, lexeme_t *lexemes, int t_c) { //t_c est le nombre de lexemes
@@ -82,10 +101,13 @@ void compileur(int *VM, lexeme_t *lexemes, int t_c) { //t_c est le nombre de lex
     do {
         if (lexemes[i].type == C) {
         } else {
-            if (isFunction(i)) {
-                // mock the calculation process
+            int posLAC;
+            if ((posLac =isFunction(i)) > 0) {
+                // the lexemes is a function, mock the calculation process
+
             } else {
-                // judgement of type of lexemes
+                // function is not found, judgement of type of lexemes
+
             }
         }
     } while (i < t_c)
