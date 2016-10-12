@@ -49,7 +49,7 @@ int LAC[2000] = {0};
             //     5, '(', 'f', 'i', 'n', ')', 0, 0, 8, 39, 
             //      ];
 int VM[200] = {0};
-static int finIndLAC = 0, finIndVM = 0;
+static int finIndLAC = 0, finIndVM = -1;
 void addFunctionBase (const int indProcesseur, char * name, int paraIn, int typeIn[], int paraOut, int typeOut[]) {
     // appending to LAC
     // LAC[finIndLAC + 1] = LAC[LAC[finIndLAC]] + 1; // sequence number of the function in LAC
