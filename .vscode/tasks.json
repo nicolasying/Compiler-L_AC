@@ -32,6 +32,14 @@
                 "-Wall", "-g", "-o", "Debug/main.out", "main.c"
             ],
             "suppressTaskName": true
+        },
+        {
+            "taskName": "Build",
+            "args": [
+                "-Wall", "-o", "Build/main.out", "main.c"
+            ],
+            "isBuildCommand": true,
+            "suppressTaskName": true
         }
     ]
 }
