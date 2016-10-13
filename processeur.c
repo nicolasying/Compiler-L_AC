@@ -26,6 +26,7 @@ void addition(void) {
     int op2 = popStack(&data), opt2 = popStack(&type);
     pushStack(op1 + op2, &data);
     pushStack(typeConversion(opt1, opt2), &type);
+    printf("CPU: add\n");
 }
 
 // implement as adiition + oppose ?
@@ -41,6 +42,7 @@ void swap(void) {
     int op2 = popStack(&data), opt2 = popStack(&type);
     pushStack(op2, &data); pushStack(opt2, &type);
     pushStack(op1, &data); pushStack(opt1, &type);
+    printf("CPU: swp\n");
 }
 
 void affichage(void) { // qui empile une element, l'affichier sur output
@@ -53,12 +55,15 @@ void lit(void) { // qui lit une element du pile, la stocker dans le registre
     pushStack(tmp + 1, &retourne); // avance 1 indice
     pushStack(VM[tmp + 1], &data);
     pushStack(ENTIER, &type); // suppose
+    printf("CPU: lit\n");
 }
 
 void fin(void) {
     popStack(&retourne);
+    printf("CPU: fin\n");
 }
 
 void def(void) {
     compilateur();
+    printf("CPU: def\n");
 }

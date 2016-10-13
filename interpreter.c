@@ -141,18 +141,22 @@ int isFunction (int i, lexeme_t * lexeme) {
     // 0 if not.
     int length = lexlen(lexeme[i].lex);
     int position = LAC[finIndLAC];
-    while (LAC[position + 1] != length && position > 0) {
-        // firstly, need to compare two strings
-        int j = 0;
-        while (j < length) {
-            if (lexeme[i].lex[j] != LAC[position + 1 + j]) {
-                break;
-            } else {
-                j++;
+    while (position > 0) {
+        if (LAC[position] != length) {
+            position = LAC[position - 1];
+        } else {
+            // firstly, need to compare two strings
+            int j = 0;
+            while (j < length) {
+                if (lexeme[i].lex[j] != LAC[position + 1 + j]) {
+                    break;
+                } else {
+                    j++;
+                }
             }
+            if (j == length) return position;
+            position = LAC[position - 1];
         }
-        if (j == length) return position;
-        position = LAC[position - 1];
     }
     return position;
 }
