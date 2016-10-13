@@ -29,6 +29,14 @@ void addition(void) {
     printf("CPU: add\n");
 }
 
+void multiplication(void) {
+    int op1 = popStack(&data), opt1 = popStack(&type);
+    int op2 = popStack(&data), opt2 = popStack(&type);
+    pushStack(op1 * op2, &data);
+    pushStack(typeConversion(opt1, opt2), &type);
+    printf("CPU: mul\n");
+}
+
 // implement as adiition + oppose ?
 void substraction(void) {
     int op1 = popStack(&data), opt1 = popStack(&type);

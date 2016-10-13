@@ -102,6 +102,7 @@ void addFunctionBase (const int indProcesseur, char * name, int paraIn, int type
 void initLACVMPro (void) {
 
     addFunctionBase(1, "+", 2, (int[]){ENTIER, ENTIER}, 1, (int[]){ENTIER}); 
+    addFunctionBase(4, "*", 2, (int[]){ENTIER, ENTIER}, 1, (int[]){ENTIER}); 
     addFunctionBase(3, "swap", 2, (int[]){ENTIER, ENTIER}, 0, (int[]){});
     addFunctionBase(0, ".", 1, (int[]){ENTIER}, 0, (int[]){});
     addFunctionBase(2, ":", 0, (int[]){}, 0, (int[]){});
@@ -109,6 +110,7 @@ void initLACVMPro (void) {
     processeur[1] = &addition;
     processeur[3] = &swap;
     processeur[2] = &def;
+    processeur[4] = &multiplication;
     processeur[MAX_PROC_FUNCS - 2] = &fin;
     processeur[MAX_PROC_FUNCS - 1] = &lit;
     posFonFINVM = MAX_VM_NUMBER - 4;
@@ -257,13 +259,13 @@ void compilateur() {
 
 void executeur (int posVM) {
     if (VM[posVM++] != 0) {
-        pushStack(posVM, &retourne);
+        //pushStack(posVM, &retourne);
         while (VM[posVM] != posFonFINVM) {
             pushStack(posVM, &retourne);
             executeur(VM[posVM]);
             posVM = popStack(&retourne) + 1;
         }
-//        processeur[VM[posFonFINVM]]();
+        //processeur[VM[posFonFINVM]]();
     } else {
         processeur[VM[posVM]]();
     }
