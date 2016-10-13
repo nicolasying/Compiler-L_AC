@@ -7,8 +7,11 @@ as part of the course of Theory of Programming Language and Algorithm.
 ## File structure
 
 analex, Analyseur lexique, projet 1
+
 BNF_C, Analyseur syntaxique, pour le command CALCULATE
+
 calculate, Fonction CALCULATE, projet 2
 
 interpreter, projet 3 (4 pas encore fait)
+
 processeur, fonctions mocquantes
