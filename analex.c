@@ -22,7 +22,7 @@ int treatment (int debut, int fin, char* p, lexeme_t* lexeme) {
     } else if ((p[debut] == '\\' || p[debut] == '(' ) && (p[debut + 1] == '\n' || p[debut + 1] == ' ' ) ) {
         
         //treatment_comment
-        printf("---analex\\treatment---\nComment detected.\n");
+        //printf("---analex\\treatment---\nComment detected.\n");
         inner = 1;
         
     } else if (p[debut] == '"') {
@@ -42,7 +42,7 @@ int treatment (int debut, int fin, char* p, lexeme_t* lexeme) {
         lexeme->lex = (char*) malloc((fin - debut + 1) * sizeof(char));
         strncpy(lexeme->lex, p + debut, fin - debut);
         (lexeme->lex)[fin - debut] = '\0';
-        //printf("---analex\\treatment---\nIdentificateur detected:\n%s\n", (lexeme->lex));
+        printf("---analex\\treatment---\nIdentificateur detected:\n%s\n", (lexeme->lex));
         inner = 0;
         
     }
@@ -85,7 +85,7 @@ int analex(char * wholetext, lexeme_t * lexemes) {
         
         debut = (int)pmatch[0].rm_so;
         fin = (int)pmatch[0].rm_eo;
-        printf("---analex---\n%.*s (%d, %d)\n", fin - debut, p + debut, debut + offset, fin + offset - 1);
+        //printf("---analex---\n%.*s (%d, %d)\n", fin - debut, p + debut, debut + offset, fin + offset - 1);
         //every possible lexeme is sent to the treatment analyser.
         is_comment = treatment(debut, fin, p, &lexemes[t_c]);
         

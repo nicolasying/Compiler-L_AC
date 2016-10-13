@@ -8,8 +8,9 @@
 #define CHAINECHAR 3
 #define FLOATANT 4
 
-#define MAX_VM_NUMBER 20
+#define MAX_VM_NUMBER 50
 #define MAX_SYMBOL_NUMBER 100
+#define MAX_PROC_FUNCS 20
 
 typedef void (*baseFonc)(void);
 
@@ -25,5 +26,7 @@ void pushStack (int data, pileBase * * pileTop);
 int popStack (pileBase * * pileTop);
 int typeConversion(int typ1, int typ2);
 void compilateur();
+void executeur(int );
+int lexlen(char *);
 
 #endif // !INTERPRET_H

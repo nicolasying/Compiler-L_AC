@@ -17,6 +17,7 @@
 #include "interpreter.h"
 
 extern pileBase * data, * type, * retourne;
+extern int VM[];
 extern int finIndLAC, finIndVM;
 // pileBase data, type, retourne;
 

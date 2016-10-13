@@ -13,6 +13,8 @@
 #include "interpreter.c"
 #include <stdio.h>
 #include <stdlib.h>
+lexeme_t lexemes[100];
+int t_c;
 
 int main(int argc, char * argv[]) {
     
@@ -21,7 +23,7 @@ int main(int argc, char * argv[]) {
 //    }
     
     FILE *fp;
-    lexeme_t lexemes[100];
+    
     long size_file;
     
     //
@@ -52,14 +54,14 @@ int main(int argc, char * argv[]) {
     //printf("---main---\nRead Buffer: \n%s\n", texte);
     
     // pass to analyse lexicale
-    int t_c = analex(texte, lexemes);
+    t_c = analex(texte, lexemes);
     printf("---main---\nFin d'Analyse Lexicale!\n%d lexemes detected and stored in array.\n", t_c--);
     printf("---main---\nPas d'Analyse Syntaxique.\n");
     
     // pass to inteprete and compile
 
     initLACVMPro();
-    interpreteur(lexemes, t_c);
+    interpreteur();
     printf("---main---\nFin d'interpreter.\n");
 
     // freeing malloc allocated memory

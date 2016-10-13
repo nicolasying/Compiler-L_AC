@@ -12,6 +12,8 @@
 #include <string.h>
 #include <stdlib.h>
 
+extern lexeme_t lexemes[];
+extern int t_c;
 // function de conversion de type 
 int typeConversion(int typ1, int typ2) {
     if (typ1 == typ2) {
@@ -52,9 +54,9 @@ int popStack (pileBase ** pileTop) {
 }
 
 pileBase *data, *type, *retourne;
-baseFonc processeur[20];
+baseFonc processeur[MAX_PROC_FUNCS];
 int posLex;
-const int posFonLITVM = 19, posFonFINVM = 20; // lit position in VM, numbre est faux
+int posFonLITVM, posFonFINVM; // lit position in VM, numbre est faux
 
 // definition temporaire de la table des symboles
 int LAC[MAX_SYMBOL_NUMBER] = {0};
@@ -65,12 +67,12 @@ int LAC[MAX_SYMBOL_NUMBER] = {0};
             //     5, '(', 'f', 'i', 'n', ')', 0, 0, 8, 39, 
             //      ];
 int VM[MAX_VM_NUMBER] = {0};
-static int finIndLAC, finIndVM;
+int finIndLAC, finIndVM;
 
 void addFunctionBase (const int indProcesseur, char * name, int paraIn, int typeIn[], int paraOut, int typeOut[]) {
     // appending to LAC
     // LAC[finIndLAC + 1] = LAC[LAC[finIndLAC]] + 1; // sequence number of the function in LAC
-    LAC[finIndLAC + 1] = strlen(name);
+    LAC[finIndLAC + 1] = lexlen(name);
     for (int i = 0; i < LAC[finIndLAC + 1]; i++) {
         LAC[finIndLAC + 2 + i] = name[i];
     }
@@ -100,13 +102,21 @@ void addFunctionBase (const int indProcesseur, char * name, int paraIn, int type
 void initLACVMPro (void) {
 
     addFunctionBase(1, "+", 2, (int[]){ENTIER, ENTIER}, 1, (int[]){ENTIER}); 
-    addFunctionBase(5, "swap", 2, (int[]){ENTIER, ENTIER}, 0, (int[]){});
+    addFunctionBase(3, "swap", 2, (int[]){ENTIER, ENTIER}, 0, (int[]){});
     addFunctionBase(0, ".", 1, (int[]){ENTIER}, 0, (int[]){});
+    addFunctionBase(2, ":", 0, (int[]){}, 0, (int[]){});
     processeur[0] = &affichage;
     processeur[1] = &addition;
-    processeur[5] = &swap;
-    posFonFINVM = MAX_VM_NUMBER - 1;
-    posFonLITVM = MAX_VM_NUMBER;
+    processeur[3] = &swap;
+    processeur[2] = &def;
+    processeur[MAX_PROC_FUNCS - 2] = &fin;
+    processeur[MAX_PROC_FUNCS - 1] = &lit;
+    posFonFINVM = MAX_VM_NUMBER - 4;
+    posFonLITVM = MAX_VM_NUMBER - 2;
+    VM[posFonFINVM] = 0;
+    VM[posFonFINVM + 1] = MAX_PROC_FUNCS - 2;
+    VM[posFonLITVM] = 0;
+    VM[posFonLITVM + 1] = MAX_PROC_FUNCS - 1;
 }
 
 
@@ -129,7 +139,7 @@ void initialisation () {
 int isFunction (int i, lexeme_t * lexeme) {
     // this function searches through from the end of table des symboles, returns the index of the beginning of the matching function,
     // 0 if not.
-    int length = strlen(lexeme[i].lex);
+    int length = lexlen(lexeme[i].lex);
     int position = LAC[finIndLAC];
     while (LAC[position + 1] != length && position > 0) {
         // firstly, need to compare two strings
@@ -147,7 +157,7 @@ int isFunction (int i, lexeme_t * lexeme) {
     return position;
 }
 
-void interpreteur(lexeme_t *lexemes, int t_c) { //t_c est le nombre de lexemes
+void interpreteur() { //t_c est le nombre de lexemes
     initialisation();
     posLex = 0;
     do {
@@ -181,17 +191,19 @@ void interpreteur(lexeme_t *lexemes, int t_c) { //t_c est le nombre de lexemes
 }
 
 void compilateur() {
-    int paraInCount = paraOutCount = 0; // stand for number of parameters of input, output and contained by the function orderly
-    int posNFVM = finIndVM++, posNFLAC = ++finIndLAC;
-    VM[finIndVM] = 1;
-    int nameLength = LAC[finIndLAC] = strlen(lexemes[posLex++].lex);
+    int paraInCount = 0, paraOutCount = 0; // stand for number of parameters of input, output and contained by the function orderly
+    int finIndVMl = finIndVM, finIndLACl = finIndLAC;
+    int posNFVM = ++finIndVMl, posNFLAC = ++finIndLACl;
+    VM[finIndVMl] = 1;
+    int nameLength = LAC[finIndLACl] = lexlen((lexemes[++posLex].lex));
     for (int i = 0; i < nameLength; i++) {
-            LAC[++finIndLAC] = lexemes[posLex++].lex[i];
-        }
-    while (lexemes[posLex].lex != ';' && posLex <= t_c) {
+            LAC[++finIndLACl] = lexemes[posLex].lex[i];
+    }
+    posLex++;
+    while (posLex <= t_c && *(lexemes[posLex].lex) != ';' || lexlen(lexemes[posLex].lex) != 1 ) {
         if (lexemes[posLex].type == C) {
             paraOutCount += 1;
-            VM[++finIndVM] = posFonLITVM;
+            VM[++finIndVMl] = posFonLITVM;
             // stock the chain.
             // storage();
             //VM[++finIndVM] = posChain;
@@ -204,32 +216,35 @@ void compilateur() {
                 int paraIn = LAC[posLAC + lenName + 1];
                 int paraOut = LAC[posLAC + lenName + paraIn + 2];
                 int posVM = LAC[posLAC + lenName + paraIn + paraOut + 3];
-                VM[++finIndVM] = posVM;
+                VM[++finIndVMl] = posVM;
                 paraInCount += paraIn - paraOutCount;
                 paraOutCount = (paraOutCount - paraIn > 0) ? (paraOutCount - paraIn) : 0 + paraOut;
             } else {
                 // function is not found,
                 // assume the lexeme is an integer
-                VM[++finIndVM] = posFonLITVM;
-                VM[++finIndVM] = atoi(lexemes[posLex].lex);
+                paraOutCount++;
+                VM[++finIndVMl] = posFonLITVM;
+                VM[++finIndVMl] = atoi(lexemes[posLex].lex);
             }
         }
         posLex++;
     };
-    if (lexemes[posLex].lex == ';') {
-        LAC[++finIndLAC] = paraInCount;
+    if (*(lexemes[posLex].lex) == ';' && lexlen(lexemes[posLex].lex) == 1) {
+        LAC[++finIndLACl] = paraInCount;
         for (int i = 0; i < paraInCount; i++) {
-            LAC[++finIndLAC]] = ENTIER; // suppose
+            LAC[++finIndLACl] = ENTIER; // suppose
         }
-        LAC[++finIndLAC] = paraOutCount;
+        LAC[++finIndLACl] = paraOutCount;
         for (int i = 0; i < paraOutCount; i++) {
-            LAC[++finIndLAC] = ENTIER;
+            LAC[++finIndLACl] = ENTIER;
         }
-        LAC[++finIndLAC] = posNFVM; // VM position;
-        LAC[++finIndLAC] = posNFLAC;
+        LAC[++finIndLACl] = posNFVM; // VM position;
+        LAC[++finIndLACl] = posNFLAC;
 
         //appending to VM
-        VM[++finIndVM] = posFonFINVM;
+        VM[++finIndVMl] = posFonFINVM;
+        finIndLAC = finIndLACl; 
+        finIndVM = finIndVMl; // synchroniser
         return;
     } else {
         exit(303);
@@ -237,13 +252,23 @@ void compilateur() {
 }
 
 void executeur (int posVM) {
-    if (VM[posVM] == 1) {
+    if (VM[posVM++] != 0) {
+        pushStack(posVM, &retourne);
         while (VM[posVM] != posFonFINVM) {
             pushStack(posVM, &retourne);
             executeur(VM[posVM]);
             posVM = popStack(&retourne) + 1;
         }
+//        processeur[VM[posFonFINVM]]();
     } else {
-        processeur[VM[posVM + 1]];
+        processeur[VM[posVM]]();
     }
+}
+
+int lexlen(char * lex) {
+    int i = 0;
+    while (lex[i] != '\0') {
+        i++;
+    }
+    return i;
 }
