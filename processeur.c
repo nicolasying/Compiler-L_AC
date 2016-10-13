@@ -17,6 +17,7 @@
 #include "interpreter.h"
 
 extern pileBase * data, * type, * retourne;
+extern int finIndLAC, finIndVM;
 // pileBase data, type, retourne;
 
 void addition(void) {
@@ -47,9 +48,16 @@ void affichage(void) { // qui empile une element, l'affichier sur output
 }
 
 void lit(void) { // qui lit une element du pile, la stocker dans le registre
-
+    int tmp = popStack(&retourne); // position de lit
+    pushStack(tmp + 1, &retourne); // avance 1 indice
+    pushStack(VM[tmp + 1], &data);
+    pushStack(ENTIER, &type); // suppose
 }
 
 void fin(void) {
+    popStack(&retourne);
+}
 
+void def(void) {
+    compilateur();
 }

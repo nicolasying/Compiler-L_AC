@@ -24,5 +24,6 @@ struct pileBase // la première element dans la pile seront toujours négligé
 void pushStack (int data, pileBase * * pileTop);
 int popStack (pileBase * * pileTop);
 int typeConversion(int typ1, int typ2);
+void compilateur();
 
 #endif // !INTERPRET_H

@@ -59,7 +59,7 @@ int main(int argc, char * argv[]) {
     // pass to inteprete and compile
 
     initLACVMPro();
-    compilateur(lexemes, t_c);
+    interpreteur(lexemes, t_c);
     printf("---main---\nFin d'interpreter.\n");
 
     // freeing malloc allocated memory
