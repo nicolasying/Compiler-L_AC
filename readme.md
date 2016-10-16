@@ -21,3 +21,9 @@ calculate, Fonction CALCULATE, projet 2
 interpreter, projet 3 (4 pas encore fait)
 
 processeur, fonctions mocquantes
+
+## Next phase
+
+Type checking
+
+Redefinition checking
