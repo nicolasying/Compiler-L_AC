@@ -24,32 +24,39 @@ extern int finIndLAC, finIndVM;
 void addition(void) {
     int op1 = popStack(&data), opt1 = popStack(&type);
     int op2 = popStack(&data), opt2 = popStack(&type);
-    pushStack(op1 + op2, &data);
-    pushStack(typeConversion(opt1, opt2), &type);
+    if (opt2 == opt1 && opt1 == ENTIER) {
+        pushStack(op1 + op2, &data);
+        pushStack(ENTIER, &type);
+    } else {
+        printf("CPU: add error\n");
+        exit(501);
+    }
     printf("CPU: add\n");
 }
 
 void multiplication(void) {
     int op1 = popStack(&data), opt1 = popStack(&type);
     int op2 = popStack(&data), opt2 = popStack(&type);
-    pushStack(op1 * op2, &data);
-    pushStack(typeConversion(opt1, opt2), &type);
+    if (opt2 == opt1 && opt1 == ENTIER) {
+        pushStack(op1 * op2, &data);
+        pushStack(ENTIER, &type);
+    } else {
+        printf("CPU: mul error\n");
+        exit(502);
+    }
     printf("CPU: mul\n");
-}
-
-// implement as adiition + oppose ?
-void substraction(void) {
-    int op1 = popStack(&data), opt1 = popStack(&type);
-    int op2 = popStack(&data), opt2 = popStack(&type);
-    pushStack(op1 - op2, &data);
-    pushStack(typeConversion(opt1, opt2), &type);
 }
 
 void swap(void) {
     int op1 = popStack(&data), opt1 = popStack(&type);
     int op2 = popStack(&data), opt2 = popStack(&type);
-    pushStack(op2, &data); pushStack(opt2, &type);
-    pushStack(op1, &data); pushStack(opt1, &type);
+    if (opt2 == opt1) {
+        pushStack(op2, &data); pushStack(opt2, &type);
+        pushStack(op1, &data); pushStack(opt1, &type);
+    } else {
+        printf("CPU: swp error\n");
+        exit(503);
+    }
     printf("CPU: swp\n");
 }
 

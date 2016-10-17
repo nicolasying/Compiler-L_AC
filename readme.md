@@ -24,6 +24,6 @@ processeur, fonctions mocquantes
 
 ## Next phase
 
-Type checking
+Type checking // impelemented in processeur
 
-Redefinition checking
+Redefinition checking // implemented in interpreter

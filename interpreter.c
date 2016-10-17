@@ -197,6 +197,9 @@ void interpreteur() { //t_c est le nombre de lexemes
 }
 
 void compilateur() {
+    // check for redefinition of functions
+    
+
     int paraInCount = 0, paraOutCount = 0; // stand for number of parameters of input, output and contained by the function orderly
     int finIndVMl = finIndVM, finIndLACl = finIndLAC;
     int posNFVM = ++finIndVMl, posNFLAC = ++finIndLACl;
