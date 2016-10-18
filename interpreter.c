@@ -198,7 +198,11 @@ void interpreteur() { //t_c est le nombre de lexemes
 
 void compilateur() {
     // check for redefinition of functions
-    
+    int flag;
+    if ((flag = isFunction(posLex + 1, lexemes)) && flag > 0) {
+        printf("Redefinition of function.\n");
+        exit(310);
+    }
 
     int paraInCount = 0, paraOutCount = 0; // stand for number of parameters of input, output and contained by the function orderly
     int finIndVMl = finIndVM, finIndLACl = finIndLAC;

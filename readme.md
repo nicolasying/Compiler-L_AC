@@ -26,4 +26,4 @@ processeur, fonctions mocquantes
 
 Type checking // impelemented in processeur
 
-Redefinition checking // implemented in interpreter
+Redefinition checking // implemented in compilateur using isFunction
