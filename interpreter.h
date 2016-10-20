@@ -8,9 +8,9 @@
 #define CHAINECHAR 3
 #define FLOATANT 4
 
-#define MAX_VM_NUMBER 50
-#define MAX_SYMBOL_NUMBER 100
-#define MAX_PROC_FUNCS 20
+#define MAX_VM_NUMBER 200
+#define MAX_SYMBOL_NUMBER 400
+#define MAX_PROC_FUNCS 40
 
 typedef void (*baseFonc)(void);
 

@@ -60,14 +60,8 @@ int posFonLITVM, posFonFINVM; // lit position in VM, numbre est faux
 
 // definition temporaire de la table des symboles
 int LAC[MAX_SYMBOL_NUMBER] = {0};
-            // [0, 1, '+', 2, ENTIER, ENTIER, 1, ENTIER, 0, 1, 
-            //     4, 's', 'w', 'a', 'p', 2, ENTIER, ENTIER, 2, ENTIER, ENTIER, 2, 10, 
-            //     1, '.', 1, ENTIER, 0, 4, 22, 
-            //     5, '(', 'l', 'i', 't', ')', 0, 0, 6, 29, 
-            //     5, '(', 'f', 'i', 'n', ')', 0, 0, 8, 39, 
-            //      ];
 int VM[MAX_VM_NUMBER] = {0};
-int finIndLAC, finIndVM;
+int finIndLAC = 0, finIndVM = 6;
 
 void addFunctionBase (const int indProcesseur, char * name, int paraIn, int typeIn[], int paraOut, int typeOut[]) {
     // appending to LAC
@@ -89,7 +83,11 @@ void addFunctionBase (const int indProcesseur, char * name, int paraIn, int type
    
     finIndLAC += 5 + LAC[finIndLAC + 1] + paraIn + paraOut;
 
-    //appending to VM
+    // appending to VM, with 4 indices reserved to fin and lit.
+    if (finIndVM + 2 >= MAX_VM_NUMBER - 4) {
+        printf("VM is full. Extent memory for VM.\n");
+        exit(311);
+    }
     VM[finIndVM++] = 0;
     VM[finIndVM++] = indProcesseur;
     
@@ -101,24 +99,24 @@ void addFunctionBase (const int indProcesseur, char * name, int paraIn, int type
 
 void initLACVMPro (void) {
 
-    addFunctionBase(1, "+", 2, (int[]){ENTIER, ENTIER}, 1, (int[]){ENTIER}); 
-    addFunctionBase(4, "*", 2, (int[]){ENTIER, ENTIER}, 1, (int[]){ENTIER}); 
-    addFunctionBase(3, "swap", 2, (int[]){ENTIER, ENTIER}, 0, (int[]){});
-    addFunctionBase(0, ".", 1, (int[]){ENTIER}, 0, (int[]){});
-    addFunctionBase(2, ":", 0, (int[]){}, 0, (int[]){});
-    processeur[0] = &affichage;
-    processeur[1] = &addition;
-    processeur[3] = &swap;
-    processeur[2] = &def;
-    processeur[4] = &multiplication;
-    processeur[MAX_PROC_FUNCS - 2] = &fin;
-    processeur[MAX_PROC_FUNCS - 1] = &lit;
-    posFonFINVM = MAX_VM_NUMBER - 4;
-    posFonLITVM = MAX_VM_NUMBER - 2;
+    addFunctionBase(4, "+", 2, (int[]){ENTIER, ENTIER}, 1, (int[]){ENTIER}); 
+    addFunctionBase(6, "*", 2, (int[]){ENTIER, ENTIER}, 1, (int[]){ENTIER}); 
+    addFunctionBase(10, "swap", 2, (int[]){ENTIER, ENTIER}, 0, (int[]){});
+    addFunctionBase(3, ".", 1, (int[]){ENTIER}, 0, (int[]){});
+    addFunctionBase(20, ":", 0, (int[]){}, 0, (int[]){});
+    processeur[3] = &affichage;
+    processeur[4] = &addition;
+    processeur[10] = &swap;
+    processeur[20] = &def;
+    processeur[6] = &multiplication;
+    processeur[2] = &fin;
+    processeur[0] = &lit;
+    posFonFINVM = 0;
+    posFonLITVM = 4;
     VM[posFonFINVM] = 0;
-    VM[posFonFINVM + 1] = MAX_PROC_FUNCS - 2;
+    VM[posFonFINVM + 1] = 4;
     VM[posFonLITVM] = 0;
-    VM[posFonLITVM + 1] = MAX_PROC_FUNCS - 1;
+    VM[posFonLITVM + 1] = 0;
 }
 
 

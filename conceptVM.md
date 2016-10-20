@@ -33,3 +33,9 @@ MOD 2 // set to prepare to retrieve [2]
 DWL 2 // retrieve [2]
 DWL 0 // retrieve [INDICEDATA]
 UPL 4 // copy to cache pos 1
+
+- first
+- second
+- third
+
+1. -

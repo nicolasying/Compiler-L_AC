@@ -31,4 +31,4 @@
 : incr 1 + ;
 : 2+. incr incr . ;
 1 2+.
-: incr . ;
+\ : incr . ;
