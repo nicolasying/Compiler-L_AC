@@ -34,3 +34,6 @@
 
 # System files
 .DS_Store
+
+# Other projects
+VM_LAC_*

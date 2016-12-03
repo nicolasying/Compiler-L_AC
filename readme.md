@@ -38,11 +38,11 @@ Redefinition checking // implemented in compilateur using isFunction
 
 3. .
 
-4. +
+4. \+
 
 5. \-
 
-6. *
+6. \*
 
 7. = (comparison)
 

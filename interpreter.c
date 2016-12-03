@@ -44,6 +44,7 @@ void pushStack (int data, pileBase ** pileTop) {
     new->precedent = pile;
     * pileTop = new;
 }
+
 int popStack (pileBase ** pileTop) {
     pileBase * toDelete = * pileTop;
     if(toDelete->precedent == NULL) exit(302);
@@ -56,7 +57,7 @@ int popStack (pileBase ** pileTop) {
 pileBase *data, *type, *retourne;
 baseFonc processeur[MAX_PROC_FUNCS];
 int posLex;
-int posFonLITVM, posFonFINVM; // lit position in VM, numbre est faux
+int posFonLITVM, posFonFINVM; // lit & fin position in VM
 
 // definition temporaire de la table des symboles
 int LAC[MAX_SYMBOL_NUMBER] = {0};
