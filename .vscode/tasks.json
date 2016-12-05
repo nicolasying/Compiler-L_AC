@@ -27,6 +27,16 @@
             "suppressTaskName": true
         },
         {
+            "taskName": "Test_new",
+            "args": [
+                "-g",
+                "-o",
+                "Debug/test_new.out",
+                "mode_calculatrice.c"
+            ],
+            "suppressTaskName": true
+        },
+        {
             "taskName": "debugMain",
             "args": [
                 "-Wall", "-g", "-o", "Debug/main.out", "main.c"

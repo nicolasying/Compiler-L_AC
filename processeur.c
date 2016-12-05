@@ -35,14 +35,20 @@
 // 28 calculate
 // 29 catenate
 
-#include "interpreter.h"
+#ifndef PROCESSOR
+#define PROCESSOR
 
-extern pileBase * data, * type, * retourne;
-extern stringMem[];
-extern int stringPtr;
-extern int VM[];
-extern int finIndLAC, finIndVM;
-// pileBase data, type, retourne;
+#include "common_component.h"
+
+static basicStack * data, * type, * retourne;
+static int *stringMem;
+
+void linkProcessor(basicStack * dataStack, basicStack * typeStack, basicStack * callStack, int * stringMemory) {
+    data = dataStack;
+    type = typeStack;
+    retourne = callStack;
+    stringMem = stringMemory;
+}
 
 void lit(void) { // qui lit une element du pile, la stocker dans le registre
     int tmp = popStack(&retourne); // position de lit
@@ -53,7 +59,7 @@ void lit(void) { // qui lit une element du pile, la stocker dans le registre
 }
 
 void str(void) { // to indicate that the next element in the array is a string
-
+    return;
 }
 
 void fin(void) {
@@ -128,7 +134,7 @@ void comparison(void) {
     #endif
 }
 
-void duplicate(void) {
+void dup(void) {
     int op1 = popStack(&data), opt1 = popStack(&type);
 
     pushStack(op1, &data);
@@ -171,3 +177,5 @@ void def(void) {
     compilateur();
     printf("CPU: def\n");
 }
+
+#endif 

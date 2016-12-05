@@ -20,5 +20,7 @@ typedef struct lexeme_Element {
 } lexeme_Element;
 
 int analyseLexical(char *, lexeme_Element *);
+// take in the text to analysis and the structure to store lexemes
+// returns the useful lexeme number (String & Identifier)
 
 #endif // !ANALEX_H
