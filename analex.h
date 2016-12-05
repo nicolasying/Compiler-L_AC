@@ -16,7 +16,7 @@ typedef enum lex_Type {
 
 typedef struct lexeme {
     lex_Type type;
-    char * lex;
+    int begin, end;
 } lexeme_t;
 
 int analex(char *, lexeme_t *);
