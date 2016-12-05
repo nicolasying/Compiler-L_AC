@@ -15,12 +15,31 @@
 
 void initProcessor (basicFunc * processor) {
     processor[0] = &lit;
+    // processor[1] = &str;
     processor[2] = &fin;
     processor[3] = &affichage;
     processor[4] = &addition;
+    processor[5] = &substraction;
     processor[6] = &multiplication;
+    processor[7] = &comparison;
+    processor[8] = &dup;
+    processor[9] = &drop;
     processor[10] = &swap;
-    processor[20] = &def;
+    // processor[11] = &count;
+    // processor[12] = &type;
+    // processor[13] = &fif;
+    // processor[14] = &felse;
+    // processor[15] = &fthen;
+    // processor[21] = &or;
+    // processor[22] = &not;
+    // processor[23] = &smaller;
+    // processor[24] = &defer;
+    // processor[25] = &recurse;
+    // processor[26] = &prime;
+    // processor[27] = &is;
+    // processor[28] = &calculate;
+    // processor[29] = &catnate;
+    processor[30] = &def;
 }
 
 void addBaseFunction (const int * symbolTable, const int * VM, int *posSymbol, int* posVM, const int processorIndex, char* name, int paraIn, int typeIn[], int paraOut, int typeOut[]) {

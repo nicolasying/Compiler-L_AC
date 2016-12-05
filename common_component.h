@@ -17,8 +17,8 @@
 
 // About processor, symbol table and VM
 typedef void (*basicFunc)(void);
-void initProcessor(void);
-void addBaseFunction (const int * symbolTable, const int * VM, int *posSymbol, int* posVM, const int processorIndex, char* name, int paraIn, int typeIn[], int paraOut, int typeOut[])
+void initProcessor(basicFunc * processor);
+void addBaseFunction (const int * symbolTable, const int * VM, int *posSymbol, int* posVM, const int processorIndex, char* name, int paraIn, int typeIn[], int paraOut, int typeOut[]);
 
 // About stacks
 typedef struct basicStack basicStack;

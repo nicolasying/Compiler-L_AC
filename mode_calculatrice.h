@@ -11,6 +11,6 @@
 
 #define MAX_LINE_LENGTH 1000
 #define MAX_LEXEME_NUMBER 300
-#define MAX_STRING_SIZE 500
 
+void initLACInterprete (int * symbolTable, int * VM, basicFunc * processor);
 #endif // CALCULATRICE_H
