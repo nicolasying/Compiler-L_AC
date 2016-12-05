@@ -8,8 +8,6 @@
 
 #define MAX_FILE_LENGTH 1000
 #define MAX_LEMEXE_NUMBER 100
-#include "analex.h"
-#include "analex.c"
 #include "interpreter.c"
 #include <stdio.h>
 #include <stdlib.h>

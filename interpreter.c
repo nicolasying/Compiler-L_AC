@@ -6,7 +6,6 @@
 //  Copyright © 2016 Nicolas YING. All rights reserved.
 //
 
-#include "analex.h"
 #include "processeur.c"
 #include "interpreter.h"
 #include "interpreter_pre.c"

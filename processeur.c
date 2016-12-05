@@ -7,6 +7,7 @@
 //  Created by Nicolas YING on 10/10/2016.
 //  Copyright © 2016 Nicolas YING. All rights reserved.
 //
+//  Error code: 5**
 
 // 0 lit (not available in interpreter mode)
 // 1 str
@@ -39,15 +40,18 @@
 #define PROCESSOR
 
 #include "common_component.h"
+#include <stdio.h>
+#include <stdlib.h>
 
 static basicStack * data, * type, * retourne;
-static int *stringMem;
+static int *stringMem, *VM;
 
-void linkProcessor(basicStack * dataStack, basicStack * typeStack, basicStack * callStack, int * stringMemory) {
+void linkProcessor(basicStack * dataStack, basicStack * typeStack, basicStack * callStack, int * stringMemory, int * exVM) {
     data = dataStack;
     type = typeStack;
     retourne = callStack;
     stringMem = stringMemory;
+    VM = exVM;
 }
 
 void lit(void) { // qui lit une element du pile, la stocker dans le registre
@@ -174,7 +178,7 @@ void count(void) {
 }
 
 void def(void) {
-    compilateur();
+    // compilateur();
     printf("CPU: def\n");
 }
 
