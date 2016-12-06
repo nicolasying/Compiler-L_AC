@@ -10,6 +10,13 @@
 #ifndef COMMON_COMPONENT
 #define COMMON_COMPONENT
 
+#include "analyse_lexical.h"
+
+#define DEBUG // debugging flag
+
+#define MAX_LINE_LENGTH 1000
+#define MAX_LEXEME_NUMBER 300
+
 #define MAX_STRING_SIZE 500
 #define SYMBOL_TABLE_SIZE 500
 #define VM_SIZE 300
@@ -18,7 +25,8 @@
 // About processor, symbol table and VM
 typedef void (*basicFunc)(void);
 void initProcessor(basicFunc * processor);
-void addBaseFunction (const int * symbolTable, const int * VM, int *posSymbol, int* posVM, const int processorIndex, char* name, int paraIn, int typeIn[], int paraOut, int typeOut[]);
+void addBaseFunction (int * symbolTable, int * VM, int *posSymbol, int* posVM, const int processorIndex, char* name, int paraIn, int typeIn[], int paraOut, int typeOut[]);
+int findFunction (int sizeSymbolTable, int * symbolTable, lexeme_Element * lexeme, char * code); // search in symbol table if the lexeme is a funtion defined, returning the beginning position in symbol table, 0 if not found
 
 // About stacks
 typedef struct basicStack basicStack;
@@ -30,7 +38,8 @@ struct basicStack {
 
 void pushStack (int data, basicStack ** topNode);
 int popStack (basicStack ** topNode);
-void displayStack (const basicStack ** dataStack, const basicStack ** typeStack, const int * memorySpace);
+void displayStack (basicStack ** dataStack, basicStack ** typeStack, char * memorySpace);
+void clearStack (basicStack ** topNode);
 
 // L_ac types
 #define ENTIER 1
@@ -41,7 +50,8 @@ void displayStack (const basicStack ** dataStack, const basicStack ** typeStack,
 #define CHAINECHARNOHEADER 5
 
 // About strings
-void printString(int * memorySpace, int position);
+void printString(char * memorySpace, int position);
 int findStringLength(char * string);
+int convertLexeme2Number (char * code, lexeme_Element * lexeme, int * number); 
 
 #endif // !COMMON_COMPONENT

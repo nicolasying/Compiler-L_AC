@@ -10,8 +10,7 @@
 #define CALCULATRICE_H
 
 #include "common_component.h"
-#define MAX_LINE_LENGTH 1000
-#define MAX_LEXEME_NUMBER 300
+
 
 void initLACInterprete (int * symbolTable, int * VM, basicFunc * processor);
 #endif // CALCULATRICE_H

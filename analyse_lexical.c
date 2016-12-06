@@ -7,33 +7,14 @@
 //
 //  Error code: 1**
 
+#include "common_component.h"
 #include "analyse_lexical.h"
 #include <stdio.h>
 #include <regex.h>
 #include <stdlib.h>
 #include <string.h>
 
-int analyseLexical(const char * textToAnalyse, lexeme_Element * lexeme_List) {
-
-    // Regular Expressions Definition
-    const char expr[] = "((^| )\" ([^()\"]*[\\].*|[^()\\]*[\\(][^()\\]*[\\)][^()\\]*)\")|((^|[ \t\n])[\\]( |\t)[^\n]*($|\n))|((^|[ \t\n])[(] [^)]*[)])|((^|[ \t\n])[\"] [^\"]*[\"])|([-+/:;.\\=\\*0-9a-zA-Z[:punct:]]+)";
-    // ordre:
-    // char chaine containing " and \, "(^|[ \t\n])[\"]((^|[ \t\n])[\\] [^()\n]*($|\n))*((^|[ \t\n])[(] [^)]*[)])*[\"]"
-    // single line comment, "(^|[ \t\n])[\\] [^()\n]*($|\n)"
-    // multiline comment, "(^|[ \t\n])[(] [^)]*[)]"
-    // char chaine, "(^|[ \t\n])[\"] [^\"]*[\"]"
-    // punctuations and remainders, "[:=;+-*/.,1-9a-zA-Z]+"
-
-    // Regular Expression Compilation
-    regex_t regExp;
-    if (regcomp(&regExp, expr, REG_EXTENDED)) {
-        printf("Analyse lexical: \nMauvaise exp rationnelle : %s\n", expr);
-        regfree(&regExp);
-        exit(101);
-    }
-    #ifdef DEBUG
-    printf("analyse_lexical: \nRegular Expression compiled.\n");
-    #endif // DEBUG
+int analyseLexical(char * textToAnalyse, lexeme_Element * lexeme_List, regex_t * regExp) {
 
     // Matching Expressions against the input text
     regmatch_t pmatch[3];
@@ -46,49 +27,60 @@ int analyseLexical(const char * textToAnalyse, lexeme_Element * lexeme_List) {
             printf("Lexemes overload.\n");
             exit(199);
         }
-        res = regexec(&regExp, p, 1, pmatch, 0);
+        res = regexec(regExp, p, 1, pmatch, 0);
         if (res) break;
 
         // Put matched result into lexeme_List
         int begin = (int)pmatch[0].rm_so;
         int end = (int)pmatch[0].rm_eo;
+        int beginGlobal = begin + offset;
+        int endGlobal = end + offset - 1;
         #ifdef DEBUG
-        printf("analyse_lexical: \n%.*s (%d, %d)\n", end - begin, p + begin, begin + offset, end + offset - 1);
+        printf("analyse_lexical: \n%.*s (%d, %d)\n", end - begin, p + begin, beginGlobal, endGlobal);
         #endif // DEBUG
 
         // Now check current lexeme type, discard the result if it is a comment
-        if (p[end] == ')' && ( (p[begin] == '(' && ((begin > 0) ? p[begin-1] == "\n" : 1) && p[begin+1] == ' ') || ( (p[begin] == ' ' || p[begin] == '\t') && p[begin+1] == '(' && p[begin+2] == ' '))){
+        if (p[endGlobal] == ')' && ( (p[beginGlobal] == '(' && ((begin > 0) ? (p[beginGlobal-1] == '\n' || p[beginGlobal-1] == ' ') : 1) && p[beginGlobal+1] == ' ') || ( (p[beginGlobal] == ' ' || p[beginGlobal] == '\t') && p[beginGlobal+1] == '(' && p[beginGlobal+2] == ' '))){
             // it is a multiline comment
             #ifdef DEBUG
-            printf("analyse_lexical: \nMultiline comment detected.\n%.*s (%d, %d)\n", end - begin, p + begin, begin + offset, end + offset - 1);
+            printf("analyse_lexical: \nMultiline comment detected.\n%.*s (%d, %d)\n", end - begin, p + begin,beginGlobal, endGlobal);
             #endif // DEBUG
-        } else if ((p[begin] == '\\' && ((begin > 0) ? p[begin-1] == "\n" : 1) && p[begin+1] == ' ') || ((p[begin] == ' ' || p[begin] == '\t') && p[begin+1] == '\\' && p[begin+2] == ' ')) {
+        } else if ((p[beginGlobal] == '\\' && ((begin > 0) ? (p[beginGlobal-1] == '\n' || p[beginGlobal-1] == ' ') : 1) && p[beginGlobal+1] == ' ') || ((p[beginGlobal] == ' ' || p[beginGlobal] == '\t') && p[beginGlobal+1] == '\\' && p[beginGlobal+2] == ' ')) {
             // it is a single line comment
             #ifdef DEBUG
-            printf("analyse_lexical: \nSingle line comment detected.\n%.*s (%d, %d)\n", end - begin, p + begin, begin + offset, end + offset - 1);
+            printf("analyse_lexical: \nSingle line comment detected.\n%.*s (%d, %d)\n", end - begin, p + begin,beginGlobal, endGlobal);
             #endif // DEBUG
-        } else if (p[end] == '"' && ( (p[begin] == '"' && ((begin > 0) ? p[begin-1] == "\n" : 1) && p[begin+1] == ' ') || ( (p[begin] == ' ' || p[begin] == '\t') && p[begin+1] == '"' && p[begin+2] == ' '))) {
+        } else if (p[endGlobal] == '\"' && ((p[beginGlobal] == '\"' && ((begin > 0) ? (p[beginGlobal-1] == '\n' || p[beginGlobal-1] == ' ') : 1) && p[beginGlobal+1] == ' ') || ((p[beginGlobal] == ' ' || p[beginGlobal] == '\t') && p[beginGlobal+1] == '\"' && p[beginGlobal+2] == ' '))) {
             // it is a chain of characters
             #ifdef DEBUG
-            printf("analyse_lexical: \nString detected.\n%.*s (%d, %d)\n", end - begin, p + begin, begin + offset, end + offset - 1);
+            printf("analyse_lexical: \nString detected.\n%.*s (%d, %d)\n", end - begin, p + begin,beginGlobal, endGlobal);
             #endif // DEBUG
             
             // Register this lexeme into lexeme_List without _"_ and  "
-            if (p[begin] == '"') lexeme_List[t_c].begin = begin + 2;
-            else lexeme_List[t_c].begin = begin + 3;
-            lexeme_List[t_c].end = end - 1;
+            if (p[beginGlobal] == '\"') lexeme_List[t_c].begin = begin + offset + 2;
+            else lexeme_List[t_c].begin = begin + offset + 3;
+            lexeme_List[t_c].end = end + offset - 2;
             lexeme_List[t_c].type = C;
+
+            #ifdef DEBUG
+            printf("analyse_lexical: \nString registered: ");
+            int i = 0;
+            while (i < lexeme_List[t_c].begin - lexeme_List[t_c].end + 1) {
+                printf("%c", p[lexeme_List[t_c].begin + i++]);
+            }
+            printf("\n");
+            #endif // DEBUG
 
             t_c++;
         } else {
             // it is an identifier
             #ifdef DEBUG
-            printf("analyse_lexical: \nIdentifier detected.\n%.*s (%d, %d)\n", end - begin, p + begin, begin + offset, end + offset - 1);
+            printf("analyse_lexical: \nIdentifier detected.\n%.*s (%d, %d)\n", end - begin, p + begin,beginGlobal, endGlobal);
             #endif // DEBUG
 
             // Register this lexeme into lexeme_List
-            lexeme_List[t_c].begin = begin;
-            lexeme_List[t_c].end = end;
+            lexeme_List[t_c].begin = begin + offset;
+            lexeme_List[t_c].end = end + offset - 1;
             lexeme_List[t_c].type = I;
             t_c++;
         }
@@ -96,7 +88,5 @@ int analyseLexical(const char * textToAnalyse, lexeme_Element * lexeme_List) {
         offset += end;
     } while (res == 0);
 
-    // matching finished
-    regfree(&regExp);
     return t_c;
 }

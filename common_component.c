@@ -9,7 +9,7 @@
 //  Error code: 9**
 
 #include "common_component.h"
-#include "processeur.c"
+#include "processor.h"
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -42,17 +42,17 @@ void initProcessor (basicFunc * processor) {
     processor[30] = &def;
 }
 
-void addBaseFunction (const int * symbolTable, const int * VM, int *posSymbol, int* posVM, const int processorIndex, char* name, int paraIn, int typeIn[], int paraOut, int typeOut[]) {
+void addBaseFunction (int * symbolTable, int * VM, int *posSymbol, int* posVM, const int processorIndex, char* name, int paraIn, int typeIn[], int paraOut, int typeOut[]) {
     
     if (*posSymbol >= SYMBOL_TABLE_SIZE || *posVM >= VM_SIZE) {
         printf("Symbol table or VM table full.");
-        exit(910)
+        exit(910);
     }
     
     // Adding info to symbol table
     symbolTable[*posSymbol + 1] = findStringLength(name);
-    for (int i = 0; i < basicStacksymbolTable[*posSymbol + 1]; i++) {
-        basicStacksymbolTable[*posSymbol + 2 + i] = name[i];
+    for (int i = 0; i < symbolTable[*posSymbol + 1]; i++) {
+        symbolTable[*posSymbol + 2 + i] = name[i];
     }
     symbolTable[*posSymbol + 2 + symbolTable[*posSymbol + 1]] = paraIn;
     for (int i = 0; i < paraIn; i++) {
@@ -70,6 +70,45 @@ void addBaseFunction (const int * symbolTable, const int * VM, int *posSymbol, i
     // Adding info to VM
     VM[(*posVM)++] = 0; // Fonction de base
     VM[(*posVM)++] = processorIndex;
+}
+
+int findFunction (int sizeSymbolTable, int * symbolTable, lexeme_Element * lexeme, char * code) {
+    int length = lexeme->end - lexeme->begin + 1; 
+    // length of the lexeme used to quick matching
+    int position = symbolTable[sizeSymbolTable]; 
+    // position is the last symbol defined in the table
+
+    #ifdef DEBUG
+    printf("findFunction: searching for : ");
+    int i = 0;
+    while(i < length) {
+        printf("%c",code[lexeme->begin + i++]);
+    }
+    printf("\n");
+    #endif // DEBUG
+
+    while (position > 0) {
+        if (symbolTable[position] != length) {
+            // if the length doesn't match
+            position = symbolTable[position - 1];
+        } else {
+            // otherwise, compare two strings
+            int j = 0;
+            while (j < length) {
+                if (code[lexeme->begin + j] != symbolTable[position + 1 + j]) {
+                    break;
+                    // resulting to a j < length, which fails the following examination
+                } else {
+                    j++;
+                }
+            }
+            if (j == length) return position;
+            // the symbol is found
+            position = symbolTable[position - 1];
+            // otherwise, try the next symbol
+        }
+    }
+    return position;
 }
 
 void pushStack (int data, basicStack ** topNode) {
@@ -93,7 +132,7 @@ int popStack (basicStack ** topNode) {
     return data;
 }
 
-void displayStack (const basicStack ** dataStack, const basicStack ** typeStack, const int * memorySpace) {
+void displayStack (basicStack ** dataStack, basicStack ** typeStack, char * memorySpace) {
     printf("Stack : (top) ");
     basicStack * tempPointerD = *dataStack, *tempPointerT = *typeStack;
     while(tempPointerD->precedent != NULL) {
@@ -103,12 +142,19 @@ void displayStack (const basicStack ** dataStack, const basicStack ** typeStack,
             printString(memorySpace, tempPointerT->data); 
             printf(" > ");
         }
-        else if(tempPointerT->data == CHAINECHARNOHEADER) printf("[A String with no header] > ", tempPointerD->data);
+        else if(tempPointerT->data == CHAINECHARNOHEADER) printf("[A String with no header] > ");
+        tempPointerD = tempPointerD->precedent;
+        tempPointerT = tempPointerT->precedent;
     } 
     printf("(bottom)\n");
 }
 
-void printString(int * memorySpace, int position) {
+void clearStack (basicStack ** topNode) {
+    while ((*topNode)->precedent != NULL) popStack(topNode);
+    free(*topNode);
+}
+
+void printString(char * memorySpace, int position) {
     int length = memorySpace[position];
     while (length-- > 0) {
         printf("%c", memorySpace[++position]);
@@ -117,8 +163,23 @@ void printString(int * memorySpace, int position) {
 
 int findStringLength (char * string) {
     int i = 0;
-    while (lex[i] != '\0') {
+    while (string[i] != '\0') {
         i++;
     }
     return i;
+}
+
+int convertLexeme2Number (char * code, lexeme_Element * lexeme, int * number) {
+    int pos = lexeme->begin;
+    *number = 0;
+    while (pos <= lexeme->end) {
+        int bitCheck = code[pos++] - '0';
+        if (bitCheck > 9 || bitCheck < 0) {
+            printf("Convert lexeme to number: invalid number.\n");
+            return 1;
+        }
+        *number *= 10;
+        *number += bitCheck;
+    }
+    return 0;
 }

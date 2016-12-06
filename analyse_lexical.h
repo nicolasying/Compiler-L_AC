@@ -9,6 +9,8 @@
 #ifndef ANALEX_H
 #define ANALEX_H
 
+#include <regex.h>
+
 typedef enum lexeme_Type {
     C, // chain de character
     I // identificateur
@@ -19,7 +21,7 @@ typedef struct lexeme_Element {
     int begin, end;
 } lexeme_Element;
 
-int analyseLexical(char *, lexeme_Element *);
+int analyseLexical(char *, lexeme_Element *, regex_t *);
 // take in the text to analysis and the structure to store lexemes
 // returns the useful lexeme number (String & Identifier)
 

@@ -29,10 +29,14 @@
         {
             "taskName": "Test_new",
             "args": [
+                
                 "-g",
                 "-o",
                 "Debug/test_new.out",
-                "mode_calculatrice.c"
+                "mode_calculatrice.c",
+                "processeur.c",
+                "common_component.c",
+                "analyse_lexical.c"
             ],
             "suppressTaskName": true
         },
