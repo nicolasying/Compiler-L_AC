@@ -17,6 +17,7 @@
 
 #define NOT_COMPILING 7833
 #define COMPILING_FUN 7943
+#define COMPILING_MAIN 7317
 #define MAX_IN_OUT_PUT_NUMBER 100
 
 int functionCompilingState = NOT_COMPILING; // a flag used to avoid nested definition
@@ -155,6 +156,8 @@ int main(int argc, char * argv[]) { // argv[1] = fileURL
     // Interpret the lexemes
     do {
         if(lexemeList[posLexeme].type == C) {
+            // Check the state, if it's not compiling a function, it's compiling main (the last block of .lac file).
+            if (functionCompilingState == NOT_COMPILING ) functionCompilingState = COMPILING_MAIN;
             // Update parameter statistics
             cCFParaArray[cCFParaPos++] = CHAINECHAR;
             cCFParaOutArray[cCFParaOutCnt++] = CHAINECHAR;
@@ -175,6 +178,11 @@ int main(int argc, char * argv[]) { // argv[1] = fileURL
                 printf("Function definition cannot be nested.\n");
                 printf("%.*s... (pos: %d)\n", 10, texte + lexemeList[posLexeme].begin, lexemeList[posLexeme].begin);
                 exit(700);
+            }
+            if (functionCompilingState == COMPILING_MAIN) {
+                printf("Error: Function definition after code execution. Move your function definition above main codes.\n");
+                printf("%.*s... (pos: %d)\n", 10, texte + lexemeList[posLexeme].begin, lexemeList[posLexeme].begin);
+                exit(702);
             }
             // Check if a function with the same name exists
             if (findFunction(posSymbol, symbolTable, &lexemeList[posLexeme + 1], texte) > 0) {
@@ -200,7 +208,7 @@ int main(int argc, char * argv[]) { // argv[1] = fileURL
 
         } else if (lexemeList[posLexeme].end - lexemeList[posLexeme].begin == 0 && texte[lexemeList[posLexeme].begin] == ';') {
             // End of the defnition
-            if (functionCompilingState != COMPILING_FUN) {
+            if (functionCompilingState != COMPILING_FUN || functionCompilingState != COMPILING_MAIN) {
                 printf("Error: There's no function being defined.\n");
                 printf("%.*s (pos: %d)\n", 10, texte + lexemeList[posLexeme].begin, lexemeList[posLexeme].begin);
                 exit(701);
@@ -222,6 +230,9 @@ int main(int argc, char * argv[]) { // argv[1] = fileURL
             functionCompilingState = NOT_COMPILING;
         } else {
             // It is an normal identifier
+            // Check the state, if it's not compiling a function, it's compiling main (the last block of .lac file).
+            if (functionCompilingState == NOT_COMPILING ) functionCompilingState = COMPILING_MAIN;
+
             int posSymbolC = findFunction(posSymbol, symbolTable, &lexemeList[posLexeme], texte);
             if (posSymbolC > 0){
                 // a function is found, find it's VM position
