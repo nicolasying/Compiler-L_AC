@@ -16,6 +16,8 @@ int i = 0, j = 0;
 lexeme lu;
 static char * s;
 
+extern struct noeud ARBRE_ZERO;
+
 int calculateString (char * string) {
     
     #ifdef DEBUG
@@ -31,7 +33,7 @@ int calculateString (char * string) {
 
     // lexicale
     resultat.N = 0;
-    
+    ARBRE_ZERO = (struct noeud) { &((struct lexeme){NOMBRE, "0\0"}), NULL, NULL};
     do {
         switch (s[i]) {
             case '0': case '1': case '2': case '3': case '4': case '5': case '6': case '7': case '8': case '9':
@@ -69,10 +71,10 @@ int calculateString (char * string) {
     arbre arbreSyntax = somme(0, resultat.N-1);
     
     traverse(arbreSyntax); // debug
-    
+    printf("\n");
 //    printf("\nL'expression %s est syntaxiquement %s\n", s, somme(0, resultat.N - 1) ? "correcte" : "incorrecte");
     
-    return 0;
+    return calculateArbre(arbreSyntax);
 }
 
 void add_nombre(void) {
@@ -82,7 +84,10 @@ void add_nombre(void) {
         strncpy(lu.valeur, s + i - j, j);
         lu.valeur[j] = 0;  // une chaîne se termine par un 0.
         resultat.tab[resultat.N] = lu;
+        #ifdef DEBUG
         printf("add_nombre: %s\n", lu.valeur);
+        #endif // DEBUG
+
         resultat.N += 1;
     }
 }
@@ -95,7 +100,9 @@ void add_divers(int type) {
     strncpy(lu.valeur, s + i, 1);
     lu.valeur[1] = 0;
     resultat.tab[resultat.N] = lu;
+    #ifdef DEBUG
     printf("add_diver: %s, %d\n", lu.valeur, type);
+    #endif // DEBUG
     resultat.N += 1;
 }
 

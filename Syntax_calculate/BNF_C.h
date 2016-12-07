@@ -55,8 +55,9 @@ void add_divers(int type);
 void add_nombre(void);
 arbre assemble (lexeme * lex, arbre gau, arbre dro);
 void traverse (arbre root);
+int calculateArbre (arbre root);
 
-const struct noeud ARBRE_ZERO = { &((struct lexeme){NOMBRE, "0\0"}), NULL, NULL};
+struct noeud ARBRE_ZERO;
 
 int calculateString (char * string);
 
