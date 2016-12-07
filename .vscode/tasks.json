@@ -39,6 +39,17 @@
                 "analyse_lexical.c"
             ],
             "suppressTaskName": true
+        },{
+            "taskName": "Build_intepreter",
+            "args": [
+                "-o",
+                "Debug/Intepreter.out",
+                "mode_calculatrice.c",
+                "processeur.c",
+                "common_component.c",
+                "analyse_lexical.c"
+            ],
+            "suppressTaskName": true
         },
         {
             "taskName": "debugMain",

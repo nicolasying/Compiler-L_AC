@@ -25,8 +25,8 @@ void initProcessor (basicFunc * processor) {
     processor[8] = &dup;
     processor[9] = &drop;
     processor[10] = &swap;
-    // processor[11] = &count;
-    // processor[12] = &type;
+    processor[11] = &count;
+    processor[12] = &typeProc;
     // processor[13] = &fif;
     // processor[14] = &felse;
     // processor[15] = &fthen;
@@ -137,10 +137,14 @@ void displayStack (basicStack ** dataStack, basicStack ** typeStack, char * memo
     basicStack * tempPointerD = *dataStack, *tempPointerT = *typeStack;
     while(tempPointerD->precedent != NULL) {
         if(tempPointerT->data == ENTIER) printf("%d > ", tempPointerD->data);
-        else if(tempPointerT->data == BOOLEAN) printf("%d > ", tempPointerD->data);
+        else if(tempPointerT->data == BOOLEAN) {
+            if (tempPointerD->data == 0) printf("FALSE > ");
+            else printf("TRUE > ");
+        }
         else if(tempPointerT->data == CHAINECHAR) {
-            printString(memorySpace, tempPointerT->data); 
-            printf(" > ");
+            printf("\"");
+            printString(memorySpace, tempPointerD->data); 
+            printf("\" > ");
         }
         else if(tempPointerT->data == CHAINECHARNOHEADER) printf("[A String with no header] > ");
         tempPointerD = tempPointerD->precedent;
@@ -155,9 +159,9 @@ void clearStack (basicStack ** topNode) {
 }
 
 void printString(char * memorySpace, int position) {
-    int length = memorySpace[position];
+    int length = memorySpace[position % MAX_STRING_SIZE];
     while (length-- > 0) {
-        printf("%c", memorySpace[++position]);
+        printf("%c", memorySpace[++position % MAX_STRING_SIZE]);
     }
 }
 

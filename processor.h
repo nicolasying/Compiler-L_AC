@@ -54,6 +54,7 @@ void dup(void);
 void drop(void);
 void swap(void);
 void count(void);
+void typeProc(void);
 void def(void);
 
 #endif // !PROCESSOR

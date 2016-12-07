@@ -105,11 +105,8 @@ int main(int argc, char * argv[]) { // it should not take any input
                 int length = lexemeList[posLexeme].end - lexemeList[posLexeme].begin + 1;
                 pushStack(posMemory, &data);
                 pushStack(CHAINECHAR, &type);
-                stringMem[posMemory++] = length;
-                // for (int i = 0; i < length; i++) {
-                //     stringMem[posMemory++] = lineBuffer[lexemeList[posLexeme].begin + i];
-                // }
-                strncpy(&stringMem[posMemory], &lineBuffer[lexemeList[posLexeme].begin], length);
+                stringMem[posMemory++ % MAX_STRING_SIZE] = length;
+                strncpy(&stringMem[posMemory % MAX_STRING_SIZE], &lineBuffer[lexemeList[posLexeme].begin], length);
                 posMemory += length;
             } else {
                 // It is an identifier
@@ -145,7 +142,8 @@ int main(int argc, char * argv[]) { // it should not take any input
         memset(lineBuffer, 0, MAX_LINE_LENGTH);
     }
 
-    clearStack(&data); clearStack(&type); free(&regExp);
+    clearStack(&data); clearStack(&type); 
+    // free(&regExp);
     return 0;
 }
 

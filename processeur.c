@@ -74,7 +74,7 @@ void fin(void) {
 
 void affichage(void) { // qui empile une element, l'affichier sur output
     int op1 = popStack(data), opt1 = popStack(type);
-    printf("Output is: %d,\n type: %d\n", op1, opt1);
+    printf("L_AC_RESULT:  %d, type: %d\n", op1, opt1);
 }
 
 void addition(void) {
@@ -186,6 +186,25 @@ void count(void) {
 
     #ifdef DEBUG
     printf("CPU: count\n");
+    #endif // DEBUG
+}
+
+void typeProc(void) {
+    int op1 = popStack(data), opt1 = popStack(type);
+    int op2 = popStack(data), opt2 = popStack(type);
+    if (opt1 == ENTIER && opt2 == CHAINECHARNOHEADER) {
+        int i = 0;
+        printf("L_AC_TYPE: ");
+        while (i < op1) {
+            printf("%c", stringMem[op2 + i++]);
+        }
+        printf("\n");
+    } else {
+        printf("CPU: type, type error.\n");
+    }
+
+    #ifdef DEBUG
+    printf("CPU: type\n");
     #endif // DEBUG
 }
 

@@ -40,24 +40,24 @@ int analyseLexical(char * textToAnalyse, lexeme_Element * lexeme_List, regex_t *
         #endif // DEBUG
 
         // Now check current lexeme type, discard the result if it is a comment
-        if (p[endGlobal] == ')' && ( (p[beginGlobal] == '(' && ((begin > 0) ? (p[beginGlobal-1] == '\n' || p[beginGlobal-1] == ' ') : 1) && p[beginGlobal+1] == ' ') || ( (p[beginGlobal] == ' ' || p[beginGlobal] == '\t') && p[beginGlobal+1] == '(' && p[beginGlobal+2] == ' '))){
+        if (textToAnalyse[endGlobal] == ')' && ( (textToAnalyse[beginGlobal] == '(' && ((begin > 0) ? (textToAnalyse[beginGlobal-1] == '\n' || textToAnalyse[beginGlobal-1] == ' ') : 1) && textToAnalyse[beginGlobal+1] == ' ') || ( (textToAnalyse[beginGlobal] == ' ' || textToAnalyse[beginGlobal] == '\t') && textToAnalyse[beginGlobal+1] == '(' && textToAnalyse[beginGlobal+2] == ' '))){
             // it is a multiline comment
             #ifdef DEBUG
             printf("analyse_lexical: \nMultiline comment detected.\n%.*s (%d, %d)\n", end - begin, p + begin,beginGlobal, endGlobal);
             #endif // DEBUG
-        } else if ((p[beginGlobal] == '\\' && ((begin > 0) ? (p[beginGlobal-1] == '\n' || p[beginGlobal-1] == ' ') : 1) && p[beginGlobal+1] == ' ') || ((p[beginGlobal] == ' ' || p[beginGlobal] == '\t') && p[beginGlobal+1] == '\\' && p[beginGlobal+2] == ' ')) {
+        } else if ((textToAnalyse[beginGlobal] == '\\' && ((begin > 0) ? (textToAnalyse[beginGlobal-1] == '\n' || textToAnalyse[beginGlobal-1] == ' ') : 1) && textToAnalyse[beginGlobal+1] == ' ') || ((textToAnalyse[beginGlobal] == ' ' || textToAnalyse[beginGlobal] == '\t') && textToAnalyse[beginGlobal+1] == '\\' && textToAnalyse[beginGlobal+2] == ' ')) {
             // it is a single line comment
             #ifdef DEBUG
             printf("analyse_lexical: \nSingle line comment detected.\n%.*s (%d, %d)\n", end - begin, p + begin,beginGlobal, endGlobal);
             #endif // DEBUG
-        } else if (p[endGlobal] == '\"' && ((p[beginGlobal] == '\"' && ((begin > 0) ? (p[beginGlobal-1] == '\n' || p[beginGlobal-1] == ' ') : 1) && p[beginGlobal+1] == ' ') || ((p[beginGlobal] == ' ' || p[beginGlobal] == '\t') && p[beginGlobal+1] == '\"' && p[beginGlobal+2] == ' '))) {
+        } else if (textToAnalyse[endGlobal] == '\"' && ((textToAnalyse[beginGlobal] == '\"' && ((begin > 0) ? (textToAnalyse[beginGlobal-1] == '\n' || textToAnalyse[beginGlobal-1] == ' ') : 1) && textToAnalyse[beginGlobal+1] == ' ') || ((textToAnalyse[beginGlobal] == ' ' || textToAnalyse[beginGlobal] == '\t') && textToAnalyse[beginGlobal+1] == '\"' && textToAnalyse[beginGlobal+2] == ' '))) {
             // it is a chain of characters
             #ifdef DEBUG
             printf("analyse_lexical: \nString detected.\n%.*s (%d, %d)\n", end - begin, p + begin,beginGlobal, endGlobal);
             #endif // DEBUG
             
             // Register this lexeme into lexeme_List without _"_ and  "
-            if (p[beginGlobal] == '\"') lexeme_List[t_c].begin = begin + offset + 2;
+            if (textToAnalyse[beginGlobal] == '\"') lexeme_List[t_c].begin = begin + offset + 2;
             else lexeme_List[t_c].begin = begin + offset + 3;
             lexeme_List[t_c].end = end + offset - 2;
             lexeme_List[t_c].type = C;
@@ -65,10 +65,10 @@ int analyseLexical(char * textToAnalyse, lexeme_Element * lexeme_List, regex_t *
             #ifdef DEBUG
             printf("analyse_lexical: \nString registered: ");
             int i = 0;
-            while (i < lexeme_List[t_c].begin - lexeme_List[t_c].end + 1) {
-                printf("%c", p[lexeme_List[t_c].begin + i++]);
+            while (i < lexeme_List[t_c].end - lexeme_List[t_c].begin + 1) {
+                printf("%c", textToAnalyse[lexeme_List[t_c].begin + i++]);
             }
-            printf("\n");
+            printf("\n\n");
             #endif // DEBUG
 
             t_c++;
