@@ -22,6 +22,7 @@
 
 int functionCompilingState = NOT_COMPILING; // a flag used to avoid nested definition
 int cCFBegin = 0; // a container for the beginning VM position for this function, for recurse.
+int cCFBeginLAC = 0; // a container for the beginning symbol table position for this function
 int cCFNameLexPos = 0, cCFParaInCnt = 0, cCFParaOutCnt = 0, cCFParaCnt = 0, cCFParaPos = MAX_IN_OUT_PUT_NUMBER; // to simulate stack change
 int cCFParaInArray[MAX_IN_OUT_PUT_NUMBER] = {0}, cCFParaOutArray[MAX_IN_OUT_PUT_NUMBER] = {0}, cCFParaArray[MAX_IN_OUT_PUT_NUMBER * 2] = {0};
 
@@ -195,12 +196,12 @@ int main(int argc, char * argv[]) { // argv[1] = fileURL
             cCFParaOutCnt = 0; 
             cCFParaCnt = 0;
             cCFBegin = posVM;
+            cCFBeginLAC = posSymbol;
             cCFParaInArray[MAX_IN_OUT_PUT_NUMBER] = {0};
             cCFParaOutArray[MAX_IN_OUT_PUT_NUMBER] = {0};
             cCFParaArray[MAX_IN_OUT_PUT_NUMBER * 2] = {0};
             functionCompilingState = COMPILING_FUN;
             cCFParaPos = MAX_IN_OUT_PUT_NUMBER;
-
             // Writing into VM
             VM[posVM++] = 1; // A user-defined function is marked by 1
             // Take note of the function name, store as a LAC string
@@ -224,8 +225,18 @@ int main(int argc, char * argv[]) { // argv[1] = fileURL
                 symbolTable[posSymbol++] = texte[lexemeList[cCFNameLexPos].begin + 1];
             }
             // Inputs Outputs
-            // symbolTable[posSymbol++]
-            
+            symbolTable[posSymbol++] = cCFParaInCnt;
+            int i = 0;
+            while (i < cCFParaInCnt) {
+                symbolTable[posSymbol++] = cCFParaInArray[i++];
+            }
+            symbolTable[posSymbol++] = cCFParaOutCnt;
+            i = 0;
+            while (i < cCFParaOutCnt) {
+                symbolTable[posSymbol++] = cCFParaInArray[i++];
+            }
+            symbolTable[posSymbol++] = cCFBegin; // VM association
+            symbolTable[posSymbol++] = cCFBeginLAC; // symbol table pos_begin
             // Mark the end of definition
             functionCompilingState = NOT_COMPILING;
         } else {
