@@ -3,18 +3,20 @@
 ( Ce fichier est un "exemple" étudié pour tester l'analyseur lexical
 écrit en phase 1 du projet)
 
-
-
-: go ( n -- )
-    " Factorielle" count type
-    dup .
-    " vaut : " count type
-    : fact ( n -- n!)
+: fact ( n -- n!)
     dup 0 = 
     if
         drop 1
     else 
         dup 1 - recurse *
-    then ; fact . cr ;
+    then ;
 
-6 go
+3 fact
+
+: go ( n -- )
+    " Factorielle" count type
+    dup .
+    " vaut : " count type
+    fact . ;
+    
+go
