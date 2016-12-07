@@ -47,6 +47,15 @@ void initLacCompile(int * symbolTable, int * VM, int * posSymbol, int * posVM) {
 
     #ifdef DEBUG
     printf("mode_compilé:\nSymbol table and VM constructed.\n");
+    int i = 0;
+    while (i < *posSymbol) {
+        printf("i: %d\n", symbolTable[i++]);
+    }
+    printf("---------");
+    i = 0;
+    while (i < *posVM) {
+        printf("i: %d\n", VM[i++]);
+    }
     #endif // DEBUG
 }
 
@@ -118,6 +127,45 @@ int main(int argc, char * argv[]) { // argv[1] = fileURL
 \nEnjoy.\n \
 \nINPUT_FILE is %s, \
 \nOUTPUT_FILE will be %s.lacc\n", argv[1], argv[1]);
+
+    // Pass to lexcial analysis, which is a common component
+    int lexemeNumber = analyseLexical(texte, lexemeList, &regExp);
+    int posLexeme = 0;
+    // Interpret the lexemes
+    do {
+        if(lexemeList[posLexeme].type == C) {
+            // Put the string into VM using str
+            int length = lexemeList[posLexeme].end - lexemeList[posLexeme].begin + 1;
+            // Cfa for str
+            VM[posVM++]= 0;
+        } else {
+            // It is an identifier
+            int posSymbolC = findFunction(posSymbol, symbolTable, &lexemeList[posLexeme], lineBuffer);
+            if (posSymbolC > 0){
+                // a function is found, find it's VM position
+                int lenName = symbolTable[posSymbolC];
+                int paraIn = symbolTable[posSymbolC + lenName + 1];
+                int paraOut = symbolTable[posSymbolC + lenName + paraIn + 2];
+                int posVMC = symbolTable[posSymbolC + lenName + paraIn + paraOut + 3];
+
+                if (VM[posVMC] != 0) {
+                    printf("Found a non valid function. Abort.\n");
+                    break;
+                } else {
+                    // run the function
+                    processor[VM[posVMC + 1]]();
+                }
+            } else {
+                // then it must be a number
+                int number;
+                if (convertLexeme2Number(lineBuffer, &lexemeList[posLexeme], &number) == 0) {
+                    pushStack(number, &data);
+                    pushStack(ENTIER, &type);
+                } else break;
+            }
+        }
+        posLexeme++;
+    } while (posLexeme < lexemeNumber);
 
     return 0;
 }

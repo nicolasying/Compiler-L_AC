@@ -23,18 +23,19 @@ int calculateString (int * string) {
     #ifdef DEBUG
     printf("calculateString: \n");
     printString(string, 0);
+    printf("\n");
     #endif // DEBUG
 
     // Transform the LAC string into C string, to reuse the ancient code written a while ago.
     int length = string[0];
     char stemp[100] = {'\0'};
-    int i = 0;
-    while (i < length) {
-        stemp[i] = (char)string[1+i];
-        i++;
+    int whatever = 0;
+    while (whatever < length) {
+        stemp[whatever] = (char)string[1+whatever];
+        whatever++;
     }
     s = &stemp[0];
-
+    
     // lexicale
     resultat.N = 0;
     ARBRE_ZERO = (struct noeud) { &((struct lexeme){NOMBRE, "0\0"}), NULL, NULL};

@@ -1,3 +1,7 @@
+# Addition to the course
+L_AC functions in VM has an additional bit after (fin) to store the beginning position of this function.
+// for recurse implementation.
+
 # Interpreter L_AC
 
 Supporting dup, drop, swap, ., count, type, = and calculate.
