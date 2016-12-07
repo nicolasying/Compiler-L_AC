@@ -125,7 +125,10 @@ void pushStack (int data, basicStack ** topNode) {
 
 int popStack (basicStack ** topNode) {
     basicStack * toDelete = *topNode;
-    if(toDelete->precedent == NULL) exit(901); // this is the bottom
+    if(toDelete->precedent == NULL) {
+        printf("Error 901: Poping empty stack. The program will crash.\n");
+        exit(901); // this is the bottom
+    }
     int data = toDelete->data;
     *topNode = toDelete->precedent;
     free(toDelete);
@@ -179,7 +182,7 @@ int convertLexeme2Number (char * code, lexeme_Element * lexeme, int * number) {
     while (pos <= lexeme->end) {
         int bitCheck = code[pos++] - '0';
         if (bitCheck > 9 || bitCheck < 0) {
-            printf("Convert lexeme to number: invalid number.\n");
+            printf("Unregistered lexeme. Trying converting lexeme to number: invalid number.\n");
             return 1;
         }
         *number *= 10;

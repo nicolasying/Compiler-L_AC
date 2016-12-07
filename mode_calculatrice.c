@@ -84,7 +84,7 @@ int main(int argc, char * argv[]) { // it should not take any input
     printf("analyse_lexical: \nRegular Expression compiled.\n");
     #endif // DEBUG
 
-    printf("Interpreter is running.\nType in QUIT to exit.\n");
+    printf("Interpreter is running.\nWritten by Nicolas YING, this interpreter supports dup, drop, swap, ., count, type, =, and calculate.\nType in QUIT to exit.\n\nNotice: if the result calculation process went wrong, it could return a false result with a message, or crash :)\nEnjoy.\n");
     char quit[] = "QUIT";
 
     while(1) {

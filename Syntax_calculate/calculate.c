@@ -61,8 +61,8 @@ int calculateString (char * string) {
 //                break;
                 
             default:
-                printf("Error!\n");
-                exit(1);
+                printf("Error 9001! Unrecognized word: %c\n", s[i]);
+                return -9001;
         }
     } while (s[++i] != 0);
     
@@ -110,7 +110,8 @@ arbre naturel (int d) {
 
 //    printf("Calling naturel, d = %d\n", d);
     if (resultat.tab[d].type != NOMBRE) {
-        exit(103);
+        printf("Calculate: Error 9103.\n");
+        return NULL;
     } else {
 //        printf("node: %s, left: null,right: null\n", resultat.tab[d].valeur);
         return assemble(&resultat.tab[d], NULL, NULL);
@@ -122,8 +123,8 @@ int findBalancingParen (int f) {
     
 //    printf("Calling balancing, f = %d\n", f);
     if (resultat.tab[f].type != PARENT_F) {
-        printf("not a closing parenthesis!\n");
-        exit(101);
+        printf("Calculate: Error 9101. not a closing parenthesis!\n");
+        return (-9101);
     }
     
     int pile = 0; // pour balancer les parentheses
@@ -143,14 +144,14 @@ int findBalancingParen (int f) {
     if (pile == -1) {
         return f;
     }
-    printf("didn't find a balanced opening parenthesis.\n");
-    exit(102);
+    printf("Calculate: Error 9102. didn't find a balanced opening parenthesis.\n");
+    return(-9102);
     
 }
 
 struct returnFac facteur (int d, int f) {
 //    printf("Calling facteur, d = %d, f = %d\n", d, f);
-    
+    struct returnFac errorStruct;
     int indSpe = f;
     // indSpe est une indication du bord de facteur, soit un parenthese, soit un +/-
     
@@ -161,7 +162,8 @@ struct returnFac facteur (int d, int f) {
     }
     
     if (f < d) {
-        exit(106);
+        printf("Calculate: Error 9106.\n");
+        return(errorStruct);
     }
     
     if (resultat.tab[f].type == NOMBRE) {
@@ -182,7 +184,8 @@ struct returnFac facteur (int d, int f) {
 //            printf("node: %s, left: null,right: null\n", right_child->data->valeur);
             return (struct returnFac){right_child, indSpe};
         } else {
-            exit(105);
+            printf("Calculate: Error 9105.\n");
+            return(errorStruct);
         }
     } else if (resultat.tab[f].type == PARENT_F) {
         
@@ -210,11 +213,12 @@ struct returnFac facteur (int d, int f) {
             return (struct returnFac){right_child, opPar};
             
         } else {
-            printf("107 exiting with opPar-1 = %d\n", opPar - 1);
-            exit(107);
+            printf("Calculate: Error 9107. 107 exiting with opPar-1 = %d\n", opPar - 1);
+            return (errorStruct);
         }
     } else {
-        exit(104);
+        printf("Calculate: Error 9104.\n");
+        return(errorStruct);
     }
 }
 

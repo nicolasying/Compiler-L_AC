@@ -75,7 +75,30 @@ void fin(void) {
 
 void affichage(void) { // qui empile une element, l'affichier sur output
     int op1 = popStack(data), opt1 = popStack(type);
-    printf("L_AC_RESULT:  %d, type: %d\n", op1, opt1);
+    printf("L_AC_RESULT:  %d, type: ", op1);
+    switch (opt1) {
+    case ENTIER:
+        printf("integer\n");
+        break;
+    case ANY:
+        printf("any\n");
+        break;
+    case BOOLEAN:
+        printf("bool\n");
+        break;
+    case CHAINECHAR:
+        printf("address of string\n");
+        break;
+    case FLOATANT:
+        printf("float\n");
+        break;
+    case CHAINECHARNOHEADER:
+        printf("address of a string without header\n");
+        break; 
+    default:
+        printf("ERROR\n");
+        break;break;
+    }
 }
 
 void addition(void) {
