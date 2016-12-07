@@ -15,6 +15,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#define NOT_COMPILING 7833
+#define COMPILING_FUN 7943
+
+int functionCompilingState = NOT_COMPILING; // a flag used to avoid nested definition
+int currentCompiledFunctionBeginning = 0; // a container for the beginning VM position for this function, for recurse.
+
 void initLacCompile(int * symbolTable, int * VM, int * posSymbol, int * posVM) {
     // Cleaning the tables
     memset(symbolTable, 0, SYMBOL_TABLE_SIZE);
@@ -49,12 +55,14 @@ void initLacCompile(int * symbolTable, int * VM, int * posSymbol, int * posVM) {
     printf("mode_compilé:\nSymbol table and VM constructed.\n");
     int i = 0;
     while (i < *posSymbol) {
-        printf("i: %d\n", symbolTable[i++]);
+        printf("%d: %d\n", i, symbolTable[i]);
+        i++;
     }
     printf("---------");
     i = 0;
     while (i < *posVM) {
-        printf("i: %d\n", VM[i++]);
+        printf("%d: %d\n", i, VM[i]);
+        i++;
     }
     #endif // DEBUG
 }
@@ -96,7 +104,7 @@ int main(int argc, char * argv[]) { // argv[1] = fileURL
     // initialisation of environment
     int symbolTable[SYMBOL_TABLE_SIZE] = {0}, VM[VM_SIZE] = {0};
     lexeme_Element lexemeList[MAX_LEXEME_NUMBER];
-    int posSymbol = 0, posVM = 0;
+    int posSymbol = 0, posVM = 0; 
 
     // initialisation of L_ac components
     initLacCompile(symbolTable, VM, &posSymbol, &posVM);
@@ -136,11 +144,36 @@ int main(int argc, char * argv[]) { // argv[1] = fileURL
         if(lexemeList[posLexeme].type == C) {
             // Put the string into VM using str
             int length = lexemeList[posLexeme].end - lexemeList[posLexeme].begin + 1;
-            // Cfa for str
-            VM[posVM++]= 0;
+            // VM position for str
+            VM[posVM++] = 2;
+            // Copy the string into VM
+            VM[posVM++] = length;
+            int i = 0;
+            while (i < length) {
+                VM[posVM++] = texte[lexemeList[posLexeme].begin + i++];
+            }
+        } else if (lexemeList[posLexeme].end - lexemeList[posLexeme].begin == 0 && texte[lexemeList[posLexeme].begin] == ':') {
+            // Define a new function
+            if (functionCompilingState == COMPILING_FUN) {
+                printf("Function definition cannot be nested.\n");
+                printf("%.*s (pos: %d)\n", 10, texte + lexemeList[posLexeme].begin, lexemeList[posLexeme].begin);
+                exit(700);
+            }
+            currentCompiledFunctionBeginning = posVM;
+            VM[posVM++] = 1; // A user-defined function is marked by 1
+            functionCompilingState = COMPILING_FUN;
+        } else if (lexemeList[posLexeme].end - lexemeList[posLexeme].begin == 0 && texte[lexemeList[posLexeme].begin] == ';') {
+            // End of the defnition
+            if (functionCompilingState != COMPILING_FUN) {
+                printf("Error: There's no function being defined.\n");
+                printf("%.*s (pos: %d)\n", 10, texte + lexemeList[posLexeme].begin, lexemeList[posLexeme].begin);
+                exit(701);
+            }
+            VM[posVM++] = 4; // VM position for fin
+            VM[posVM++] = currentCompiledFunctionBeginning;
         } else {
-            // It is an identifier
-            int posSymbolC = findFunction(posSymbol, symbolTable, &lexemeList[posLexeme], lineBuffer);
+            // It is an normal identifier
+            int posSymbolC = findFunction(posSymbol, symbolTable, &lexemeList[posLexeme], texte);
             if (posSymbolC > 0){
                 // a function is found, find it's VM position
                 int lenName = symbolTable[posSymbolC];
@@ -149,19 +182,16 @@ int main(int argc, char * argv[]) { // argv[1] = fileURL
                 int posVMC = symbolTable[posSymbolC + lenName + paraIn + paraOut + 3];
 
                 if (VM[posVMC] != 0) {
-                    printf("Found a non valid function. Abort.\n");
-                    break;
+                    // A user-defined function
+                    
                 } else {
-                    // run the function
-                    processor[VM[posVMC + 1]]();
+                    // A base function
+                    
                 }
             } else {
                 // then it must be a number
                 int number;
-                if (convertLexeme2Number(lineBuffer, &lexemeList[posLexeme], &number) == 0) {
-                    pushStack(number, &data);
-                    pushStack(ENTIER, &type);
-                } else break;
+                
             }
         }
         posLexeme++;

@@ -19,7 +19,7 @@ static char * s;
 extern struct noeud ARBRE_ZERO;
 
 int calculateString (int * string) {
-    
+    i = 0;
     #ifdef DEBUG
     printf("calculateString: \n");
     printString(string, 0);

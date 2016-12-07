@@ -9,6 +9,7 @@
         {
             "taskName": "Debug_intepreter",
             "args": [
+                "-DDEBUG",
                 "-g",
                 "-o",
                 "Debug/Intepreter.out",
@@ -38,6 +39,7 @@
             "taskName": "Debug_compiler",
             "args": [
                 "-g",
+                "-DDEBUG",
                 "-o",
                 "Debug/Compiler.out",
                 "compiler.c",

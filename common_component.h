@@ -12,7 +12,7 @@
 
 #include "analyse_lexical.h"
 
-#define DEBUG // debugging flag
+// #define DEBUG // debugging flag
 
 #define MAX_LINE_LENGTH 1000
 #define MAX_LEXEME_NUMBER 300
