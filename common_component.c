@@ -37,7 +37,7 @@ void initProcessor (basicFunc * processor) {
     // processor[25] = &recurse;
     // processor[26] = &prime;
     // processor[27] = &is;
-    // processor[28] = &calculate;
+    processor[28] = &calculate;
     // processor[29] = &catnate;
     processor[30] = &def;
 }

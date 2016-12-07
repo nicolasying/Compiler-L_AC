@@ -58,4 +58,6 @@ void traverse (arbre root);
 
 const struct noeud ARBRE_ZERO = { &((struct lexeme){NOMBRE, "0\0"}), NULL, NULL};
 
+int calculateString (char * string);
+
 #endif /* BNF_C_h */

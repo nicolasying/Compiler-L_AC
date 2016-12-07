@@ -29,25 +29,28 @@
         {
             "taskName": "Test_new",
             "args": [
-                
                 "-g",
                 "-o",
                 "Debug/test_new.out",
                 "mode_calculatrice.c",
                 "processeur.c",
                 "common_component.c",
-                "analyse_lexical.c"
+                "analyse_lexical.c",
+                "Syntax_calculate/BNF_C.c",
+                "Syntax_calculate/calculate.c"
             ],
             "suppressTaskName": true
         },{
             "taskName": "Build_intepreter",
             "args": [
                 "-o",
-                "Debug/Intepreter.out",
+                "Build/Intepreter.out",
                 "mode_calculatrice.c",
                 "processeur.c",
                 "common_component.c",
-                "analyse_lexical.c"
+                "analyse_lexical.c",
+                "Syntax_calculate/BNF_C.c",
+                "Syntax_calculate/calculate.c"
             ],
             "suppressTaskName": true
         },

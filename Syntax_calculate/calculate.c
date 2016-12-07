@@ -7,20 +7,28 @@
 //  Copyright © 2016 Nicolas YING. All rights reserved.
 //
 
-#include "BNF_C.c"
 #include "BNF_C.h"
+#include "../common_component.h"
+#include <string.h>
 
 l_lexeme resultat;
 int i = 0, j = 0;
-char s[50];
 lexeme lu;
+static char * s;
 
-int main () {
+int calculateString (char * string) {
     
-    // Pour debug
-    printf("Expression to calculate : \n");
-    scanf("%49[^\n]s",s);
-    
+    #ifdef DEBUG
+    printf("calculateString: \n");
+    printString(string, 0);
+    #endif // DEBUG
+
+    // Transform the LAC string into C string, to reuse the ancient code written a while ago.
+    int length = string[0];
+    char stemp[100] = {'\0'};
+    strncpy(&stemp[0], &string[1], length);
+    s = &stemp[0];
+
     // lexicale
     resultat.N = 0;
     

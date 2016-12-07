@@ -38,6 +38,7 @@
 
 #include "common_component.h"
 #include "processor.h"
+#include "Syntax_calculate/BNF_C.h"
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -196,7 +197,7 @@ void typeProc(void) {
         int i = 0;
         printf("L_AC_TYPE: ");
         while (i < op1) {
-            printf("%c", stringMem[op2 + i++]);
+            printf("%c", stringMem[op2 + i++ % MAX_STRING_SIZE]);
         }
         printf("\n");
     } else {
@@ -205,6 +206,18 @@ void typeProc(void) {
 
     #ifdef DEBUG
     printf("CPU: type\n");
+    #endif // DEBUG
+}
+
+void calculate(void) {
+    int op1 = popStack(data), opt1 = popStack(type);
+    if (opt1 != CHAINECHAR) {
+        printf("CPU: calculate, type error.\n");
+    }
+    int result = calculateString (&stringMem[op1 % MAX_STRING_SIZE]);
+    pushStack(result, data); pushStack(ENTIER, type);
+    #ifdef DEBUG
+    printf("CPU: calculate\n");
     #endif // DEBUG
 }
 
