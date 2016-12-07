@@ -97,7 +97,7 @@ void affichage(void) { // qui empile une element, l'affichier sur output
         break; 
     default:
         printf("ERROR\n");
-        break;break;
+        break;
     }
 }
 
@@ -109,7 +109,11 @@ void addition(void) {
         pushStack(ENTIER, type);
     } else {
         printf("CPU: add error\n");
-        exit(504);
+        // exit(504);
+        // reverting to previous state.
+        pushStack(op2, data); pushStack(opt2, type);
+        pushStack(op1, data); pushStack(opt1, type);
+        return;
     }
     #ifdef DEBUG
     printf("CPU: add\n");
@@ -124,7 +128,10 @@ void substraction(void) {
         pushStack(ENTIER, type);
     } else {
         printf("CPU: substraction error\n");
-        exit(505);
+        // exit(505);
+        // reverting to previous state.
+        pushStack(op2, data); pushStack(opt2, type);
+        pushStack(op1, data); pushStack(opt1, type);
     }
     #ifdef DEBUG
     printf("CPU: substraction\n");
@@ -139,7 +146,10 @@ void multiplication(void) {
         pushStack(ENTIER, type);
     } else {
         printf("CPU: mul error\n");
-        exit(506);
+        // exit(506);        
+        // reverting to previous state.
+        pushStack(op2, data); pushStack(opt2, type);
+        pushStack(op1, data); pushStack(opt1, type);
     }
     #ifdef DEBUG
     printf("CPU: mul\n");
@@ -154,7 +164,10 @@ void comparison(void) {
         pushStack(BOOLEAN, type);
     } else {
         printf("CPU: comparison error\n");
-        exit(507);
+        // exit(507);        
+        // reverting to previous state.
+        pushStack(op2, data); pushStack(opt2, type);
+        pushStack(op1, data); pushStack(opt1, type);
     }
     #ifdef DEBUG
     printf("CPU: comparison\n");
@@ -205,7 +218,7 @@ void count(void) {
         pushStack(op1, data); pushStack(CHAINECHARNOHEADER, type);
         pushStack(length, data); pushStack(ENTIER, type);
     } else {
-        printf("CPU: count, type error.\n");
+        printf("CPU: count, type error. Poping out.\n");
     }
 
     #ifdef DEBUG
@@ -224,7 +237,7 @@ void typeProc(void) {
         }
         printf("\n");
     } else {
-        printf("CPU: type, type error.\n");
+        printf("CPU: type, type error. Poping out.\n");
     }
 
     #ifdef DEBUG
