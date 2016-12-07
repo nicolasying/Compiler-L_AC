@@ -41,7 +41,7 @@
 
 #include "common_component.h"
 
-void linkProcessor(basicStack ** dataStack, basicStack ** typeStack, basicStack ** callStack, char * stringMemory, int * exVM);
+void linkProcessor(basicStack ** dataStack, basicStack ** typeStack, basicStack ** callStack, int * stringMemory, int * exVM, int * exPosMem);
 void lit(void);
 void str(void);
 void fin(void);
@@ -55,7 +55,15 @@ void drop(void);
 void swap(void);
 void count(void);
 void typeProc(void);
+void fif(void);
+void felse(void);
+void fthen(void);
+void land(void);
+void lor(void);
+void lnot(void);
+void smaller(void);
+void recurse(void);
 void calculate(void);
-void def(void);
+void catenate(void);
 
 #endif // !PROCESSOR

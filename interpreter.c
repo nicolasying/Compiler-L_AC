@@ -6,12 +6,6 @@
 //  Copyright © 2016 Nicolas YING. All rights reserved.
 //
 
-#include "processeur.c"
-#include "interpreter.h"
-#include "interpreter_pre.c"
-#include <string.h>
-#include <stdlib.h>
-
 extern lexeme_t lexemes[];
 extern int t_c;
 // function de conversion de type 
@@ -37,57 +31,11 @@ int typeConversion(int typ1, int typ2) {
     }
 }
 
-void pushStack (int data, pileBase ** pileTop) {
-    pileBase * pile = * pileTop;
-    pileBase * new = malloc(sizeof(pileBase));
-    new->data = data;
-    new->precedent = pile;
-    * pileTop = new;
-}
-
-int popStack (pileBase ** pileTop) {
-    pileBase * toDelete = * pileTop;
-    if(toDelete->precedent == NULL) exit(302);
-    int data = toDelete->data;
-    *pileTop = toDelete->precedent;
-    free(toDelete);
-    return data;
-}
-
-void displayStack (const pileBase ** pileData, const pileBase ** pileType) {
-    printf("Stack : (top) ");
-    pileBase * tempPointerD = * pileData, *tempPointerT = * pileType;
-    while(tempPointerD->precedent != NULL) {
-        if(tempPointerT->data == ENTIER) printf("%d ", tempPointerD->data);
-        else if(tempPointerT->data == BOOLEAN) printf("%d ", tempPointerD->data);
-        else if(tempPointerT->data == FLOATANT) printf("%f ", tempPointerD->data); // to be corrected.
-        else if(tempPointerT->data == CHAINECHAR) printf("%s ", tempPointerD->data); // to be corrected.
-    } 
-
-}
-
 pileBase *data, *type, *retourne;
 int stringMem[200] = {0};
 int stringPtr = 0;
 int posLex;
 
-
-
-void makeEmpty () { // comme le nom indique
-   while (data->precedent != NULL) popStack(&data);
-   while (type->precedent != NULL) popStack(&type);
-   while (retourne->precedent != NULL) popStack(&retourne);
-}
-void initialisation () { 
-    // initialisation des piles
-    data = malloc(sizeof(pileBase));
-    type = malloc(sizeof(pileBase));
-    retourne = malloc(sizeof(pileBase));
-    data->data = 0;
-    data->precedent = NULL;
-    type->data = 0;
-    type->precedent = NULL;
-}
 
 int isFunction (int i, lexeme_t * lexeme) {
     // this function searches through from the end of table des symboles, returns the index of the beginning of the matching function,

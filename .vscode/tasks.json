@@ -7,31 +7,11 @@
     "showOutput": "always",
     "tasks": [
         {
-            "taskName": "Calculate",
-            "args": [
-                "-Wallg",
-                "-o",
-                "Debug/calculate.out",
-                "calculate.c"
-            ],
-            "suppressTaskName": true
-        },
-        {
-            "taskName": "Test",
+            "taskName": "Debug_intepreter",
             "args": [
                 "-g",
                 "-o",
-                "Debug/test.out",
-                "test.c"
-            ],
-            "suppressTaskName": true
-        },
-        {
-            "taskName": "Test_new",
-            "args": [
-                "-g",
-                "-o",
-                "Debug/test_new.out",
+                "Debug/Intepreter.out",
                 "mode_calculatrice.c",
                 "processeur.c",
                 "common_component.c",
@@ -44,7 +24,7 @@
             "taskName": "Build_intepreter",
             "args": [
                 "-o",
-                "Build/Intepreter.out",
+                "Build/Intepreter",
                 "mode_calculatrice.c",
                 "processeur.c",
                 "common_component.c",
@@ -55,18 +35,31 @@
             "suppressTaskName": true
         },
         {
-            "taskName": "debugMain",
+            "taskName": "Debug_compiler",
             "args": [
-                "-Wall", "-g", "-o", "Debug/main.out", "main.c"
+                "-g",
+                "-o",
+                "Debug/Compiler.out",
+                "compiler.c",
+                "processeur.c",
+                "common_component.c",
+                "analyse_lexical.c",
+                "Syntax_calculate/BNF_C.c",
+                "Syntax_calculate/calculate.c"
             ],
             "suppressTaskName": true
-        },
-        {
-            "taskName": "Build",
+        },{
+            "taskName": "Build_compiler",
             "args": [
-                "-Wall", "-o", "Build/main.out", "main.c"
+                "-o",
+                "Build/Compiler",
+                "mode_calculatrice.c",
+                "processeur.c",
+                "common_component.c",
+                "analyse_lexical.c",
+                "Syntax_calculate/BNF_C.c",
+                "Syntax_calculate/calculate.c"
             ],
-            "isBuildCommand": true,
             "suppressTaskName": true
         }
     ]

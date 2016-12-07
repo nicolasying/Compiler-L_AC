@@ -15,7 +15,7 @@
 
 void initProcessor (basicFunc * processor) {
     processor[0] = &lit;
-    // processor[1] = &str;
+    processor[1] = &str;
     processor[2] = &fin;
     processor[3] = &affichage;
     processor[4] = &addition;
@@ -27,19 +27,19 @@ void initProcessor (basicFunc * processor) {
     processor[10] = &swap;
     processor[11] = &count;
     processor[12] = &typeProc;
-    // processor[13] = &fif;
-    // processor[14] = &felse;
-    // processor[15] = &fthen;
-    // processor[21] = &or;
-    // processor[22] = &not;
-    // processor[23] = &smaller;
+    processor[13] = &fif;
+    processor[14] = &felse;
+    processor[15] = &fthen;
+    processor[20] = &land;
+    processor[21] = &lor;
+    processor[22] = &lnot;
+    processor[23] = &smaller;
     // processor[24] = &defer;
-    // processor[25] = &recurse;
+    processor[25] = &recurse;
     // processor[26] = &prime;
     // processor[27] = &is;
     processor[28] = &calculate;
-    // processor[29] = &catnate;
-    processor[30] = &def;
+    processor[29] = &catenate;
 }
 
 void addBaseFunction (int * symbolTable, int * VM, int *posSymbol, int* posVM, const int processorIndex, char* name, int paraIn, int typeIn[], int paraOut, int typeOut[]) {
@@ -135,13 +135,13 @@ int popStack (basicStack ** topNode) {
     return data;
 }
 
-void displayStack (basicStack ** dataStack, basicStack ** typeStack, char * memorySpace) {
+void displayStack (basicStack ** dataStack, basicStack ** typeStack, int * memorySpace) {
     printf("Stack : (top) ");
     basicStack * tempPointerD = *dataStack, *tempPointerT = *typeStack;
     while(tempPointerD->precedent != NULL) {
         if(tempPointerT->data == ENTIER) printf("%d > ", tempPointerD->data);
         else if(tempPointerT->data == BOOLEAN) {
-            if (tempPointerD->data == 0) printf("FALSE > ");
+            if (tempPointerD->data == LFALSE) printf("FALSE > ");
             else printf("TRUE > ");
         }
         else if(tempPointerT->data == CHAINECHAR) {
@@ -161,7 +161,7 @@ void clearStack (basicStack ** topNode) {
     free(*topNode);
 }
 
-void printString(char * memorySpace, int position) {
+void printString(int * memorySpace, int position) {
     int length = memorySpace[position % MAX_STRING_SIZE];
     while (length-- > 0) {
         printf("%c", memorySpace[++position % MAX_STRING_SIZE]);
@@ -189,4 +189,33 @@ int convertLexeme2Number (char * code, lexeme_Element * lexeme, int * number) {
         *number += bitCheck;
     }
     return 0;
+}
+
+void strcpyMEM(int * stringMem, const int * scr, int * posMem) {
+    int length = scr[0], i = 0;
+    while (i <= length) {
+        stringMem[(*posMem + i) % MAX_STRING_SIZE] = scr[i];
+        i++;
+    }
+    *posMem += length + 1;
+}
+
+void strncpyMEM(int * stringMem, const int * scr, int * posMem, int length) {
+    int i = 0;
+    stringMem[(*posMem) % MAX_STRING_SIZE] = length;
+    while (i < length) {
+        stringMem[(*posMem + 1 + i) % MAX_STRING_SIZE] =  scr[i];
+        i++;
+    }
+    *posMem += length + 1;
+}
+
+void cstrncpyMEM(int * stringMem, const char * scr, int * posMem, int length) {
+    int i = 0;
+    stringMem[(*posMem) % MAX_STRING_SIZE] = length;
+    while (i < length) {
+        stringMem[(*posMem + 1 + i) % MAX_STRING_SIZE] =  (int)scr[i];
+        i++;
+    }
+    *posMem += length + 1;
 }

@@ -2,17 +2,17 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Calculate",
+            "name": "Debug_interpreter",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceRoot}/Debug/calculate.out",
+            "program": "${workspaceRoot}/Debug/Intepreter.out",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${workspaceRoot}/Debug",
             "environment": [],
             "externalConsole": true,
             "internalConsoleOptions": "openOnFirstSessionStart",
-            "preLaunchTask": "Calculate",
+            "preLaunchTask": "Debug_intepreter",
             "linux": {
                 "MIMode": "gdb"
             },
@@ -23,18 +23,17 @@
                 "MIMode": "gdb"
             }
         },
-        {
-            "name": "Main",
+        {   "name": "Debug_compiler",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceRoot}/Debug/main.out",
-            "args": ["${workspaceRoot}/inte_test.lac"],
+            "program": "${workspaceRoot}/Debug/Compiler.out",
+            "args": ["${workspaceRoot}/factorielle.lac"],
             "stopAtEntry": false,
             "cwd": "${workspaceRoot}/Debug",
             "environment": [],
             "externalConsole": true,
             "internalConsoleOptions": "openOnFirstSessionStart",
-            "preLaunchTask": "debugMain",
+            "preLaunchTask": "Debug_compiler",
             "linux": {
                 "MIMode": "gdb"
             },
@@ -45,65 +44,5 @@
                 "MIMode": "gdb"
             }
         },
-        {
-            "name": "Test",
-            "type": "cppdbg",
-            "request": "launch",
-            "program": "${workspaceRoot}/Debug/test.out",
-            "args": [],
-            "stopAtEntry": false,
-            "cwd": "${workspaceRoot}/Debug",
-            "environment": [],
-            "externalConsole": true,
-            "internalConsoleOptions": "openOnFirstSessionStart",
-            "preLaunchTask": "Test",
-            "linux": {
-                "MIMode": "gdb"
-            },
-            "osx": {
-                "MIMode": "lldb"
-            },
-            "windows": {
-                "MIMode": "gdb"
-            }
-        },
-        {
-            "name": "Test_New",
-            "type": "cppdbg",
-            "request": "launch",
-            "program": "${workspaceRoot}/Debug/test_new.out",
-            "args": [],
-            "stopAtEntry": false,
-            "cwd": "${workspaceRoot}/Debug",
-            "environment": [],
-            "externalConsole": true,
-            "internalConsoleOptions": "openOnFirstSessionStart",
-            "preLaunchTask": "Test_new",
-            "linux": {
-                "MIMode": "gdb"
-            },
-            "osx": {
-                "MIMode": "lldb"
-            },
-            "windows": {
-                "MIMode": "gdb"
-            }
-        },
-        {
-            "name": "C++ Attach",
-            "type": "cppdbg",
-            "request": "attach",
-            "program": "${workspaceRoot}/a.out",
-            "processId": "${command.pickProcess}",
-            "linux": {
-                "MIMode": "gdb"
-            },
-            "osx": {
-                "MIMode": "lldb"
-            },
-            "windows": {
-                "MIMode": "gdb"
-            }
-        }
     ]
 }

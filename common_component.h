@@ -12,7 +12,7 @@
 
 #include "analyse_lexical.h"
 
-// #define DEBUG // debugging flag
+#define DEBUG // debugging flag
 
 #define MAX_LINE_LENGTH 1000
 #define MAX_LEXEME_NUMBER 300
@@ -38,7 +38,7 @@ struct basicStack {
 
 void pushStack (int data, basicStack ** topNode);
 int popStack (basicStack ** topNode);
-void displayStack (basicStack ** dataStack, basicStack ** typeStack, char * memorySpace);
+void displayStack (basicStack ** dataStack, basicStack ** typeStack, int * memorySpace);
 void clearStack (basicStack ** topNode);
 
 // L_ac types
@@ -49,9 +49,15 @@ void clearStack (basicStack ** topNode);
 #define FLOATANT 4
 #define CHAINECHARNOHEADER 5
 
+#define LTRUE 8901
+#define LFALSE 8900
+
 // About strings
-void printString(char * memorySpace, int position);
+void printString(int * memorySpace, int position); // print a LAC string in a safe way
 int findStringLength(char * string);
 int convertLexeme2Number (char * code, lexeme_Element * lexeme, int * number); 
+void strcpyMEM(int * stringMem, const int * scr, int * posMem); // copy a LAC string into memory safely
+void strncpyMEM(int * stringMem, const int * scr, int * posMem, int length); // copy a C string(int) into memory safely
+void cstrncpyMEM(int * stringMem, const char * scr, int * posMem, int length); // copy a C string(char) into memory safely
 
 #endif // !COMMON_COMPONENT

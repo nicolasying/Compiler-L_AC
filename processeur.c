@@ -43,27 +43,50 @@
 #include <stdlib.h>
 
 static basicStack ** data, ** type, ** retourne;
-static int *VM;
-static char *stringMem;
+static int *VM, *posMem;
+static int *stringMem;
 
-void linkProcessor(basicStack ** dataStack, basicStack ** typeStack, basicStack ** callStack, char * stringMemory, int * exVM) {
+void linkProcessor(basicStack ** dataStack, basicStack ** typeStack, basicStack ** callStack, int * stringMemory, int * exVM, int * exPosMem) {
     data = dataStack;
     type = typeStack;
     retourne = callStack;
     stringMem = stringMemory;
     VM = exVM;
+    posMem = exPosMem;
+
+    #ifdef DEBUG
+    printf("CPU: processor linked.\n");
+    #endif // DEBUG
 }
 
 void lit(void) { // qui lit une element du pile, la stocker dans le registre
     int tmp = popStack(retourne); // position de lit
     pushStack(tmp + 1, retourne); // avance 1 indice
     pushStack(VM[tmp + 1], data);
-    pushStack(ENTIER, type); // suppose
+    pushStack(ENTIER, type); // on supposing only integers are lit
+
+    #ifdef DEBUG
     printf("CPU: lit\n");
+    #endif // DEBUG
 }
 
 void str(void) { // to indicate that the next element in the array is a string
-    return;
+    int tmp = popStack(retourne); // str position in VM
+    int length = VM[tmp + 1];
+    pushStack(tmp + length + 1, retourne); // avance 1 indice and the length of string
+    
+    // put string info in stacks
+    int stringAdd = *posMem;
+    pushStack(stringAdd, data);
+    pushStack(CHAINECHAR, type); 
+
+    // copy string actually into stringMem
+    strcpyMEM(stringMem, &VM[tmp + 1], posMem);
+    
+    #ifdef DEBUG
+    printf("CPU: str\n");
+    printString(stringMem, stringAdd);
+    #endif
 }
 
 void fin(void) {
@@ -160,7 +183,8 @@ void comparison(void) {
     int op1 = popStack(data), opt1 = popStack(type);
     int op2 = popStack(data), opt2 = popStack(type);
     if (opt2 == opt1) {
-        pushStack(op1 == op2, data);
+        if (op1 == op2) pushStack(LTRUE, data);
+        else pushStack(LFALSE, data);
         pushStack(BOOLEAN, type);
     } else {
         printf("CPU: comparison error\n");
@@ -245,6 +269,111 @@ void typeProc(void) {
     #endif // DEBUG
 }
 
+void fif(void){
+    #ifdef DEBUG
+    printf("CPU: if\n");
+    #endif // DEBUG
+}
+
+void felse(void){
+    #ifdef DEBUG
+    printf("CPU: else\n");
+    #endif // DEBUG
+}
+
+void fthen(void){
+    #ifdef DEBUG
+    printf("CPU: then\n");
+    #endif // DEBUG
+}
+
+void land(void){
+
+    int op1 = popStack(data), opt1 = popStack(type);
+    int op2 = popStack(data), opt2 = popStack(type);
+    if ((opt2 == opt1) && (opt1 == BOOLEAN)) {
+        if ((op1 == LTRUE) == (op2 == LTRUE)) pushStack(LTRUE, data);
+        else pushStack(LFALSE, data);
+        pushStack(BOOLEAN, type);
+    } else {
+        printf("CPU: logic_and error\n");
+        pushStack(op2, data); pushStack(opt2, type);
+        pushStack(op1, data); pushStack(opt1, type);
+    }
+
+    #ifdef DEBUG
+    printf("CPU: logic_and\n");
+    #endif // DEBUG
+}
+
+void lor(void) {
+
+    int op1 = popStack(data), opt1 = popStack(type);
+    int op2 = popStack(data), opt2 = popStack(type);
+    if ((opt2 == opt1) && (opt1 == BOOLEAN)) {
+        if ((op1 == LFALSE) == (op2 == LFALSE)) pushStack(LFALSE, data);
+        else pushStack(LTRUE, data);
+        pushStack(BOOLEAN, type);
+    } else {
+        printf("CPU: logic_or error\n");
+        pushStack(op2, data); pushStack(opt2, type);
+        pushStack(op1, data); pushStack(opt1, type);
+    }
+
+    #ifdef DEBUG
+    printf("CPU: logic_or\n");
+    #endif // DEBUG
+}
+
+void lnot(void) {
+
+    int op1 = popStack(data), opt1 = popStack(type);
+    if (opt1 == BOOLEAN) {
+        if (op1 == LFALSE) pushStack(LTRUE, data);
+        else pushStack(LFALSE, data);
+        pushStack(BOOLEAN, type);
+    } else {
+        printf("CPU: logic_not error\n");
+        pushStack(op1, data); pushStack(opt1, type);
+    }
+
+    #ifdef DEBUG
+    printf("CPU: logic_not\n");
+    #endif // DEBUG
+}
+
+void smaller(void) {
+    int op1 = popStack(data), opt1 = popStack(type);
+    int op2 = popStack(data), opt2 = popStack(type);
+    if (opt2 == opt1 && opt1 == ENTIER) {
+        if (op2 <= op1)  pushStack(LTRUE, data);
+        else  pushStack(LFALSE, data);
+        pushStack(BOOLEAN, type);
+    } else {
+        printf("CPU: smaller error\n");
+        // exit(504);
+        // reverting to previous state.
+        pushStack(op2, data); pushStack(opt2, type);
+        pushStack(op1, data); pushStack(opt1, type);
+        return;
+    }
+    #ifdef DEBUG
+    printf("CPU: smaller\n");
+    #endif
+}
+
+void recurse(void) { // TO BE MODIFIED
+    // the function calls it self
+    // findout currently running userdefined function
+    int tmp = 0;
+    // calling out the function
+    pushStack(tmp , retourne);
+    
+    #ifdef DEBUG
+    printf("CPU: recurse\n");
+    #endif // DEBUG
+}
+
 void calculate(void) {
     int op1 = popStack(data), opt1 = popStack(type);
     if (opt1 != CHAINECHAR) {
@@ -257,7 +386,32 @@ void calculate(void) {
     #endif // DEBUG
 }
 
-void def(void) {
-    // compilateur();
-    printf("CPU: def\n");
+void catenate(void) {
+    int op1 = popStack(data), opt1 = popStack(type);
+    int op2 = popStack(data), opt2 = popStack(type);
+    if (opt1 == opt2 && opt1 == CHAINECHAR) {
+        int newPosMem = *posMem, i = 0;
+        pushStack(newPosMem, data); pushStack(CHAINECHAR, type);
+        int length1 = stringMem[op1];
+        int length = stringMem[op2] + stringMem[op1];
+        // copy the former string to a new place
+        strcpyMEM(stringMem, &stringMem[op2], posMem);
+        // set correct length
+        stringMem[newPosMem % MAX_STRING_SIZE] = length; 
+        // append the latter string 
+        while (i < length1) {
+            stringMem[*posMem++] = stringMem[op1 + i + 1];
+            i++;
+        }
+    } else {
+        printf("CPU: catenate type error\n");
+        // exit(504);
+        // reverting to previous state.
+        pushStack(op2, data); pushStack(opt2, type);
+        pushStack(op1, data); pushStack(opt1, type);
+        return;
+    }
+    #ifdef DEBUG
+    printf("CPU: catenate\n");
+    #endif // DEBUG
 }

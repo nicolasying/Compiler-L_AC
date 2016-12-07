@@ -59,6 +59,6 @@ int calculateArbre (arbre root);
 
 struct noeud ARBRE_ZERO;
 
-int calculateString (char * string);
+int calculateString (int * string);
 
 #endif /* BNF_C_h */

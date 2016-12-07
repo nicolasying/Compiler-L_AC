@@ -18,7 +18,7 @@ static char * s;
 
 extern struct noeud ARBRE_ZERO;
 
-int calculateString (char * string) {
+int calculateString (int * string) {
     
     #ifdef DEBUG
     printf("calculateString: \n");
@@ -28,7 +28,11 @@ int calculateString (char * string) {
     // Transform the LAC string into C string, to reuse the ancient code written a while ago.
     int length = string[0];
     char stemp[100] = {'\0'};
-    strncpy(&stemp[0], &string[1], length);
+    int i = 0;
+    while (i < length) {
+        stemp[i] = (char)string[1+i];
+        i++;
+    }
     s = &stemp[0];
 
     // lexicale
