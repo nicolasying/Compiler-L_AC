@@ -75,7 +75,7 @@ void addBaseFunction (int * symbolTable, int * VM, int *posSymbol, int* posVM, c
 int findFunction (int sizeSymbolTable, int * symbolTable, lexeme_Element * lexeme, char * code) {
     int length = lexeme->end - lexeme->begin + 1; 
     // length of the lexeme used to quick matching
-    int position = symbolTable[sizeSymbolTable]; 
+    int position = symbolTable[sizeSymbolTable] - 1; 
     // position is the last symbol defined in the table
 
     #ifdef DEBUG
@@ -90,7 +90,7 @@ int findFunction (int sizeSymbolTable, int * symbolTable, lexeme_Element * lexem
     while (position > 0) {
         if (symbolTable[position] != length) {
             // if the length doesn't match
-            position = symbolTable[position];
+            position = symbolTable[position - 1];
         } else {
             // otherwise, compare two strings
             int j = 0;

@@ -209,7 +209,7 @@ int main(int argc, char * argv[]) { // argv[1] = fileURL
             cCFParaOutCnt = 0; 
             cCFParaCnt = 0;
             cCFBegin = posVM;
-            cCFBeginLAC = posSymbol;
+            cCFBeginLAC = posSymbol + 1;
             memset(cCFParaInArray, 0, MAX_IN_OUT_PUT_NUMBER);
             memset(cCFParaOutArray, 0, MAX_IN_OUT_PUT_NUMBER);
             memset(cCFParaArray, 0, 2 * MAX_IN_OUT_PUT_NUMBER);
@@ -276,7 +276,7 @@ int main(int argc, char * argv[]) { // argv[1] = fileURL
             // Check the state, if it's not compiling a function, it's compiling main (the last block of .lac file).
             if (functionCompilingState == NOT_COMPILING ) functionCompilingState = COMPILING_MAIN;
             #ifdef DEBUG
-            printf("symbolTable: %d, %d\n"， posSymbol, symbolTable[posSymbol]);
+            printf("symbolTable: %d, %d\n", posSymbol, symbolTable[posSymbol]);
             #endif // DEBUG
             int posSymbolC = findFunction(posSymbol, symbolTable, &lexemeList[posLexeme], texte);
             if (posSymbolC == recurseposSymbol) {
