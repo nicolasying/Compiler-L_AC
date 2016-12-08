@@ -10,6 +10,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
 
 int main(int argc, char * argv[]) { // argv[1] = fileURL
     #ifdef DEBUG
@@ -33,7 +34,7 @@ int main(int argc, char * argv[]) { // argv[1] = fileURL
     // fclose (fp);
 
     // reading part.
-    int * buffer;
+    int32_t * buffer;
     size_t result;
 
     printf("Now reading.\n");
@@ -47,12 +48,12 @@ int main(int argc, char * argv[]) { // argv[1] = fileURL
     rewind (fp);
 
     // allocate memory to contain the whole file:
-    buffer = (int*) malloc (lSize);
+    buffer = (int32_t*) malloc (lSize);
     if (buffer == NULL) {fputs ("Memory error",stderr); exit (2);}
 
     // copy the file into the buffer:
-    result = fread (buffer, sizeof(int), lSize/sizeof(int) , fp);
-    if (result != lSize/sizeof(int)) {fputs ("Reading error",stderr); exit (3);}
+    result = fread (buffer, sizeof(int32_t), lSize/sizeof(int32_t) , fp);
+    if (result != lSize/sizeof(int32_t)) {fputs ("Reading error",stderr); exit (3);}
     /* the whole file is now loaded in the memory buffer. */
 
     int i = 0;

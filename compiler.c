@@ -35,6 +35,7 @@ void initLacCompile(int * symbolTable, int * VM, int * posSymbol, int * posVM) {
     // Adding funtions allowed in compile mode
     // It should be exactly the same in executer
     VM[(*posVM)++] = 1003; // VM version 1003, correspongding to VM_LAC_hugolonicolasien 1.3
+    VM[(*posVM)++] = 0; // For point d'entree
     litposVM = *posVM;
     addBaseFunction (symbolTable, VM, posSymbol, posVM, 0, "lit", 0, (int[]){}, 0, (int[]){});
     strposVM = *posVM;
@@ -376,15 +377,20 @@ int main(int argc, char * argv[]) { // argv[1] = fileURL
         return 713;
     } else printf("\n\nCompilation finished.\n"); 
     posVM--;
+
     // End of the compilation
     #ifdef DEBUG
     printf("Finishing up.\n");
     #endif // DEBUG
+
     if (functionCompilingState != COMPILING_MAIN) {
         printf("Error: We're not compiling main.\n");
         printf("%.*s (pos: %d)\n", 10, texte + lexemeList[posLexeme].begin, lexemeList[posLexeme].begin);
         exit(701);
     }
+
+    // VM point d'entree
+    VM[1] = mainPosVM; 
 
     // generate compiled file
     #ifdef DEBUG
