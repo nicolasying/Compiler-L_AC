@@ -88,23 +88,28 @@ int findFunction (int sizeSymbolTable, int * symbolTable, lexeme_Element * lexem
     #endif // DEBUG
 
     while (position > 0) {
-        if (symbolTable[position] != length) {
+        if (symbolTable[position + 1] != length) {
             // if the length doesn't match
-            position = symbolTable[position - 1];
+            position = symbolTable[position] - 1;
         } else {
             // otherwise, compare two strings
             int j = 0;
             while (j < length) {
-                if (code[lexeme->begin + j] != symbolTable[position + 1 + j]) {
+                if (code[lexeme->begin + j] != symbolTable[position + 2 + j]) {
                     break;
                     // resulting to a j < length, which fails the following examination
                 } else {
                     j++;
                 }
             }
-            if (j == length) return position;
+            if (j == length) {
+                #ifdef DEBUG
+                printf("Found funtion, returning %d.\n", position + 1);
+                #endif // DEBUG
+                return position + 1;
+            }
             // the symbol is found
-            position = symbolTable[position - 1];
+            position = symbolTable[position] - 1;
             // otherwise, try the next symbol
         }
     }

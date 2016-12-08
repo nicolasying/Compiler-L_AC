@@ -25,7 +25,7 @@ int cCFBegin = 0; // a container for the beginning VM position for this function
 int cCFBeginLAC = 0; // a container for the beginning symbol table position for this function
 int cCFNameLexPos = 0, cCFParaInCnt = 0, cCFParaOutCnt = 0, cCFParaCnt = 0, cCFParaPos = MAX_IN_OUT_PUT_NUMBER; // to simulate stack change
 int cCFParaInArray[MAX_IN_OUT_PUT_NUMBER] = {0}, cCFParaOutArray[MAX_IN_OUT_PUT_NUMBER] = {0}, cCFParaArray[MAX_IN_OUT_PUT_NUMBER * 2] = {0};
-static int litposVM = 0, strposVM = 0, finposVM = 0, recurseposSymbol = 0;
+static int litposVM = 0, strposVM = 0, finposVM = 0, recurseposSymbol = 0, mainPosVM = 0;
 
 void initLacCompile(int * symbolTable, int * VM, int * posSymbol, int * posVM) {
     // Cleaning the tables
@@ -167,8 +167,17 @@ int main(int argc, char * argv[]) { // argv[1] = fileURL
         printf("functionCompilingState: %d\n", functionCompilingState);
         #endif // DEBUG
         if(lexemeList[posLexeme].type == C) {
+            #ifdef DEBUG
+            printf("Adding a string to VM");
+            #endif // DEBUG
             // Check the state, if it's not compiling a function, it's compiling main (the last block of .lac file).
-            if (functionCompilingState == NOT_COMPILING ) functionCompilingState = COMPILING_MAIN;
+            if (functionCompilingState == NOT_COMPILING ) {
+                #ifdef DEBUG
+                printf("Entering main function compilation beginning with an identifier.\n");
+                #endif // DEBUG
+                functionCompilingState = COMPILING_MAIN;
+                mainPosVM = posVM;
+            }
             // Update parameter statistics
             cCFParaArray[cCFParaPos++] = CHAINECHAR;
             cCFParaOutArray[cCFParaOutCnt++] = CHAINECHAR;
@@ -271,10 +280,26 @@ int main(int argc, char * argv[]) { // argv[1] = fileURL
                 i++;
             }
             #endif // DEBUG
+
+            // Initialise flags
+            cCFParaInCnt = 0;
+            cCFParaOutCnt = 0; 
+            cCFParaCnt = 0;
+            memset(cCFParaInArray, 0, MAX_IN_OUT_PUT_NUMBER);
+            memset(cCFParaOutArray, 0, MAX_IN_OUT_PUT_NUMBER);
+            memset(cCFParaArray, 0, 2 * MAX_IN_OUT_PUT_NUMBER);
+            cCFParaPos = MAX_IN_OUT_PUT_NUMBER;
+
         } else {
             // It is an normal identifier
             // Check the state, if it's not compiling a function, it's compiling main (the last block of .lac file).
-            if (functionCompilingState == NOT_COMPILING ) functionCompilingState = COMPILING_MAIN;
+            if (functionCompilingState == NOT_COMPILING ) {
+                #ifdef DEBUG
+                printf("Entering main function compilation beginning with an identifier.\n");
+                #endif // DEBUG
+                functionCompilingState = COMPILING_MAIN;
+                mainPosVM = posVM;
+            }
             #ifdef DEBUG
             printf("symbolTable: %d, %d\n", posSymbol, symbolTable[posSymbol]);
             #endif // DEBUG
@@ -322,7 +347,8 @@ int main(int argc, char * argv[]) { // argv[1] = fileURL
                     cCFParaCnt++;
                     i++;
                 }
-                
+                // add function VM address into VM
+                VM[posVM++] = posVMC;
             } else {
                 // then it must be a number
                 int number;
@@ -345,7 +371,29 @@ int main(int argc, char * argv[]) { // argv[1] = fileURL
         }
         posLexeme++;
     } while (posLexeme < lexemeNumber);
-    if (cCFParaInCnt != 0) 
+    if (cCFParaInCnt != 0) {
         printf("Error code 713: input not sufficient.\n"); 
+        return 713;
+    } else printf("\n\nCompilation finished.\n"); 
+    posVM--;
+    // End of the compilation
+    #ifdef DEBUG
+    printf("Finishing up.\n");
+    #endif // DEBUG
+    if (functionCompilingState != COMPILING_MAIN) {
+        printf("Error: We're not compiling main.\n");
+        printf("%.*s (pos: %d)\n", 10, texte + lexemeList[posLexeme].begin, lexemeList[posLexeme].begin);
+        exit(701);
+    }
+
+    // generate compiled file
+    #ifdef DEBUG
+    printf("mode_compilé:\n\nVM point d'entrée: %d.\n", mainPosVM);
+    int i = 0;
+    while (i <= posVM) {
+        printf("%d: %d\n", i, VM[i]);
+        i++;
+    }
+    #endif // DEBUG
     return 0;
 }
