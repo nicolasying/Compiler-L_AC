@@ -2,6 +2,28 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Debug_runtime",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceRoot}/Debug/Runtime.out",
+            "args": ["${workspaceRoot}/factorielle.lacc"],
+            "stopAtEntry": false,
+            "cwd": "${workspaceRoot}/Debug",
+            "environment": [],
+            "externalConsole": true,
+            "internalConsoleOptions": "openOnFirstSessionStart",
+            "preLaunchTask": "Debug_runtime",
+            "linux": {
+                "MIMode": "gdb"
+            },
+            "osx": {
+                "MIMode": "lldb"
+            },
+            "windows": {
+                "MIMode": "gdb"
+            }
+        },
+        {
             "name": "Debug_interpreter",
             "type": "cppdbg",
             "request": "launch",

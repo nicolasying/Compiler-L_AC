@@ -6,7 +6,7 @@
 //  Copyright © 2016 Nicolas YING. All rights reserved.
 //
 //  Error code 7**
-//  generate a VM array complying to the VM_LAC_hugolonicolasien standard
+//  generate a VM array complying to the VM_LAC_hugolonicolasien standard 1.3
 
 #include "common_component.h"
 #include "analyse_lexical.h"
@@ -34,7 +34,7 @@ void initLacCompile(int * symbolTable, int * VM, int * posSymbol, int * posVM) {
 
     // Adding funtions allowed in compile mode
     // It should be exactly the same in executer
-    VM[*posVM] = 1001; // VM version 1001
+    VM[(*posVM)++] = 1003; // VM version 1003, correspongding to VM_LAC_hugolonicolasien 1.3
     litposVM = *posVM;
     addBaseFunction (symbolTable, VM, posSymbol, posVM, 0, "lit", 0, (int[]){}, 0, (int[]){});
     strposVM = *posVM;

@@ -7,6 +7,33 @@
     "showOutput": "always",
     "tasks": [
         {
+            "taskName": "Debug_runtime",
+            "args": [
+                "-DDEBUG",
+                "-g",
+                "-o",
+                "Debug/Runtime.out",
+                "runtime.c",
+                "processeur.c",
+                "common_component.c",
+                "Syntax_calculate/BNF_C.c",
+                "Syntax_calculate/calculate.c"
+            ],
+            "suppressTaskName": true
+        },{
+            "taskName": "Build_runtime",
+            "args": [
+                "-o",
+                "Build/Runtime",
+                "runtime.c",
+                "processeur.c",
+                "common_component.c",
+                "Syntax_calculate/BNF_C.c",
+                "Syntax_calculate/calculate.c"
+            ],
+            "suppressTaskName": true
+        },
+        {
             "taskName": "Debug_intepreter",
             "args": [
                 "-DDEBUG",
