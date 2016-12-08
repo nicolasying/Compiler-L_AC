@@ -33,7 +33,8 @@ void initLacCompile(int * symbolTable, int * VM, int * posSymbol, int * posVM) {
     memset(VM, 0, VM_SIZE);
 
     // Adding funtions allowed in compile mode
-    VM[*posVM] = 1; // VM version
+    // It should be exactly the same in executer
+    VM[*posVM] = 1001; // VM version 1001
     litposVM = *posVM;
     addBaseFunction (symbolTable, VM, posSymbol, posVM, 0, "lit", 0, (int[]){}, 0, (int[]){});
     strposVM = *posVM;
@@ -47,7 +48,7 @@ void initLacCompile(int * symbolTable, int * VM, int * posSymbol, int * posVM) {
     addBaseFunction (symbolTable, VM, posSymbol, posVM, 7, "=", 2, (int[]){ENTIER, ENTIER}, 1, (int[]){BOOLEAN}); 
     addBaseFunction (symbolTable, VM, posSymbol, posVM, 8, "dup", 1, (int[]){ANY}, 2, (int[]){ANY, ANY}); 
     addBaseFunction (symbolTable, VM, posSymbol, posVM, 9, "drop", 1, (int[]){ANY}, 0, (int[]){}); 
-    addBaseFunction (symbolTable, VM, posSymbol, posVM, 10, "swap", 2, (int[]){ANY, ANY}, 0, (int[]){}); 
+    addBaseFunction (symbolTable, VM, posSymbol, posVM, 10, "swap", 2, (int[]){ANY, ANY}, 2, (int[]){ANY, ANY}); 
     addBaseFunction (symbolTable, VM, posSymbol, posVM, 11, "count", 1, (int[]){CHAINECHAR}, 2, (int[]){CHAINECHARNOHEADER, ENTIER}); 
     addBaseFunction (symbolTable, VM, posSymbol, posVM, 12, "type", 2, (int[]){ENTIER, CHAINECHARNOHEADER}, 0, (int[]){}); 
     addBaseFunction (symbolTable, VM, posSymbol, posVM, 13, "if", 1, (int[]){BOOLEAN}, 0, (int[]){});
@@ -57,7 +58,7 @@ void initLacCompile(int * symbolTable, int * VM, int * posSymbol, int * posVM) {
     addBaseFunction (symbolTable, VM, posSymbol, posVM, 21, "||", 2, (int[]){BOOLEAN, BOOLEAN}, 1, (int[]){BOOLEAN});
     addBaseFunction (symbolTable, VM, posSymbol, posVM, 22, "!", 1, (int[]){BOOLEAN}, 1, (int[]){BOOLEAN});
     addBaseFunction (symbolTable, VM, posSymbol, posVM, 23, "<=", 2, (int[]){ENTIER, ENTIER}, 1, (int[]){BOOLEAN});
-    recurseposSymbol = *posSymbol;
+    recurseposSymbol = *posSymbol + 1;
     addBaseFunction (symbolTable, VM, posSymbol, posVM, 25, "recurse", 0, (int[]){}, 0, (int[]){}); 
     addBaseFunction (symbolTable, VM, posSymbol, posVM, 28, "calculate", 1, (int[]){CHAINECHAR}, 0, (int[]){}); 
     addBaseFunction (symbolTable, VM, posSymbol, posVM, 29, "catenate", 1, (int[]){CHAINECHAR}, 0, (int[]){}); 
@@ -233,11 +234,12 @@ int main(int argc, char * argv[]) { // argv[1] = fileURL
             
             // Add info to symbol table
             // Name
+            posSymbol++;
             int nameLength = lexemeList[cCFNameLexPos].end - lexemeList[cCFNameLexPos].begin + 1;
             symbolTable[posSymbol++] = nameLength;
             int i = 0;
             while (i < nameLength) {
-                symbolTable[posSymbol++] = texte[lexemeList[cCFNameLexPos].begin + 1 + i++];
+                symbolTable[posSymbol++] = texte[lexemeList[cCFNameLexPos].begin + i++];
             }
             // Inputs Outputs
             symbolTable[posSymbol++] = cCFParaInCnt;
@@ -251,7 +253,7 @@ int main(int argc, char * argv[]) { // argv[1] = fileURL
                 symbolTable[posSymbol++] = cCFParaInArray[i++];
             }
             symbolTable[posSymbol++] = cCFBegin; // VM association
-            symbolTable[posSymbol++] = cCFBeginLAC; // symbol table pos_begin
+            symbolTable[posSymbol] = cCFBeginLAC; // symbol table pos_begin
             // Mark the end of definition
             functionCompilingState = NOT_COMPILING;
 
@@ -273,14 +275,16 @@ int main(int argc, char * argv[]) { // argv[1] = fileURL
             // It is an normal identifier
             // Check the state, if it's not compiling a function, it's compiling main (the last block of .lac file).
             if (functionCompilingState == NOT_COMPILING ) functionCompilingState = COMPILING_MAIN;
-
+            #ifdef DEBUG
+            printf("symbolTable: %d, %d\n"， posSymbol, symbolTable[posSymbol]);
+            #endif // DEBUG
             int posSymbolC = findFunction(posSymbol, symbolTable, &lexemeList[posLexeme], texte);
             if (posSymbolC == recurseposSymbol) {
                 // put the pos_begin VM of current compiled function into VM
                 VM[posVM++] = cCFBegin;
                 // update parameter statistics
                 printf("Parameter counting for recurse functions are not yet compiled.\n Bonne Chance.\n");
-                
+
             } else if (posSymbolC > 0){
                 // a function is found, find it's VM position
                 int lenName = symbolTable[posSymbolC];
@@ -315,6 +319,7 @@ int main(int argc, char * argv[]) { // argv[1] = fileURL
                 while (i < paraOutCnt) { // generate outputs
                     cCFParaOutArray[cCFParaOutCnt++] = symbolTable[posSymbolC + lenName + paraInCnt + i + 3]; 
                     cCFParaArray[cCFParaPos++] = symbolTable[posSymbolC + lenName + paraInCnt + i + 3]; 
+                    cCFParaCnt++;
                     i++;
                 }
                 

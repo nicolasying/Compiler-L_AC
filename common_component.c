@@ -90,7 +90,7 @@ int findFunction (int sizeSymbolTable, int * symbolTable, lexeme_Element * lexem
     while (position > 0) {
         if (symbolTable[position] != length) {
             // if the length doesn't match
-            position = symbolTable[position - 1];
+            position = symbolTable[position];
         } else {
             // otherwise, compare two strings
             int j = 0;
