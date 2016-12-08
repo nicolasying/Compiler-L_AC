@@ -25,18 +25,18 @@ int main(int argc, char * argv[]) { // argv[1] = fileURL
     // get file size
     FILE *fp;
     long size_file;
-    fp = fopen(argv[1], "wb");
+    // fp = fopen(argv[1], "wb");
     
-    int testArray[15] = {0, 1, 2, 5, 7, 8};
-    fwrite (&testArray[0], sizeof(int), 15, fp);
-    printf("file written. Size is %ld.\n", sizeof(testArray));
-    fclose (fp);
+    // int testArray[15] = {0, 1, 2, 5, 7, 8};
+    // fwrite (&testArray[0], sizeof(int), 15, fp);
+    // printf("file written. Size is %ld.\n", sizeof(testArray));
+    // fclose (fp);
 
     // reading part.
     int * buffer;
     size_t result;
 
-    printf("Now reading.");
+    printf("Now reading.\n");
 
     fp = fopen (argv[1], "rb" );
     if (fp==NULL) {fputs ("File error",stderr); exit (1);}
@@ -55,6 +55,11 @@ int main(int argc, char * argv[]) { // argv[1] = fileURL
     if (result != lSize/sizeof(int)) {fputs ("Reading error",stderr); exit (3);}
     /* the whole file is now loaded in the memory buffer. */
 
+    int i = 0;
+    while (i < result) {
+        printf("%d, ", buffer[i++]);
+    }
+    
     // terminate
     fclose (fp);
     free (buffer);
