@@ -42,8 +42,8 @@ void displayStack (basicStack ** dataStack, basicStack ** typeStack, int * memor
 void clearStack (basicStack ** topNode);
 
 // L_ac types
-#define ENTIER 1
 #define ANY 0
+#define ENTIER 1
 #define BOOLEAN 2
 #define CHAINECHAR 3
 #define FLOATANT 4

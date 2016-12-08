@@ -25,6 +25,7 @@ int cCFBegin = 0; // a container for the beginning VM position for this function
 int cCFBeginLAC = 0; // a container for the beginning symbol table position for this function
 int cCFNameLexPos = 0, cCFParaInCnt = 0, cCFParaOutCnt = 0, cCFParaCnt = 0, cCFParaPos = MAX_IN_OUT_PUT_NUMBER; // to simulate stack change
 int cCFParaInArray[MAX_IN_OUT_PUT_NUMBER] = {0}, cCFParaOutArray[MAX_IN_OUT_PUT_NUMBER] = {0}, cCFParaArray[MAX_IN_OUT_PUT_NUMBER * 2] = {0};
+static int litposVM = 0, strposVM = 0, finposVM = 0, recurseposSymbol = 0;
 
 void initLacCompile(int * symbolTable, int * VM, int * posSymbol, int * posVM) {
     // Cleaning the tables
@@ -32,10 +33,14 @@ void initLacCompile(int * symbolTable, int * VM, int * posSymbol, int * posVM) {
     memset(VM, 0, VM_SIZE);
 
     // Adding funtions allowed in compile mode
+    VM[*posVM] = 1; // VM version
+    litposVM = *posVM;
     addBaseFunction (symbolTable, VM, posSymbol, posVM, 0, "lit", 0, (int[]){}, 0, (int[]){});
+    strposVM = *posVM;
     addBaseFunction (symbolTable, VM, posSymbol, posVM, 1, "str", 0, (int[]){}, 0, (int[]){});
+    finposVM = *posVM;
     addBaseFunction (symbolTable, VM, posSymbol, posVM, 2, "fin", 0, (int[]){}, 0, (int[]){});
-    addBaseFunction (symbolTable, VM, posSymbol, posVM, 3, ".", 1, (int[]){ENTIER}, 0, (int[]){});
+    addBaseFunction (symbolTable, VM, posSymbol, posVM, 3, ".", 1, (int[]){ANY}, 0, (int[]){});
     addBaseFunction (symbolTable, VM, posSymbol, posVM, 4, "+", 2, (int[]){ENTIER, ENTIER}, 1, (int[]){ENTIER}); 
     addBaseFunction (symbolTable, VM, posSymbol, posVM, 5, "-", 2, (int[]){ENTIER, ENTIER}, 1, (int[]){ENTIER}); 
     addBaseFunction (symbolTable, VM, posSymbol, posVM, 6, "*", 2, (int[]){ENTIER, ENTIER}, 1, (int[]){ENTIER}); 
@@ -44,7 +49,7 @@ void initLacCompile(int * symbolTable, int * VM, int * posSymbol, int * posVM) {
     addBaseFunction (symbolTable, VM, posSymbol, posVM, 9, "drop", 1, (int[]){ANY}, 0, (int[]){}); 
     addBaseFunction (symbolTable, VM, posSymbol, posVM, 10, "swap", 2, (int[]){ANY, ANY}, 0, (int[]){}); 
     addBaseFunction (symbolTable, VM, posSymbol, posVM, 11, "count", 1, (int[]){CHAINECHAR}, 2, (int[]){CHAINECHARNOHEADER, ENTIER}); 
-    addBaseFunction (symbolTable, VM, posSymbol, posVM, 12, "type", 2, (int[]){CHAINECHARNOHEADER, ENTIER}, 0, (int[]){}); 
+    addBaseFunction (symbolTable, VM, posSymbol, posVM, 12, "type", 2, (int[]){ENTIER, CHAINECHARNOHEADER}, 0, (int[]){}); 
     addBaseFunction (symbolTable, VM, posSymbol, posVM, 13, "if", 1, (int[]){BOOLEAN}, 0, (int[]){});
     addBaseFunction (symbolTable, VM, posSymbol, posVM, 14, "else", 0, (int[]){}, 0, (int[]){});
     addBaseFunction (symbolTable, VM, posSymbol, posVM, 15, "then", 0, (int[]){}, 0, (int[]){});
@@ -52,6 +57,7 @@ void initLacCompile(int * symbolTable, int * VM, int * posSymbol, int * posVM) {
     addBaseFunction (symbolTable, VM, posSymbol, posVM, 21, "||", 2, (int[]){BOOLEAN, BOOLEAN}, 1, (int[]){BOOLEAN});
     addBaseFunction (symbolTable, VM, posSymbol, posVM, 22, "!", 1, (int[]){BOOLEAN}, 1, (int[]){BOOLEAN});
     addBaseFunction (symbolTable, VM, posSymbol, posVM, 23, "<=", 2, (int[]){ENTIER, ENTIER}, 1, (int[]){BOOLEAN});
+    recurseposSymbol = *posSymbol;
     addBaseFunction (symbolTable, VM, posSymbol, posVM, 25, "recurse", 0, (int[]){}, 0, (int[]){}); 
     addBaseFunction (symbolTable, VM, posSymbol, posVM, 28, "calculate", 1, (int[]){CHAINECHAR}, 0, (int[]){}); 
     addBaseFunction (symbolTable, VM, posSymbol, posVM, 29, "catenate", 1, (int[]){CHAINECHAR}, 0, (int[]){}); 
@@ -156,6 +162,9 @@ int main(int argc, char * argv[]) { // argv[1] = fileURL
     int posLexeme = 0;
     // Interpret the lexemes
     do {
+        #ifdef DEBUG
+        printf("functionCompilingState: %d\n", functionCompilingState);
+        #endif // DEBUG
         if(lexemeList[posLexeme].type == C) {
             // Check the state, if it's not compiling a function, it's compiling main (the last block of .lac file).
             if (functionCompilingState == NOT_COMPILING ) functionCompilingState = COMPILING_MAIN;
@@ -166,7 +175,7 @@ int main(int argc, char * argv[]) { // argv[1] = fileURL
             // Put the string into VM using str
             int length = lexemeList[posLexeme].end - lexemeList[posLexeme].begin + 1;
             // VM position for str
-            VM[posVM++] = 2;
+            VM[posVM++] = strposVM;
             // Copy the string into VM
             VM[posVM++] = length;
             int i = 0;
@@ -174,6 +183,9 @@ int main(int argc, char * argv[]) { // argv[1] = fileURL
                 VM[posVM++] = texte[lexemeList[posLexeme].begin + i++];
             }
         } else if (lexemeList[posLexeme].end - lexemeList[posLexeme].begin == 0 && texte[lexemeList[posLexeme].begin] == ':') {
+            #ifdef DEBUG
+            printf("Defining a new function.\n");
+            #endif // DEBUG
             // Define a new function, check if definition is nested
             if (functionCompilingState == COMPILING_FUN) {
                 printf("Function definition cannot be nested.\n");
@@ -197,9 +209,9 @@ int main(int argc, char * argv[]) { // argv[1] = fileURL
             cCFParaCnt = 0;
             cCFBegin = posVM;
             cCFBeginLAC = posSymbol;
-            cCFParaInArray[MAX_IN_OUT_PUT_NUMBER] = {0};
-            cCFParaOutArray[MAX_IN_OUT_PUT_NUMBER] = {0};
-            cCFParaArray[MAX_IN_OUT_PUT_NUMBER * 2] = {0};
+            memset(cCFParaInArray, 0, MAX_IN_OUT_PUT_NUMBER);
+            memset(cCFParaOutArray, 0, MAX_IN_OUT_PUT_NUMBER);
+            memset(cCFParaArray, 0, 2 * MAX_IN_OUT_PUT_NUMBER);
             functionCompilingState = COMPILING_FUN;
             cCFParaPos = MAX_IN_OUT_PUT_NUMBER;
             // Writing into VM
@@ -209,24 +221,27 @@ int main(int argc, char * argv[]) { // argv[1] = fileURL
 
         } else if (lexemeList[posLexeme].end - lexemeList[posLexeme].begin == 0 && texte[lexemeList[posLexeme].begin] == ';') {
             // End of the defnition
-            if (functionCompilingState != COMPILING_FUN || functionCompilingState != COMPILING_MAIN) {
+            #ifdef DEBUG
+            printf("End defining a new function.\n");
+            #endif // DEBUG
+            if (functionCompilingState != COMPILING_FUN) {
                 printf("Error: There's no function being defined.\n");
                 printf("%.*s (pos: %d)\n", 10, texte + lexemeList[posLexeme].begin, lexemeList[posLexeme].begin);
                 exit(701);
             }
-            VM[posVM++] = 4; // VM position for fin
-            VM[posVM++] = cCFBegin; // Take note of the function beginning for recurse
+            VM[posVM++] = finposVM; // VM position for fin
+            
             // Add info to symbol table
             // Name
             int nameLength = lexemeList[cCFNameLexPos].end - lexemeList[cCFNameLexPos].begin + 1;
             symbolTable[posSymbol++] = nameLength;
             int i = 0;
             while (i < nameLength) {
-                symbolTable[posSymbol++] = texte[lexemeList[cCFNameLexPos].begin + 1];
+                symbolTable[posSymbol++] = texte[lexemeList[cCFNameLexPos].begin + 1 + i++];
             }
             // Inputs Outputs
             symbolTable[posSymbol++] = cCFParaInCnt;
-            int i = 0;
+            i = 0;
             while (i < cCFParaInCnt) {
                 symbolTable[posSymbol++] = cCFParaInArray[i++];
             }
@@ -239,13 +254,34 @@ int main(int argc, char * argv[]) { // argv[1] = fileURL
             symbolTable[posSymbol++] = cCFBeginLAC; // symbol table pos_begin
             // Mark the end of definition
             functionCompilingState = NOT_COMPILING;
+
+            #ifdef DEBUG // dumping out table and VM
+            printf("mode_compilé:\n\nNEW Symbol table and VM.\n");
+            i = 0;
+            while (i <= posSymbol) {
+                printf("%d: %d\n", i, symbolTable[i]);
+                i++;
+            }
+            printf("---------\n");
+            i = 0;
+            while (i <= posVM) {
+                printf("%d: %d\n", i, VM[i]);
+                i++;
+            }
+            #endif // DEBUG
         } else {
             // It is an normal identifier
             // Check the state, if it's not compiling a function, it's compiling main (the last block of .lac file).
             if (functionCompilingState == NOT_COMPILING ) functionCompilingState = COMPILING_MAIN;
 
             int posSymbolC = findFunction(posSymbol, symbolTable, &lexemeList[posLexeme], texte);
-            if (posSymbolC > 0){
+            if (posSymbolC == recurseposSymbol) {
+                // put the pos_begin VM of current compiled function into VM
+                VM[posVM++] = cCFBegin;
+                // update parameter statistics
+                printf("Parameter counting for recurse functions are not yet compiled.\n Bonne Chance.\n");
+                
+            } else if (posSymbolC > 0){
                 // a function is found, find it's VM position
                 int lenName = symbolTable[posSymbolC];
                 int paraInCnt = symbolTable[posSymbolC + lenName + 1];
@@ -267,9 +303,10 @@ int main(int argc, char * argv[]) { // argv[1] = fileURL
                             cCFParaInArray[cCFParaInCnt++] = typeCheck;
                             cCFParaCnt++;  
                         }
+                        i++;
                     } else {
                         // type is incompatible
-                        printf("Error code 711: type incompatible.\n")
+                        printf("Error code 711: type incompatible.\n");
                         printf("%.*s (pos: %d)\n", 10, texte + lexemeList[posLexeme].begin, lexemeList[posLexeme].begin);
                         return(711);
                     }
@@ -278,32 +315,32 @@ int main(int argc, char * argv[]) { // argv[1] = fileURL
                 while (i < paraOutCnt) { // generate outputs
                     cCFParaOutArray[cCFParaOutCnt++] = symbolTable[posSymbolC + lenName + paraInCnt + i + 3]; 
                     cCFParaArray[cCFParaPos++] = symbolTable[posSymbolC + lenName + paraInCnt + i + 3]; 
+                    i++;
                 }
                 
             } else {
                 // then it must be a number
                 int number;
-                if (convertLexeme2Number(lineBuffer, &lexemeList[posLexeme], &number) == 0) {
-                    pushStack(number, &data);
-                    pushStack(ENTIER, &type);
+                if (convertLexeme2Number(texte, &lexemeList[posLexeme], &number) == 0) {
+                    // Update parameter statistics
+                    cCFParaArray[cCFParaPos++] = ENTIER;
+                    cCFParaOutArray[cCFParaOutCnt++] = ENTIER;
+                    cCFParaCnt++;
+                    // Put the number into VM using lit
+                    // VM position for lit
+                    VM[posVM++] = litposVM;
+                    // Copy the string into VM
+                    VM[posVM++] = number;
                 } else { // not a number
                     printf("Error code 712: Convert number failed.\n");
                     printf("%.*s (pos: %d)\n", 10, texte + lexemeList[posLexeme].begin, lexemeList[posLexeme].begin);
                     return(712);
                 }
-                // Update parameter statistics
-                cCFParaArray[cCFParaPos++] = ENTIER;
-                cCFParaOutArray[cCFParaOutCnt++] = ENTIER;
-                cCFParaCnt++;
-                // Put the number into VM using lit
-                // VM position for lit
-                VM[posVM++] = 0;
-                // Copy the string into VM
-                VM[posVM++] = number;
             }
         }
         posLexeme++;
     } while (posLexeme < lexemeNumber);
-
+    if (cCFParaInCnt != 0) 
+        printf("Error code 713: input not sufficient.\n"); 
     return 0;
 }

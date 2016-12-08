@@ -36,21 +36,21 @@ int analyseLexical(char * textToAnalyse, lexeme_Element * lexeme_List, regex_t *
         int beginGlobal = begin + offset;
         int endGlobal = end + offset - 1;
         #ifdef DEBUG
-        printf("analyse_lexical: \n%.*s (%d, %d)\n", end - begin, p + begin, beginGlobal, endGlobal);
+        // printf("analyse_lexical: \n%.*s (%d, %d)\n", end - begin, p + begin, beginGlobal, endGlobal);
         #endif // DEBUG
-
+        while (textToAnalyse[beginGlobal] == '\n') beginGlobal++;
         // Now check current lexeme type, discard the result if it is a comment
-        if (textToAnalyse[endGlobal] == ')' && ( (textToAnalyse[beginGlobal] == '(' && ((begin > 0) ? (textToAnalyse[beginGlobal-1] == '\n' || textToAnalyse[beginGlobal-1] == ' ') : 1) && textToAnalyse[beginGlobal+1] == ' ') || ( (textToAnalyse[beginGlobal] == ' ' || textToAnalyse[beginGlobal] == '\t') && textToAnalyse[beginGlobal+1] == '(' && textToAnalyse[beginGlobal+2] == ' '))){
+        if (textToAnalyse[endGlobal] == ')' && ( (textToAnalyse[beginGlobal] == '(' && ((beginGlobal > 0) ? (textToAnalyse[beginGlobal-1] == '\n' || textToAnalyse[beginGlobal-1] == ' ') : 1) && textToAnalyse[beginGlobal+1] == ' ') || ( (textToAnalyse[beginGlobal] == ' ' || textToAnalyse[beginGlobal] == '\t') && textToAnalyse[beginGlobal+1] == '(' && textToAnalyse[beginGlobal+2] == ' '))){
             // it is a multiline comment
             #ifdef DEBUG
             printf("analyse_lexical: \nMultiline comment detected.\n%.*s (%d, %d)\n", end - begin, p + begin,beginGlobal, endGlobal);
             #endif // DEBUG
-        } else if ((textToAnalyse[beginGlobal] == '\\' && ((begin > 0) ? (textToAnalyse[beginGlobal-1] == '\n' || textToAnalyse[beginGlobal-1] == ' ') : 1) && textToAnalyse[beginGlobal+1] == ' ') || ((textToAnalyse[beginGlobal] == ' ' || textToAnalyse[beginGlobal] == '\t') && textToAnalyse[beginGlobal+1] == '\\' && textToAnalyse[beginGlobal+2] == ' ')) {
+        } else if ((textToAnalyse[beginGlobal] == '\\' && ((beginGlobal > 0) ? (textToAnalyse[beginGlobal-1] == '\n' || textToAnalyse[beginGlobal-1] == ' ') : 1) && textToAnalyse[beginGlobal+1] == ' ') || ((textToAnalyse[beginGlobal] == ' ' || textToAnalyse[beginGlobal] == '\t') && textToAnalyse[beginGlobal+1] == '\\' && textToAnalyse[beginGlobal+2] == ' ')) {
             // it is a single line comment
             #ifdef DEBUG
             printf("analyse_lexical: \nSingle line comment detected.\n%.*s (%d, %d)\n", end - begin, p + begin,beginGlobal, endGlobal);
             #endif // DEBUG
-        } else if (textToAnalyse[endGlobal] == '\"' && ((textToAnalyse[beginGlobal] == '\"' && ((begin > 0) ? (textToAnalyse[beginGlobal-1] == '\n' || textToAnalyse[beginGlobal-1] == ' ') : 1) && textToAnalyse[beginGlobal+1] == ' ') || ((textToAnalyse[beginGlobal] == ' ' || textToAnalyse[beginGlobal] == '\t') && textToAnalyse[beginGlobal+1] == '\"' && textToAnalyse[beginGlobal+2] == ' '))) {
+        } else if (textToAnalyse[endGlobal] == '\"' && ((textToAnalyse[beginGlobal] == '\"' && ((beginGlobal > 0) ? (textToAnalyse[beginGlobal-1] == '\n' || textToAnalyse[beginGlobal-1] == ' ') : 1) && textToAnalyse[beginGlobal+1] == ' ') || ((textToAnalyse[beginGlobal] == ' ' || textToAnalyse[beginGlobal] == '\t') && textToAnalyse[beginGlobal+1] == '\"' && textToAnalyse[beginGlobal+2] == ' '))) {
             // it is a chain of characters
             #ifdef DEBUG
             printf("analyse_lexical: \nString detected.\n%.*s (%d, %d)\n", end - begin, p + begin,beginGlobal, endGlobal);
