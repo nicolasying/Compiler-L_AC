@@ -88,14 +88,17 @@ int main(int argc, char * argv[]) { // it should not take any input
     #ifdef DEBUG
     printf("analyse_lexical: \nRegular Expression compiled.\n");
     #endif // DEBUG
-
-    printf("Interpreter is running.\nWritten by Nicolas YING, this interpreter supports dup, drop, swap, ., count, type, =, and calculate.\nType in QUIT to exit.\n\nNotice: if the result calculation process went wrong, it could return a false result with a message, or crash :)\nEnjoy.\n");
-    char quit[] = "QUIT";
+    printf("Welcome. Interpreter is running.\nIt is written by Nicolas YING following the course of TPLA presented by Alain Chillès.\n \
+\nIt is very sensitive to code error. \
+\nPlease review the code before entering a carriage. \
+\nAside from arithmetic operations like +, -, *, /, (x for multiplication in calculate)\n\
+\nThis interpreter supports dup, drop, swap, ., count, type, =, and calculate.\nType in QUIT to exit.\n\nNotice: if the result calculation process went wrong, it could return a false result with a message, or crash :)\nEnjoy.\n");
+    char quit[] = "QUIT\n";
 
     while(1) {
         // Take input from the shell
         printf("L_AC:> ");
-        gets(lineBuffer);
+        fgets(lineBuffer, sizeof(lineBuffer), stdin);
        
         // Check if it is QUIT
         if (strcmp(lineBuffer, quit) == 0) break;
@@ -142,7 +145,7 @@ int main(int argc, char * argv[]) { // it should not take any input
 
         // One line is executed, display the stack
         displayStack(&data, &type,  &stringMem[0]);
-        memset(lineBuffer, 0, MAX_LINE_LENGTH);
+        memset(lineBuffer, '\0', MAX_LINE_LENGTH);
     }
 
     clearStack(&data); clearStack(&type); 
