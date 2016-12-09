@@ -6,7 +6,7 @@
 //  Copyright © 2016 Nicolas YING. All rights reserved.
 //
 //  Error code 6**
-//  generate a VM array complying to the VM_LAC_hugolonicolasien standard 1.3
+//  generate a VM array complying to the VM_LAC_hugolonicolasien standard 1.4
 
 #include <stdio.h>
 #include <stdlib.h>

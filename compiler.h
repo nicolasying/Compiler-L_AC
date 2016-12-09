@@ -11,5 +11,6 @@
 #ifndef COMPILER
 #define COMPILER
 
+#define VM_VERSION 1004
 
 #endif // !COMPILER
