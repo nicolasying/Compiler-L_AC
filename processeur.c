@@ -271,20 +271,29 @@ void typeProc(void) {
 }
 
 void fif(void){
+    int op1 = popStack(data), opt1 = popStack(type);
+    if (opt1 != BOOLEAN) {
+        printf("CPU Error: if cannot fetch BOOLEAN information.\n");
+        exit(533);
+    } else {
+        if(op1 == LTRUE) { // go to the branch closely followed
+            int temp = popStack(retourne);
+            pushStack(temp + 1, retourne);
+        } else {
+            int temp = VM[popStack(retourne) + 1];
+            pushStack(temp, retourne);
+        }
+    }
     #ifdef DEBUG
     printf("CPU: if\n");
     #endif // DEBUG
 }
 
-void felse(void){
+void felse(void) {
+    int temp = VM[popStack(retourne) + 1];
+    pushStack(temp, retourne);
     #ifdef DEBUG
     printf("CPU: else\n");
-    #endif // DEBUG
-}
-
-void fthen(void){
-    #ifdef DEBUG
-    printf("CPU: then\n");
     #endif // DEBUG
 }
 
@@ -429,5 +438,4 @@ void cr(void) { // add a string with "\n" in data stack
     #ifdef DEBUG
     printf("CPU: cr.\n");
     #endif
-
 }

@@ -58,7 +58,6 @@ void count(void);
 void typeProc(void);
 void fif(void);
 void felse(void);
-void fthen(void);
 void land(void);
 void lor(void);
 void lnot(void);
