@@ -30,8 +30,8 @@ int main(int argc, char * argv[]) { // argv[1] = fileURL
     }
 
     printf("Welcome. Executor is being prepared to run your program.\nIt is written by Nicolas YING following the course of TPLA presented by Alain Chillès.\n \
-\nThis executor follows the standard Hugolonicolasien 1.4, supporting .lacc files with standard prior to version 1.2.\n
-\n\nINPUT_FILE is %s,\nEnjoy.\n", argv[1]);
+\nThis executor follows the standard Hugolonicolasien 1.4, supporting .lacc files with standard prior to version 1.2.\n \
+INPUT_FILE is %s,\nEnjoy.\n", argv[1]);
 
     // get file size
     FILE *fp;
@@ -66,6 +66,7 @@ int main(int argc, char * argv[]) { // argv[1] = fileURL
     // Compatibility check
     if (VMp[0] < 1002) {
         printf("VM version is not supported by this machine.\nAbort execution.\n");
+        return 665;
     }
 
     // Initialisation of environment
@@ -95,6 +96,8 @@ int main(int argc, char * argv[]) { // argv[1] = fileURL
         printf("Entry point error.\n");
         return 666;
     }
+
+    printf("Begin execution.\n\n\n\n");
 
     while (1) { 
         if (functionType != 0) { // check function type
