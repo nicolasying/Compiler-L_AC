@@ -84,8 +84,9 @@ void str(void) { // to indicate that the next element in the array is a string
     strcpyMEM(stringMem, &VM[tmp + 1], posMem);
     
     #ifdef DEBUG
-    printf("CPU: str\n");
+    printf("CPU: str, with content:\n");
     printString(stringMem, stringAdd);
+    printf("\n");
     #endif
 }
 

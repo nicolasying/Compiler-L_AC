@@ -180,6 +180,7 @@ int main(int argc, char * argv[]) { // argv[1] = fileURL
                 #endif // DEBUG
                 functionCompilingState = COMPILING_MAIN;
                 mainPosVM = posVM;
+                VM[posVM++] = 2; // lac main function
             }
             // Update parameter statistics
             cCFParaArray[cCFParaPos++] = CHAINECHAR;
@@ -302,6 +303,7 @@ int main(int argc, char * argv[]) { // argv[1] = fileURL
                 #endif // DEBUG
                 functionCompilingState = COMPILING_MAIN;
                 mainPosVM = posVM;
+                VM[posVM++] = 2; // lac main function
             }
             #ifdef DEBUG
             printf("symbolTable: %d, %d\n", posSymbol, symbolTable[posSymbol]);

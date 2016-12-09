@@ -11,6 +11,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
+#include "common_component.h"
+#include "processor.h"
+
+static int32_t * VMp; // VM array pointer
+static size_t result;
+basicStack *data, *type, *call;
 
 int main(int argc, char * argv[]) { // argv[1] = fileURL
     #ifdef DEBUG
@@ -25,22 +31,10 @@ int main(int argc, char * argv[]) { // argv[1] = fileURL
 
     // get file size
     FILE *fp;
-    long size_file;
-    // fp = fopen(argv[1], "wb");
     
-    // int testArray[15] = {0, 1, 2, 5, 7, 8};
-    // fwrite (&testArray[0], sizeof(int), 15, fp);
-    // printf("file written. Size is %ld.\n", sizeof(testArray));
-    // fclose (fp);
-
-    // reading part.
-    int32_t * buffer;
-    size_t result;
-
-    printf("Now reading.\n");
 
     fp = fopen (argv[1], "rb" );
-    if (fp==NULL) {fputs ("File error",stderr); exit (1);}
+    if (fp==NULL) {fputs ("File error", stderr); exit (601);}
 
     // obtain file size:
     fseek (fp , 0 , SEEK_END);
@@ -48,21 +42,83 @@ int main(int argc, char * argv[]) { // argv[1] = fileURL
     rewind (fp);
 
     // allocate memory to contain the whole file:
-    buffer = (int32_t*) malloc (lSize);
-    if (buffer == NULL) {fputs ("Memory error",stderr); exit (2);}
+    VMp = (int32_t*) malloc (lSize);
+    if (VMp == NULL) {fputs ("Memory error", stderr); exit (602);}
 
     // copy the file into the buffer:
-    result = fread (buffer, sizeof(int32_t), lSize/sizeof(int32_t) , fp);
+    result = fread (VMp, sizeof(int32_t), lSize/sizeof(int32_t) , fp);
     if (result != lSize/sizeof(int32_t)) {fputs ("Reading error",stderr); exit (3);}
     /* the whole file is now loaded in the memory buffer. */
 
+    #ifdef DEBUG
     int i = 0;
     while (i < result) {
-        printf("%d, ", buffer[i++]);
+        printf("%d, ", VMp[i++]);
+    }
+    fputs ("\n", stdin);
+    #endif // DEBUG
+    
+    fclose (fp);
+
+    // Compatibility check
+    if (VMp[0] < 1002) {
+        printf("VM version is not supported by this machine.\nAbort execution.\n");
+    }
+
+    // Initialisation of environment
+    int stringMem[MAX_STRING_SIZE] = {0};
+    int posMemory = 0, posVM = VMp[1]; // set to entry point
+    basicFunc processor[PROCESS_FUN_QUAN];
+
+    // Initialisation of L_ac components
+    data = malloc(sizeof(basicStack));
+    type = malloc(sizeof(basicStack));
+    call = malloc(sizeof(basicStack));
+    data->data = 0;
+    data->precedent = NULL;
+    type->data = 0;
+    type->precedent = NULL;
+    call->data = 0;
+    call->precedent = NULL;
+    initProcessor(processor);
+    linkProcessor(&data, &type, &call, &stringMem[0], VMp, &posMemory);
+
+    // begin executing main function 
+    int functionType = 1; // by default it is running main function
+    int functionTypeOld = 1;
+
+    if ( posVM >= result ) { // violation check
+        free(VMp);
+        printf("Entry point error.\n");
+        return 666;
+    }
+
+    while (1) { 
+        if (functionType != 0) { // check function type
+            // it's a LAC function, or main function
+            functionTypeOld = functionType;
+            pushStack(++posVM, &call);
+            if (posVM >= result) {
+                break;
+            }
+            posVM = VMp[posVM];
+            functionType = VMp[posVM];
+            //posVM = popStack(&call) + 1;
+        } else {
+            // it's a base function
+            processor[VMp[++posVM]]();
+            posVM = popStack(&call);
+            functionType = functionTypeOld;
+            // pushStack(posVM, &call);
+        }
     }
     
-    // terminate
-    fclose (fp);
-    free (buffer);
+    popStack(&call);
+
+    #ifdef DEBUG
+    printf("End of execution.\n");
+    #endif // DEBUG
+
+    free (VMp);
     return 0;
 }
