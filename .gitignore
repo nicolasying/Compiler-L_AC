@@ -28,9 +28,12 @@
 *.x86_64
 *.hex
 
-# Debug files
+# Debug files, compiled versions
 *.dSYM/
 *.su
+Debug/*
+Release/*
+Build/*
 
 # System files
 .DS_Store
