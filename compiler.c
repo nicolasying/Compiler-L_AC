@@ -14,6 +14,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
 
 #define NOT_COMPILING 7833
 #define COMPILING_FUN 7943
@@ -88,6 +89,7 @@ int typeConversion(int type1, int type2) { // Evaluate ANY type
     } // so type1 <= type2
     if (type1 == ANY || type1 == type2) return type2;
     if (type1 != type2) return 10; // only ANY can be resolved to other types
+    return 11; // to resolve warning message
 }
 
 int main(int argc, char * argv[]) { // argv[1] = fileURL
@@ -375,7 +377,7 @@ int main(int argc, char * argv[]) { // argv[1] = fileURL
     if (cCFParaInCnt != 0) {
         printf("Error code 713: input not sufficient.\n"); 
         return 713;
-    } else printf("\n\nCompilation finished.\n"); 
+    } else printf("\n\nCompilation logic finished.\n"); 
     posVM--;
 
     // End of the compilation
@@ -401,5 +403,13 @@ int main(int argc, char * argv[]) { // argv[1] = fileURL
         i++;
     }
     #endif // DEBUG
+    
+    i = strlen(argv[1]);
+    argv[1][i] = 'c'; argv[1][i+1] = '\0';
+    fp = fopen(argv[1], "wb");
+    fwrite (&VM[0], sizeof(int32_t), posVM + 1, fp);
+    printf("\nCompiled file is generated.\n");
+    fclose (fp);
+
     return 0;
 }

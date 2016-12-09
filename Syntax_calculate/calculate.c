@@ -156,7 +156,7 @@ int findBalancingParen (int f) {
 
 struct returnFac facteur (int d, int f) {
 //    printf("Calling facteur, d = %d, f = %d\n", d, f);
-    struct returnFac errorStruct;
+    struct returnFac errorStruct = (struct returnFac) {NULL, 0} ;
     int indSpe = f;
     // indSpe est une indication du bord de facteur, soit un parenthese, soit un +/-
     
