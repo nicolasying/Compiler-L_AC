@@ -39,6 +39,7 @@ void initLacInterprete(int * symbolTable, int * VM, int * posSymbol, int * posVM
     addBaseFunction (symbolTable, VM, posSymbol, posVM, 23, "<=", 2, (int[]){ENTIER, ENTIER}, 1, (int[]){BOOLEAN});
     addBaseFunction (symbolTable, VM, posSymbol, posVM, 28, "calculate", 1, (int[]){CHAINECHAR}, 0, (int[]){}); 
     addBaseFunction (symbolTable, VM, posSymbol, posVM, 29, "catenate", 1, (int[]){CHAINECHAR}, 0, (int[]){}); 
+    addBaseFunction (symbolTable, VM, posSymbol, posVM, 30, "cr", 0, (int[]){}, 1, (int[]){CHAINECHAR}); 
     #ifdef DEBUG
     printf("mode_calculatrice:\nSymbol table and VM constructed.\n");
     #endif // DEBUG
@@ -92,7 +93,7 @@ int main(int argc, char * argv[]) { // it should not take any input
 \nIt is very sensitive to code error. \
 \nPlease review the code before entering a carriage. \
 \nAside from arithmetic operations like +, -, *, /, (x for multiplication in calculate)\n\
-\nThis interpreter supports dup, drop, swap, ., count, type, =, and calculate.\nType in QUIT to exit.\n\nNotice: if the result calculation process went wrong, it could return a false result with a message, or crash :)\nEnjoy.\n");
+\nThis interpreter supports cr, dup, drop, swap, ., count, type, =, and calculate.\nType in QUIT to exit.\n\nNotice: if the result calculation process went wrong, it could return a false result with a message, or crash :)\nEnjoy.\n");
     char quit[] = "QUIT\n";
 
     while(1) {

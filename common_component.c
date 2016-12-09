@@ -40,6 +40,7 @@ void initProcessor (basicFunc * processor) {
     // processor[27] = &is;
     processor[28] = &calculate;
     processor[29] = &catenate;
+    processor[30] = &cr;
 }
 
 void addBaseFunction (int * symbolTable, int * VM, int *posSymbol, int* posVM, const int processorIndex, char* name, int paraIn, int typeIn[], int paraOut, int typeOut[]) {
@@ -87,7 +88,7 @@ int findFunction (int sizeSymbolTable, int * symbolTable, lexeme_Element * lexem
     printf("\n");
     #endif // DEBUG
 
-    while (position > 0) {
+    while (position >= 0) {
         if (symbolTable[position + 1] != length) {
             // if the length doesn't match
             position = symbolTable[position] - 1;

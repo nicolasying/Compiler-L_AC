@@ -35,6 +35,7 @@
 // 27 is
 // 28 calculate
 // 29 catenate
+// 30 cr
 
 #ifndef PROCESSOR
 #define PROCESSOR
@@ -65,5 +66,6 @@ void smaller(void);
 void recurse(void);
 void calculate(void);
 void catenate(void);
+void cr(void);
 
 #endif // !PROCESSOR

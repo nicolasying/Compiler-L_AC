@@ -416,3 +416,18 @@ void catenate(void) {
     printf("CPU: catenate\n");
     #endif // DEBUG
 }
+
+void cr(void) { // add a string with "\n" in data stack
+    // put string info in stacks
+    pushStack(*posMem, data);
+    pushStack(CHAINECHAR, type); 
+
+    // copy string actually into stringMem
+    stringMem[(*posMem)++ % MAX_STRING_SIZE] = 1; // length
+    stringMem[(*posMem)++ % MAX_STRING_SIZE] = '\n'; // content
+    
+    #ifdef DEBUG
+    printf("CPU: cr.\n");
+    #endif
+
+}
