@@ -29,9 +29,12 @@ int main(int argc, char * argv[]) { // argv[1] = fileURL
         return 3;
     }
 
+    printf("Welcome. Executor is being prepared to run your program.\nIt is written by Nicolas YING following the course of TPLA presented by Alain Chillès.\n \
+\nThis executor follows the standard Hugolonicolasien 1.4, supporting .lacc files with standard prior to version 1.2.\n
+\n\nINPUT_FILE is %s,\nEnjoy.\n", argv[1]);
+
     // get file size
     FILE *fp;
-    
 
     fp = fopen (argv[1], "rb" );
     if (fp==NULL) {fputs ("File error", stderr); exit (601);}
@@ -114,6 +117,10 @@ int main(int argc, char * argv[]) { // argv[1] = fileURL
     }
     
     popStack(&call);
+    
+    printf("And the final stack state is like:\n");
+    displayStack(&data, &type, &stringMem[0]);
+    clearStack(&data); clearStack(&type); 
 
     #ifdef DEBUG
     printf("End of execution.\n");

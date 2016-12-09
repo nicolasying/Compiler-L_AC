@@ -154,12 +154,11 @@ int main(int argc, char * argv[]) { // argv[1] = fileURL
     printf("analyse_lexical: \nRegular Expression compiled.\n");
     #endif // DEBUG
 
-    printf("Compiler is running.\nWritten by Nicolas YING.\n \
-\nThis compiler is very sensitive to code error. \
+    printf("Welcome. Compiler is running.\nIt is written by Nicolas YING following the course of TPLA presented by Alain Chillès.\n \
+\nThis compiler follows the standard Hugolonicolasien 1.4.\n Is very sensitive to code error. \
 \nPlease review the code before compiling. \
-\nEnjoy.\n \
-\nINPUT_FILE is %s, \
-\nOUTPUT_FILE will be %s.lacc\n", argv[1], argv[1]);
+\n\nINPUT_FILE is %s, \
+\nOUTPUT_FILE will be %s.lacc\nEnjoy.\n", argv[1], argv[1]);
 
     // Pass to lexcial analysis, which is a common component
     int lexemeNumber = analyseLexical(texte, lexemeList, &regExp);
@@ -379,7 +378,7 @@ int main(int argc, char * argv[]) { // argv[1] = fileURL
     if (cCFParaInCnt != 0) {
         printf("Error code 713: input not sufficient.\n"); 
         return 713;
-    } else printf("\n\nCompilation logic finished.\n"); 
+    } else printf("\nCompilation logic finished.\n"); 
     posVM--;
 
     // End of the compilation
@@ -395,11 +394,11 @@ int main(int argc, char * argv[]) { // argv[1] = fileURL
 
     // VM point d'entree
     VM[1] = mainPosVM; 
-
+    int i = 0;
     // generate compiled file
     #ifdef DEBUG
     printf("mode_compilé:\n\nVM point d'entrée: %d.\n", mainPosVM);
-    int i = 0;
+    i = 0;
     while (i <= posVM) {
         printf("%d: %d\n", i, VM[i]);
         i++;
@@ -410,7 +409,7 @@ int main(int argc, char * argv[]) { // argv[1] = fileURL
     argv[1][i] = 'c'; argv[1][i+1] = '\0';
     fp = fopen(argv[1], "wb");
     fwrite (&VM[0], sizeof(int32_t), posVM + 1, fp);
-    printf("\nCompiled file is generated.\n");
+    printf("Compiled file is generated.\nCheckout %s.\n", argv[1]);
     fclose (fp);
 
     return 0;
