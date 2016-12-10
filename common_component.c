@@ -30,6 +30,7 @@ void initProcessor (basicFunc * processor) {
     processor[13] = &fif;
     processor[14] = &felse;
     // processor[15] = &fthen;
+    processor[16] = &division;
     processor[20] = &land;
     processor[21] = &lor;
     processor[22] = &lnot;

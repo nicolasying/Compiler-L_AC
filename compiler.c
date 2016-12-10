@@ -19,6 +19,7 @@
 #define NOT_COMPILING 7833
 #define COMPILING_FUN 7943
 #define COMPILING_MAIN 7317
+#define COMPILING_COND 7704
 #define MAX_IN_OUT_PUT_NUMBER 100
 #define MAX_COND_BRANCH_LEVEL 10
 
@@ -28,11 +29,17 @@ int cCFBeginLAC = 0; // a container for the beginning symbol table position for 
 int cCFNameLexPos = 0, cCFParaInCnt = 0, cCFParaOutCnt = 0, cCFParaCnt = 0, cCFParaPos = MAX_IN_OUT_PUT_NUMBER; // to simulate stack change
 int cCFParaInArray[MAX_IN_OUT_PUT_NUMBER] = {0}, cCFParaOutArray[MAX_IN_OUT_PUT_NUMBER] = {0}, cCFParaArray[MAX_IN_OUT_PUT_NUMBER * 2] = {0};
 static int litposVM = 0, strposVM = 0, finposVM = 0, recurseposSymbol = 0, mainPosVM = 0, ifposSymbol = 0, thenposSymbol = 0, elseposSymbol = 0;
-static int condBranchLevel = 0;
+static int condBranchLevel = -1;
 
-struct condBranchSavedState {
-    cCF
+struct condBranchSavedStateStruct {
+    int bTBegin = 0, bTParaInCnt = 0, bTParaOutCnt = 0, bFBegin = 0, bFParaInCnt = 0, bFParaOutCnt = 0;
+    int cBParaCnt = 0, cBParaPos = MAX_IN_OUT_PUT_NUMBER;
+    int bTParaInArray[MAX_IN_OUT_PUT_NUMBER] = {0}, bTParaOutArray[MAX_IN_OUT_PUT_NUMBER] = {0}, bFParaInArray[MAX_IN_OUT_PUT_NUMBER] = {0}, bFParaOutArray[MAX_IN_OUT_PUT_NUMBER] = {0}, 
+    int cBParaArray[MAX_IN_OUT_PUT_NUMBER * 2] = {0};
 }
+
+typedef struct condBranchSavedStateStruct condBchSState;
+static condBchState[MAX_COND_BRANCH_LEVEL];
 
 void initLacCompile(int * symbolTable, int * VM, int * posSymbol, int * posVM) {
     // Cleaning the tables
@@ -65,6 +72,7 @@ void initLacCompile(int * symbolTable, int * VM, int * posSymbol, int * posVM) {
     addBaseFunction (symbolTable, VM, posSymbol, posVM, 14, "else", 0, (int[]){}, 0, (int[]){});
     thenposSymbol = *posSymbol + 1;
     addBaseFunction (symbolTable, VM, posSymbol, posVM, 15, "then", 0, (int[]){}, 0, (int[]){});
+    addBaseFunction (symbolTable, VM, posSymbol, posVM, 16, "/", 2, (int[]){ENTIER, ENTIER}, 1, (int[]){ENTIER}); 
     addBaseFunction (symbolTable, VM, posSymbol, posVM, 20, "&&", 2, (int[]){BOOLEAN, BOOLEAN}, 1, (int[]){BOOLEAN});
     addBaseFunction (symbolTable, VM, posSymbol, posVM, 21, "||", 2, (int[]){BOOLEAN, BOOLEAN}, 1, (int[]){BOOLEAN});
     addBaseFunction (symbolTable, VM, posSymbol, posVM, 22, "!", 1, (int[]){BOOLEAN}, 1, (int[]){BOOLEAN});

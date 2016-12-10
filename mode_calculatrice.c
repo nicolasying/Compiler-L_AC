@@ -33,6 +33,7 @@ void initLacInterprete(int * symbolTable, int * VM, int * posSymbol, int * posVM
     addBaseFunction (symbolTable, VM, posSymbol, posVM, 10, "swap", 2, (int[]){ANY, ANY},  2, (int[]){ANY, ANY}); 
     addBaseFunction (symbolTable, VM, posSymbol, posVM, 11, "count", 1, (int[]){CHAINECHAR}, 2, (int[]){CHAINECHARNOHEADER, ENTIER}); 
     addBaseFunction (symbolTable, VM, posSymbol, posVM, 12, "type", 2, (int[]){ENTIER, CHAINECHARNOHEADER}, 0, (int[]){}); 
+    addBaseFunction (symbolTable, VM, posSymbol, posVM, 16, "/", 2, (int[]){ENTIER, ENTIER}, 1, (int[]){ENTIER}); 
     addBaseFunction (symbolTable, VM, posSymbol, posVM, 20, "&&", 2, (int[]){BOOLEAN, BOOLEAN}, 1, (int[]){BOOLEAN});
     addBaseFunction (symbolTable, VM, posSymbol, posVM, 21, "||", 2, (int[]){BOOLEAN, BOOLEAN}, 1, (int[]){BOOLEAN});
     addBaseFunction (symbolTable, VM, posSymbol, posVM, 22, "!", 1, (int[]){BOOLEAN}, 1, (int[]){BOOLEAN});

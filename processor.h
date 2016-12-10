@@ -58,6 +58,7 @@ void count(void);
 void typeProc(void);
 void fif(void);
 void felse(void);
+void division(void);
 void land(void);
 void lor(void);
 void lnot(void);

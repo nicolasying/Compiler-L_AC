@@ -297,6 +297,29 @@ void felse(void) {
     #endif // DEBUG
 }
 
+void division(void) {
+    int op1 = popStack(data), opt1 = popStack(type);
+    int op2 = popStack(data), opt2 = popStack(type);
+    if (opt2 == opt1 && opt1 == ENTIER) {
+        if(op1 != 00) {
+            pushStack(op2 / op1, data);
+            pushStack(ENTIER, type);
+        } else {
+            printf("CPU: division on 0. We are thinking about infinity although it might not be true.\n");
+            pushStack(9999, data);
+            pushStack(ENTIER, type);
+        }
+    } else {
+        printf("CPU: division error\n");
+        // exit(505);
+        // reverting to previous state.
+        pushStack(op2, data); pushStack(opt2, type);
+        pushStack(op1, data); pushStack(opt1, type);
+    }
+    #ifdef DEBUG
+    printf("CPU: division\n");
+    #endif
+}
 void land(void){
 
     int op1 = popStack(data), opt1 = popStack(type);
