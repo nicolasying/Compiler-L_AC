@@ -177,7 +177,7 @@ int main(int argc, char * argv[]) { // argv[1] = fileURL
 \nPlease review the code before compiling.\n\nThis compiler supports up to 10 levels of nesting conditional branch, \
 and if recursive procedures are involed, it will neglect input and output constraints. So good luck with that. \
 \n\nINPUT_FILE is %s, \
-\nOUTPUT_FILE will be %s.lacc\nEnjoy.\n", argv[1], argv[1]);
+\nOUTPUT_FILE will be %sc\nEnjoy.\n", argv[1], argv[1]);
 
     // Pass to lexcial analysis, which is a common component
     int lexemeNumber = analyseLexical(texte, lexemeList, &regExp);

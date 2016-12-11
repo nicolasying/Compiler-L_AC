@@ -297,6 +297,14 @@ void felse(void) {
     #endif // DEBUG
 }
 
+void fthen(void) {
+    int temp = popStack(retourne);
+    pushStack(temp + 1, retourne);
+    #ifdef DEBUG
+    printf("CPU: then\n");
+    #endif // DEBUG
+}
+
 void division(void) {
     int op1 = popStack(data), opt1 = popStack(type);
     int op2 = popStack(data), opt2 = popStack(type);
