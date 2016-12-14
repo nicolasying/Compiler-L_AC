@@ -23,16 +23,20 @@
 #define MAX_IN_OUT_PUT_NUMBER 100
 #define MAX_COND_BRANCH_LEVEL 10
 
+#define SIVRAI 7421
+#define SIFAUX 7431
+
 int functionCompilingState = NOT_COMPILING; // a flag used to avoid nested definition
 int cCFBegin = 0; // a container for the beginning VM position for this function, for recurse.
 int cCFBeginLAC = 0; // a container for the beginning symbol table position for this function
 int cCFNameLexPos = 0, cCFParaInCnt = 0, cCFParaOutCnt = 0, cCFParaCnt = 0, cCFParaPos = MAX_IN_OUT_PUT_NUMBER; // to simulate stack change
 int cCFParaInArray[MAX_IN_OUT_PUT_NUMBER] = {0}, cCFParaOutArray[MAX_IN_OUT_PUT_NUMBER] = {0}, cCFParaArray[MAX_IN_OUT_PUT_NUMBER * 2] = {0};
-static int litposVM = 0, strposVM = 0, finposVM = 0, recurseposSymbol = 0, mainPosVM = 0, ifposSymbol = 0, thenposSymbol = 0, elseposSymbol = 0;
-static int condBranchLevel = -1;
+static int litposVM = 0, strposVM = 0, finposVM = 0, recurseposSymbol = 0, mainPosVM = 0, ifposSymbol = 0, ifposVM = 0, thenposSymbol = 0, elseposSymbol = 0, elseposVM = 0;
+static int condBranchLevel = -1， condBranchWrapperState = COMPILING_FUN;
+static int anyTracking[MAX_IN_OUT_PUT_NUMBER] = {0}, anyNumeration = 0; // for linking ANY resolutions
 
 struct condBranchSavedStateStruct {
-    int bTBegin = 0, bTParaInCnt = 0, bTParaOutCnt = 0, bFBegin = 0, bFParaInCnt = 0, bFParaOutCnt = 0;
+    int bTEnd = 0, bTParaInCnt = 0, bTParaOutCnt = 0, bFEnd = 0, bFParaInCnt = 0, bFParaOutCnt = 0, cBType = SIVRAI;
     int cBParaCnt = 0, cBParaPos = MAX_IN_OUT_PUT_NUMBER;
     int bTParaInArray[MAX_IN_OUT_PUT_NUMBER] = {0}, bTParaOutArray[MAX_IN_OUT_PUT_NUMBER] = {0}, bFParaInArray[MAX_IN_OUT_PUT_NUMBER] = {0}, bFParaOutArray[MAX_IN_OUT_PUT_NUMBER] = {0}, 
     int cBParaArray[MAX_IN_OUT_PUT_NUMBER * 2] = {0};
@@ -61,14 +65,16 @@ void initLacCompile(int * symbolTable, int * VM, int * posSymbol, int * posVM) {
     addBaseFunction (symbolTable, VM, posSymbol, posVM, 5, "-", 2, (int[]){ENTIER, ENTIER}, 1, (int[]){ENTIER}); 
     addBaseFunction (symbolTable, VM, posSymbol, posVM, 6, "*", 2, (int[]){ENTIER, ENTIER}, 1, (int[]){ENTIER}); 
     addBaseFunction (symbolTable, VM, posSymbol, posVM, 7, "=", 2, (int[]){ENTIER, ENTIER}, 1, (int[]){BOOLEAN}); 
-    addBaseFunction (symbolTable, VM, posSymbol, posVM, 8, "dup", 1, (int[]){ANY}, 2, (int[]){ANY, ANY}); 
+    addBaseFunction (symbolTable, VM, posSymbol, posVM, 8, "dup", 1, (int[]){-1}, 2, (int[]){-1, -1});  // to mark the same type
     addBaseFunction (symbolTable, VM, posSymbol, posVM, 9, "drop", 1, (int[]){ANY}, 0, (int[]){}); 
-    addBaseFunction (symbolTable, VM, posSymbol, posVM, 10, "swap", 2, (int[]){ANY, ANY}, 2, (int[]){ANY, ANY}); 
+    addBaseFunction (symbolTable, VM, posSymbol, posVM, 10, "swap", 2, (int[]){-1, -2}, 2, (int[]){-1, -2}); 
     addBaseFunction (symbolTable, VM, posSymbol, posVM, 11, "count", 1, (int[]){CHAINECHAR}, 2, (int[]){CHAINECHARNOHEADER, ENTIER}); 
     addBaseFunction (symbolTable, VM, posSymbol, posVM, 12, "type", 2, (int[]){ENTIER, CHAINECHARNOHEADER}, 0, (int[]){}); 
     ifposSymbol = *posSymbol + 1;
+    ifposVM = *posVM;
     addBaseFunction (symbolTable, VM, posSymbol, posVM, 13, "if", 1, (int[]){BOOLEAN}, 0, (int[]){});
     elseposSymbol = *posSymbol + 1;
+    elseposVM = *posVM;
     addBaseFunction (symbolTable, VM, posSymbol, posVM, 14, "else", 0, (int[]){}, 0, (int[]){});
     thenposSymbol = *posSymbol + 1;
     addBaseFunction (symbolTable, VM, posSymbol, posVM, 15, "then", 0, (int[]){}, 0, (int[]){});
@@ -105,7 +111,7 @@ int typeConversion(int type1, int type2) { // Evaluate ANY type
         type2 ^= type1;
         type1 ^= type2;
     } // so type1 <= type2
-    if (type1 == ANY || type1 == type2) return type2;
+    if (type1 <= ANY || type1 == type2) return type2;
     if (type1 != type2) return 10; // only ANY can be resolved to other types
     return 11; // to resolve warning message
 }
@@ -277,7 +283,7 @@ and if recursive procedures are involed, it will neglect input and output constr
             while (i < nameLength) {
                 symbolTable[posSymbol++] = texte[lexemeList[cCFNameLexPos].begin + i++];
             }
-            // Inputs Outputs
+            // Inputs Outputs, compatible with unpredictable counts
             symbolTable[posSymbol++] = cCFParaInCnt;
             i = 0;
             while (i < cCFParaInCnt) {
@@ -329,10 +335,52 @@ and if recursive procedures are involed, it will neglect input and output constr
                 VM[posVM++] = 2; // lac main function
             }
             #ifdef DEBUG
-            printf("symbolTable: %d, %d\n", posSymbol, symbolTable[posSymbol]);
+            printf("Before findFunction, symbolTable: %d, %d\n", posSymbol, symbolTable[posSymbol]);
             #endif // DEBUG
             int posSymbolC = findFunction(posSymbol, symbolTable, &lexemeList[posLexeme], texte);
             if (posSymbolC == ifposSymbol) {
+                // update current compiling function state if outside is still predictable
+                if(cCFParaInCnt > -1 && cCFParaOutCnt > -1) { // still have to update type counters
+                    int typeCheck = typeConversion(cCFParaArray[cCFParaPos-1], BOOLEAN);
+                    if (typeCheck < 6 ) { // type is compatible
+                        if(cCFParaOutCnt > 0) cCFParaOutCnt--; // reduce from outputs
+                        cCFParaArray[cCFParaPos--] = ANY; // moving parameter stack
+                        cCFParaCnt--;
+                        if(cCFParaCnt < 0) {
+                            // an additional input is needed
+                            cCFParaInArray[cCFParaInCnt++] = typeCheck;
+                            cCFParaCnt++;  
+                        }
+                    } else {
+                        printf("Error code 711: If branch could not retrieve a bool value.\n");
+                        printf("%.*s (pos: %d)\n", 10, texte + lexemeList[posLexeme].begin, lexemeList[posLexeme].begin);
+                        return(711);
+                    }
+                    // mark current state
+                    if(condBranchLevel == -1) condBranchWrapperState = functionCompilingState;
+                    functionCompilingState = COMPILING_COND;
+                    condBranchLevel++; // to mark the nesting level of the if branch
+                    // initialise flags
+                    condBchSState[condBranchLevel].cBType = SIVRAI;
+                    condBchSState[condBranchLevel].bTEnd = 0;
+                    condBchSState[condBranchLevel].bTParaInCnt = 0;
+                    condBchSState[condBranchLevel].bTParaOutCnt = 0;
+                    condBchSState[condBranchLevel].bFEnd = 0;
+                    condBchSState[condBranchLevel].bFParaInCnt = 0;
+                    condBchSState[condBranchLevel].bFParaOutCnt = 0;
+                    condBchSState[condBranchLevel].cBParaCnt = 0;
+                    condBchSState[condBranchLevel].cBParaPos = MAX_IN_OUT_PUT_NUMBER;
+                    memset(condBchSState[condBranchLevel].bTParaInArray, 0, MAX_IN_OUT_PUT_NUMBER);
+                    memset(condBchSState[condBranchLevel].bTParaOutArray, 0, MAX_IN_OUT_PUT_NUMBER);
+                    memset(condBchSState[condBranchLevel].bFParaInArray, 0, MAX_IN_OUT_PUT_NUMBER);
+                    memset(condBchSState[condBranchLevel].bFParaOutArray, 0, MAX_IN_OUT_PUT_NUMBER);
+                    memset(condBchSState[condBranchLevel].cBParaArray, 0, MAX_IN_OUT_PUT_NUMBER * 2);
+                } else { // give up counting types
+                    
+                }
+                    // Writing into VM
+                    VM[posVM++] = ifposVM; 
+                    // something else
                 
             } else if (posSymbolC == elseposSymbol) {
                 
@@ -351,47 +399,92 @@ and if recursive procedures are involed, it will neglect input and output constr
                     return(744);
                 }
             } else if (posSymbolC > 0){ // a function is found, find it's VM position
-                if (cCFParaOutCnt >= 0 && cCFParaInCnt >= 0) { // if the state is still valid, update parameter statistics
-                    int lenName = symbolTable[posSymbolC];
-                    int paraInCnt = symbolTable[posSymbolC + lenName + 1];
-                    int paraOutCnt = symbolTable[posSymbolC + lenName + paraInCnt + 2];
-                    int posVMC = symbolTable[posSymbolC + lenName + paraInCnt + paraOutCnt + 3];
-                    if (paraInCnt >= 0 && paraOutCnt >= 0) { // a normal function
-                        // simulate executing the function
-                        int i = 0;
-                        while (i < paraInCnt) { // inputs
-                            // for cCFParaArray that is not yet used, it is initialised to 0 - ANY
-                            int typeCheck = typeConversion(cCFParaArray[cCFParaPos-1], symbolTable[posSymbolC + lenName + i + 2]);
-                            if (typeCheck < 6 ) { // type is compatible
-                                if(cCFParaOutCnt > 0) cCFParaOutCnt--; // reduce from outputs
-                                cCFParaArray[cCFParaPos--] = ANY; // moving parameter stack
-                                cCFParaCnt--;
-                                if(cCFParaCnt < 0) {
-                                    // an additional input is needed
-                                    cCFParaInArray[cCFParaInCnt++] = typeCheck;
-                                    cCFParaCnt++;  
+                if (functionCompilingState == COMPILING_FUN || functionCompilingState == COMPILING_MAIN) {
+                    if (cCFParaOutCnt >= 0 && cCFParaInCnt >= 0) { // if the state is still valid, update parameter statistics
+                        int lenName = symbolTable[posSymbolC];
+                        int paraInCnt = symbolTable[posSymbolC + lenName + 1];
+                        int paraOutCnt = symbolTable[posSymbolC + lenName + paraInCnt + 2];
+                        int posVMC = symbolTable[posSymbolC + lenName + paraInCnt + paraOutCnt + 3];
+                        if (paraInCnt >= 0 && paraOutCnt >= 0) { // a normal function
+                            // simulate executing the function
+                            int i = 0;
+                            while (i < paraInCnt) { // inputs
+                                // for cCFParaArray that is not yet used, it is initialised to 0 - ANY
+                                int typeCheck = typeConversion(cCFParaArray[cCFParaPos-1], symbolTable[posSymbolC + lenName + i + 2]);
+                                if (typeCheck < 6 ) { // type is compatible
+                                    if(cCFParaOutCnt > 0) cCFParaOutCnt--; // reduce from outputs
+                                    cCFParaArray[cCFParaPos--] = ANY; // moving parameter stack
+                                    cCFParaCnt--;
+                                    if(cCFParaCnt < 0) {
+                                        // an additional input is needed
+                                        cCFParaInArray[cCFParaInCnt++] = typeCheck;
+                                        cCFParaCnt++;  
+                                    }
+                                    i++;
+                                } else { // type is incompatible
+                                    printf("Error code 711: type incompatible.\n");
+                                    printf("%.*s (pos: %d)\n", 10, texte + lexemeList[posLexeme].begin, lexemeList[posLexeme].begin);
+                                    return(711);
                                 }
-                                i++;
-                            } else { // type is incompatible
-                                printf("Error code 711: type incompatible.\n");
-                                printf("%.*s (pos: %d)\n", 10, texte + lexemeList[posLexeme].begin, lexemeList[posLexeme].begin);
-                                return(711);
                             }
+                            i = 0;
+                            while (i < paraOutCnt) { // generate outputs
+                                cCFParaOutArray[cCFParaOutCnt++] = symbolTable[posSymbolC + lenName + paraInCnt + i + 3]; 
+                                cCFParaArray[cCFParaPos++] = symbolTable[posSymbolC + lenName + paraInCnt + i + 3]; 
+                                cCFParaCnt++;
+                                i++;
+                            }
+                        } else { // a function which inputs and outpus cannot be prevaluated
+                            cCFParaOutCnt = -1;
+                            cCFParaInCnt = -1;
                         }
-                        i = 0;
-                        while (i < paraOutCnt) { // generate outputs
-                            cCFParaOutArray[cCFParaOutCnt++] = symbolTable[posSymbolC + lenName + paraInCnt + i + 3]; 
-                            cCFParaArray[cCFParaPos++] = symbolTable[posSymbolC + lenName + paraInCnt + i + 3]; 
-                            cCFParaCnt++;
-                            i++;
-                        }
-                    } else { // a function which inputs and outpus cannot be prevaluated
+                    } else {
                         cCFParaOutCnt = -1;
                         cCFParaInCnt = -1;
                     }
-                } else {
-                    cCFParaOutCnt = -1;
-                    cCFParaInCnt = -1;
+                } else if (functionCompilingState == COMPILING_COND && condBchSState[condBranchLevel].cBType == SIVRAI) { // compiling conditional branches
+                    if (condBchSState[condBranchLevel].bTParaOutCnt >= 0 && cCFParaInCnt >= 0) { // if the state is still valid, update parameter statistics
+                        int lenName = symbolTable[posSymbolC];
+                        int paraInCnt = symbolTable[posSymbolC + lenName + 1];
+                        int paraOutCnt = symbolTable[posSymbolC + lenName + paraInCnt + 2];
+                        int posVMC = symbolTable[posSymbolC + lenName + paraInCnt + paraOutCnt + 3];
+                        if (paraInCnt >= 0 && paraOutCnt >= 0) { // a normal function
+                            // simulate executing the function
+                            int i = 0;
+                            while (i < paraInCnt) { // inputs
+                                // for cCFParaArray that is not yet used, it is initialised to 0 - ANY
+                                int typeCheck = typeConversion(cCFParaArray[cCFParaPos-1], symbolTable[posSymbolC + lenName + i + 2]);
+                                if (typeCheck < 6 ) { // type is compatible
+                                    if(cCFParaOutCnt > 0) cCFParaOutCnt--; // reduce from outputs
+                                    cCFParaArray[cCFParaPos--] = ANY; // moving parameter stack
+                                    cCFParaCnt--;
+                                    if(cCFParaCnt < 0) {
+                                        // an additional input is needed
+                                        cCFParaInArray[cCFParaInCnt++] = typeCheck;
+                                        cCFParaCnt++;  
+                                    }
+                                    i++;
+                                } else { // type is incompatible
+                                    printf("Error code 711: type incompatible.\n");
+                                    printf("%.*s (pos: %d)\n", 10, texte + lexemeList[posLexeme].begin, lexemeList[posLexeme].begin);
+                                    return(711);
+                                }
+                            }
+                            i = 0;
+                            while (i < paraOutCnt) { // generate outputs
+                                cCFParaOutArray[cCFParaOutCnt++] = symbolTable[posSymbolC + lenName + paraInCnt + i + 3]; 
+                                cCFParaArray[cCFParaPos++] = symbolTable[posSymbolC + lenName + paraInCnt + i + 3]; 
+                                cCFParaCnt++;
+                                i++;
+                            }
+                        } else { // a function which inputs and outpus cannot be prevaluated
+                            cCFParaOutCnt = -1;
+                            cCFParaInCnt = -1;
+                        }
+                    } else {
+                        cCFParaOutCnt = -1;
+                        cCFParaInCnt = -1;
+                    }
                 }
                 // add function VM address into VM
                 VM[posVM++] = posVMC;

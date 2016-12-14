@@ -16,6 +16,10 @@ This project is a compiler on a VM provided by AC,
 for a language defined by AC,
 as part of the course of Theory of Programming Language and Algorithm.
 
+## Procedure-mocking compiler
+## Dynamic resolution of ANY by tracking
+## Up to 10 layer of conditional branch nesting
+
 ## Parameters
 
 [filename]
