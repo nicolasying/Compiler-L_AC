@@ -23,9 +23,6 @@
 #define MAX_IN_OUT_PUT_NUMBER 100
 #define MAX_COND_BRANCH_LEVEL 10
 
-#define SIVRAI 7421
-#define SIFAUX 7431
-
 int functionCompilingState = NOT_COMPILING; // a flag used to avoid nested definition
 int cCFBegin = 0; // a container for the beginning VM position for this function, for recurse.
 int cCFBeginLAC = 0; // a container for the beginning symbol table position for this function
@@ -35,15 +32,14 @@ static int litposVM = 0, strposVM = 0, finposVM = 0, recurseposSymbol = 0, mainP
 static int condBranchLevel = -1， condBranchWrapperState = COMPILING_FUN;
 static int anyTracking[MAX_IN_OUT_PUT_NUMBER] = {0}, anyNumeration = 0; // for linking ANY resolutions
 
-struct condBranchSavedStateStruct {
-    int bTEnd = 0, bTParaInCnt = 0, bTParaOutCnt = 0, bFEnd = 0, bFParaInCnt = 0, bFParaOutCnt = 0, cBType = SIVRAI;
-    int cBParaCnt = 0, cBParaPos = MAX_IN_OUT_PUT_NUMBER;
-    int bTParaInArray[MAX_IN_OUT_PUT_NUMBER] = {0}, bTParaOutArray[MAX_IN_OUT_PUT_NUMBER] = {0}, bFParaInArray[MAX_IN_OUT_PUT_NUMBER] = {0}, bFParaOutArray[MAX_IN_OUT_PUT_NUMBER] = {0}, 
-    int cBParaArray[MAX_IN_OUT_PUT_NUMBER * 2] = {0};
+struct condBranchSavedStateStruct { // struct to store current compiling information
+    int cCFBegin = 0, cCFBranchN = 0;
+    int cCFParaInCnt = 0, cCFParaOutCnt = 0, cCFParaCnt = 0, cCFParaPos = MAX_IN_OUT_PUT_NUMBER;
+    int cCFParaInArray[MAX_IN_OUT_PUT_NUMBER] = {0}, cCFParaOutArray[MAX_IN_OUT_PUT_NUMBER] = {0}, cCFParaArray[MAX_IN_OUT_PUT_NUMBER * 2] = {0};
 }
 
 typedef struct condBranchSavedStateStruct condBchSState;
-static condBchState[MAX_COND_BRANCH_LEVEL];
+static condBchState[MAX_COND_BRANCH_LEVEL]; // acting like a stack
 
 void initLacCompile(int * symbolTable, int * VM, int * posSymbol, int * posVM) {
     // Cleaning the tables
@@ -339,6 +335,16 @@ and if recursive procedures are involed, it will neglect input and output constr
             #endif // DEBUG
             int posSymbolC = findFunction(posSymbol, symbolTable, &lexemeList[posLexeme], texte);
             if (posSymbolC == ifposSymbol) {
+                // mark current state
+                if(condBranchLevel == -1) condBranchWrapperState = functionCompilingState;
+                functionCompilingState = COMPILING_COND;
+                condBranchLevel++; // move the index to 0 to store current flags
+                condBchState[condBranchLevel].cCFBranchN = cCFBranchN;
+                cCFBranchN = 0;
+                condBchState[condBranchLevel].cCFBegin = cCFBegin;
+                #ifdef DEBUG
+                printf("Entering if with cdBranchLevel %d, cCFBranchN %d.", condBranchLevel, cCFBranchN);
+                #endif // DEBUG
                 // update current compiling function state if outside is still predictable
                 if(cCFParaInCnt > -1 && cCFParaOutCnt > -1) { // still have to update type counters
                     int typeCheck = typeConversion(cCFParaArray[cCFParaPos-1], BOOLEAN);
@@ -356,37 +362,197 @@ and if recursive procedures are involed, it will neglect input and output constr
                         printf("%.*s (pos: %d)\n", 10, texte + lexemeList[posLexeme].begin, lexemeList[posLexeme].begin);
                         return(711);
                     }
-                    // mark current state
-                    if(condBranchLevel == -1) condBranchWrapperState = functionCompilingState;
-                    functionCompilingState = COMPILING_COND;
-                    condBranchLevel++; // to mark the nesting level of the if branch
-                    // initialise flags
-                    condBchSState[condBranchLevel].cBType = SIVRAI;
-                    condBchSState[condBranchLevel].bTEnd = 0;
-                    condBchSState[condBranchLevel].bTParaInCnt = 0;
-                    condBchSState[condBranchLevel].bTParaOutCnt = 0;
-                    condBchSState[condBranchLevel].bFEnd = 0;
-                    condBchSState[condBranchLevel].bFParaInCnt = 0;
-                    condBchSState[condBranchLevel].bFParaOutCnt = 0;
-                    condBchSState[condBranchLevel].cBParaCnt = 0;
-                    condBchSState[condBranchLevel].cBParaPos = MAX_IN_OUT_PUT_NUMBER;
-                    memset(condBchSState[condBranchLevel].bTParaInArray, 0, MAX_IN_OUT_PUT_NUMBER);
-                    memset(condBchSState[condBranchLevel].bTParaOutArray, 0, MAX_IN_OUT_PUT_NUMBER);
-                    memset(condBchSState[condBranchLevel].bFParaInArray, 0, MAX_IN_OUT_PUT_NUMBER);
-                    memset(condBchSState[condBranchLevel].bFParaOutArray, 0, MAX_IN_OUT_PUT_NUMBER);
-                    memset(condBchSState[condBranchLevel].cBParaArray, 0, MAX_IN_OUT_PUT_NUMBER * 2);
-                } else { // give up counting types
+                    // copy current flags to the struct
+                    condBchState[condBranchLevel].cCFParaInCnt = cCFParaInCnt;
+                    condBchState[condBranchLevel].cCFParaOutCnt = cCFParaOutCnt;
+                    condBchState[condBranchLevel].cCFParaCnt = cCFParaCnt;
+                    condBchState[condBranchLevel].cCFParaPos = cCFParaPos;
+                    memcpy(&condBchState[condBranchLevel].cCFParaInArray[0], &cCFParaInArray[0], MAX_IN_OUT_PUT_NUMBER);
+                    memcpy(&condBchState[condBranchLevel].cCFParaOutArray[0], &cCFParaOutArray[0], MAX_IN_OUT_PUT_NUMBER);
+                    memcpy(&condBchState[condBranchLevel].cCFParaArray[0], &cCFParaArray[0], MAX_IN_OUT_PUT_NUMBER * 2);
                     
+                    // reinitialise flags
+                    cCFParaInCnt = 0;
+                    cCFParaOutCnt = 0; 
+                    cCFParaCnt = 0;
+                    cCFParaPos = MAX_IN_OUT_PUT_NUMBER;
+                    memset(cCFParaInArray, 0, MAX_IN_OUT_PUT_NUMBER);
+                    memset(cCFParaOutArray, 0, MAX_IN_OUT_PUT_NUMBER);
+                    memset(cCFParaArray, 0, 2 * MAX_IN_OUT_PUT_NUMBER);
                 }
-                    // Writing into VM
-                    VM[posVM++] = ifposVM; 
-                    // something else
-                
+                // Writing into VM
+                VM[posVM++] = ifposVM; 
+                cCFBegin = posVM++; // this is VM position for SIVRAI
             } else if (posSymbolC == elseposSymbol) {
-                
+                condBranchLevel++; // to save the SIVRAI statistics
+                condBchState[condBranchLevel].cCFBegin = cCFBegin;
+                cCFBranchN = 1;
+                #ifdef DEBUG
+                printf("Entering else with cdBranchLevel %d, cCFBranchN %d.", condBranchLevel, cCFBranchN);
+                #endif // DEBUG
+                // examnine current state
+                if(condBranchLevel != COMPILING_COND) {
+                    printf("Error code 715: Else in non conditional branch.\n");
+                    printf("%.*s (pos: %d)\n", 10, texte + lexemeList[posLexeme].begin, lexemeList[posLexeme].begin);
+                    return(715);
+                }
+                // update current compiling function state if outside is still predictable
+                if(cCFParaInCnt > -1 && cCFParaOutCnt > -1) { // still have to update type counters
+                    // copy current flags to the struct 
+                    condBchState[condBranchLevel].cCFParaInCnt = cCFParaInCnt;
+                    condBchState[condBranchLevel].cCFParaOutCnt = cCFParaOutCnt;
+                    condBchState[condBranchLevel].cCFParaCnt = cCFParaCnt;
+                    condBchState[condBranchLevel].cCFParaPos = cCFParaPos;
+                    memcpy(&condBchState[condBranchLevel].cCFParaInArray[0], &cCFParaInArray[0], MAX_IN_OUT_PUT_NUMBER);
+                    memcpy(&condBchState[condBranchLevel].cCFParaOutArray[0], &cCFParaOutArray[0], MAX_IN_OUT_PUT_NUMBER);
+                    memcpy(&condBchState[condBranchLevel].cCFParaArray[0], &cCFParaArray[0], MAX_IN_OUT_PUT_NUMBER * 2);
+                    
+                    // reinitialise flags for SIFAUX
+                    cCFParaInCnt = 0;
+                    cCFParaOutCnt = 0; 
+                    cCFParaCnt = 0;
+                    cCFParaPos = MAX_IN_OUT_PUT_NUMBER;
+                    memset(cCFParaInArray, 0, MAX_IN_OUT_PUT_NUMBER);
+                    memset(cCFParaOutArray, 0, MAX_IN_OUT_PUT_NUMBER);
+                    memset(cCFParaArray, 0, 2 * MAX_IN_OUT_PUT_NUMBER);
+                }
+                // Writing into VM
+                VM[posVM++] = elseposVM; 
+                cCFBegin = posVM++; // this is VM position for the beginning for SIFAUX
             } else if (posSymbolC == thenposSymbol) {
-                
+                // cCFBegin is VM position fo SIFAUX
+                // condBranchLevel pointing to SIVRAI (or wrapper function depending on BranchN)
+                #ifdef DEBUG
+                printf("Entering then with cdBranchLevel %d, cCFBranchN %d.\n", condBranchLevel, cCFBranchN);
+                #endif // DEBUG
+                // examnine current state
+                if(condBranchLevel != COMPILING_COND) {
+                    printf("Error code 716: Then in non conditional branch.\n");
+                    printf("%.*s (pos: %d)\n", 10, texte + lexemeList[posLexeme].begin, lexemeList[posLexeme].begin);
+                    return(716);
+                }
+                if (cCFBranchN == 1) { // there is a SIFAUX branch, compare statistics of two branches
+                    if(cCFParaInCnt > -1 && cCFParaOutCnt > -1) { // compare statistics
+                        // compare current flags to the struct 
+                        if (condBchState[condBranchLevel].cCFParaInCnt == cCFParaInCnt) {
+                            #ifdef DEBUG
+                            printf("Passed ParaInCnt test.");
+                            #endif // DEBUG
+                        } else {
+                            printf("Error code 717: Conditional branch input type mismatch.\n");
+                            printf("%.*s (pos: %d)\n", 10, texte + lexemeList[posLexeme].begin, lexemeList[posLexeme].begin);
+                            return(717);
+                        }
+                        if (condBchState[condBranchLevel].cCFParaOutCnt == cCFParaOutCnt) {
+                            #ifdef DEBUG
+                            printf("Passed ParaOutCnt test.");
+                            #endif // DEBUG
+                        } else {
+                            printf("Error code 717: Conditional branch output type mismatch.\n");
+                            printf("%.*s (pos: %d)\n", 10, texte + lexemeList[posLexeme].begin, lexemeList[posLexeme].begin);
+                            return(717);
+                        }
+                        // to do type crosscheck and evaluate (targeting any)
+                        // BUT ASSUME this part does not need checking
+                        // condBchState[condBranchLevel].cCFParaCnt = cCFParaCnt; 
+                        // condBchState[condBranchLevel].cCFParaPos = cCFParaPos;
+                        
+                        // Type checked, pop index from SavedStateStruct, assuming the two branches are the same
+                        condBranchLevel--;
+                        // update if and else jumping address into VM
+                        VM[cCFBegin] = posVM - 1; // else jump
+                        VM[condBchState[condBranchLevel].cCFBegin] = cCFBegin; // if jump
+                    }
+                } else if (cCFBranchN == 0) { // there is no SIFAUX branch
+                    if(cCFParaInCnt > -1 && cCFParaOutCnt > -1) { // compare statistics
+                        // compare current flags to the struct 
+                        if (cCFParaInCnt == 0) {
+                            #ifdef DEBUG
+                            printf("Passed ParaInCnt test.");
+                            #endif // DEBUG
+                        } else {
+                            printf("Error code 718: Conditional branch input type mismatch.\n");
+                            printf("%.*s (pos: %d)\n", 10, texte + lexemeList[posLexeme].begin, lexemeList[posLexeme].begin);
+                            return(718);
+                        }
+                        if (cCFParaOutCnt == 0) {
+                            #ifdef DEBUG
+                            printf("Passed ParaOutCnt test.");
+                            #endif // DEBUG
+                        } else {
+                            printf("Error code 719: Conditional branch output type mismatch.\n");
+                            printf("%.*s (pos: %d)\n", 10, texte + lexemeList[posLexeme].begin, lexemeList[posLexeme].begin);
+                            return(719);
+                        }
+                        // to do type crosscheck and evaluate (targeting any)
+                        // BUT ASSUME this part does not need checking
+                        // condBchState[condBranchLevel].cCFParaCnt = cCFParaCnt; 
+                        // condBchState[condBranchLevel].cCFParaPos = cCFParaPos;
+                        // update if jumping address into VM
+                        VM[cCFBegin] = posVM - 1; // if jump
+                    }
+                } else {
+                    printf("Error code 720: You're in the middle of nowhere, cCFBranchN is %d.\n", cCFBranchN);
+                    printf("%.*s (pos: %d)\n", 10, texte + lexemeList[posLexeme].begin, lexemeList[posLexeme].begin);
+                    return(720);
+                }
+                // update the statistics to the wrapper function
+                if (cCFParaOutCnt >= 0 && cCFParaInCnt >= 0) { // if the state is still valid, update parameter statistics
+                    int paraInArray[MAX_IN_OUT_PUT_NUMBER], paraOutArray[MAX_IN_OUT_PUT_NUMBER];
+
+                    int paraInCnt = cCFParaInCnt;
+                    cCFParaInCnt = condBchState[condBranchLevel].cCFParaInCnt;
+                    memcpy(&paraInArray[0], &cCFParaInArray[0], MAX_IN_OUT_PUT_NUMBER);
+
+                    int paraOutCnt = cCFParaOutCnt;
+                    cCFParaInCnt = condBchState[condBranchLevel].cCFParaInCnt;
+                    memcpy(&paraOutArray[0], &cCFParaOutArray[0], MAX_IN_OUT_PUT_NUMBER);
+
+                    // restore wrapper function statistic state before conditional branch after poping out BOOLEAN
+                    cCFParaCnt = condBchState[condBranchLevel].cCFParaCnt;
+                    cCFParaPos = condBchState[condBranchLevel].cCFParaPos;
+                    memcpy(&cCFParaInArray[0], &condBchState[condBranchLevel].cCFParaInArray[0], MAX_IN_OUT_PUT_NUMBER);
+                    memcpy(&cCFParaOutArray[0], &condBchState[condBranchLevel].cCFParaOutArray[0], MAX_IN_OUT_PUT_NUMBER);
+                    memcpy(&cCFParaArray[0], &condBchState[condBranchLevel].cCFParaArray[0],MAX_IN_OUT_PUT_NUMBER * 2);
+                    
+                    if (paraInCnt >= 0 && paraOutCnt >= 0) { // a normal function
+                        // simulate executing the function
+                        int i = 0;
+                        while (i < paraInCnt) { // inputs
+                            // for cCFParaArray that is not yet used, it is initialised to 0 - ANY
+                            int typeCheck = typeConversion(cCFParaArray[cCFParaPos-1], paraInArray[i]);
+                            if (typeCheck < 6 ) { // type is compatible
+                                if(cCFParaOutCnt > 0) cCFParaOutCnt--; // reduce from outputs
+                                cCFParaArray[cCFParaPos--] = ANY; // moving parameter stack
+                                cCFParaCnt--;
+                                if(cCFParaCnt < 0) {
+                                    // an additional input is needed
+                                    cCFParaInArray[cCFParaInCnt++] = typeCheck;
+                                    cCFParaCnt++;  
+                                }
+                                i++;
+                            } else { // type is incompatible
+                                printf("Error code 721: type incompatible.\n");
+                                printf("%.*s (pos: %d)\n", 10, texte + lexemeList[posLexeme].begin, lexemeList[posLexeme].begin);
+                                return(721);
+                            }
+                        }
+                        i = 0;
+                        while (i < paraOutCnt) { // generate outputs
+                            cCFParaOutArray[cCFParaOutCnt++] = paraOutArray[i]; 
+                            cCFParaArray[cCFParaPos++] = paraOutArray[i]; 
+                            cCFParaCnt++;
+                            i++;
+                        }
+                    } else { // a function which inputs and outpus cannot be prevaluated
+                        cCFParaOutCnt = -1;
+                        cCFParaInCnt = -1;
+                    }
+                }
             } else if (posSymbolC == recurseposSymbol) {
+                #ifdef DEBUG
+                printf("Encounter recurse, abandoning type statistic.\n");
+                #endif // DEBUG
                 // update parameter statistics
                 cCFParaOutCnt = -1;
                 cCFParaInCnt = -1;
@@ -394,12 +560,14 @@ and if recursive procedures are involed, it will neglect input and output constr
                 // put the pos_begin VM of current compiled function into VM
                 if (functionCompilingState == COMPILING_FUN) VM[posVM++] = cCFBegin;
                 else if (functionCompilingState == COMPILING_MAIN) VM[posVM++] = mainPosVM;
+                else if (functionCompilingState == COMPILING_COND && cCFBranchN = 1) VM[posVM++] = condBchState[condBranchLevel - 1].cCFBegin; // condBranchLevel -> SIVRAI, -1 -> Wrapper
+                else if (functionCompilingState == COMPILING_COND && cCFBranchN = 0) VM[posVM++] = condBchState[condBranchLevel].cCFBegin; // condBranchLevel -> Wrapper
                 else {
                     printf("It should not be possible to display this message, it must be the C compiler that's wrong.\n");
                     return(744);
                 }
             } else if (posSymbolC > 0){ // a function is found, find it's VM position
-                if (functionCompilingState == COMPILING_FUN || functionCompilingState == COMPILING_MAIN) {
+                if (functionCompilingState == COMPILING_FUN || functionCompilingState == COMPILING_MAIN || functionCompilingState == COMPILING_COND) {
                     if (cCFParaOutCnt >= 0 && cCFParaInCnt >= 0) { // if the state is still valid, update parameter statistics
                         int lenName = symbolTable[posSymbolC];
                         int paraInCnt = symbolTable[posSymbolC + lenName + 1];
@@ -438,52 +606,6 @@ and if recursive procedures are involed, it will neglect input and output constr
                             cCFParaOutCnt = -1;
                             cCFParaInCnt = -1;
                         }
-                    } else {
-                        cCFParaOutCnt = -1;
-                        cCFParaInCnt = -1;
-                    }
-                } else if (functionCompilingState == COMPILING_COND && condBchSState[condBranchLevel].cBType == SIVRAI) { // compiling conditional branches
-                    if (condBchSState[condBranchLevel].bTParaOutCnt >= 0 && cCFParaInCnt >= 0) { // if the state is still valid, update parameter statistics
-                        int lenName = symbolTable[posSymbolC];
-                        int paraInCnt = symbolTable[posSymbolC + lenName + 1];
-                        int paraOutCnt = symbolTable[posSymbolC + lenName + paraInCnt + 2];
-                        int posVMC = symbolTable[posSymbolC + lenName + paraInCnt + paraOutCnt + 3];
-                        if (paraInCnt >= 0 && paraOutCnt >= 0) { // a normal function
-                            // simulate executing the function
-                            int i = 0;
-                            while (i < paraInCnt) { // inputs
-                                // for cCFParaArray that is not yet used, it is initialised to 0 - ANY
-                                int typeCheck = typeConversion(cCFParaArray[cCFParaPos-1], symbolTable[posSymbolC + lenName + i + 2]);
-                                if (typeCheck < 6 ) { // type is compatible
-                                    if(cCFParaOutCnt > 0) cCFParaOutCnt--; // reduce from outputs
-                                    cCFParaArray[cCFParaPos--] = ANY; // moving parameter stack
-                                    cCFParaCnt--;
-                                    if(cCFParaCnt < 0) {
-                                        // an additional input is needed
-                                        cCFParaInArray[cCFParaInCnt++] = typeCheck;
-                                        cCFParaCnt++;  
-                                    }
-                                    i++;
-                                } else { // type is incompatible
-                                    printf("Error code 711: type incompatible.\n");
-                                    printf("%.*s (pos: %d)\n", 10, texte + lexemeList[posLexeme].begin, lexemeList[posLexeme].begin);
-                                    return(711);
-                                }
-                            }
-                            i = 0;
-                            while (i < paraOutCnt) { // generate outputs
-                                cCFParaOutArray[cCFParaOutCnt++] = symbolTable[posSymbolC + lenName + paraInCnt + i + 3]; 
-                                cCFParaArray[cCFParaPos++] = symbolTable[posSymbolC + lenName + paraInCnt + i + 3]; 
-                                cCFParaCnt++;
-                                i++;
-                            }
-                        } else { // a function which inputs and outpus cannot be prevaluated
-                            cCFParaOutCnt = -1;
-                            cCFParaInCnt = -1;
-                        }
-                    } else {
-                        cCFParaOutCnt = -1;
-                        cCFParaInCnt = -1;
                     }
                 }
                 // add function VM address into VM
