@@ -491,7 +491,6 @@ and if recursive procedures are involed, it will neglect input and output constr
                     }
                     // update if jumping address into VM
                     VM[cCFBegin] = posVM - 1; // if jump
-
                 } else {
                     printf("Error code 720: You're in the middle of nowhere, cCFBranchN is %d.\n", cCFBranchN);
                     printf("%.*s (pos: %d)\n", 10, texte + lexemeList[posLexeme].begin, lexemeList[posLexeme].begin);
@@ -506,9 +505,11 @@ and if recursive procedures are involed, it will neglect input and output constr
                     memcpy(&paraInArray[0], &cCFParaInArray[0], MAX_IN_OUT_PUT_NUMBER);
 
                     int paraOutCnt = cCFParaOutCnt;
-                    cCFParaInCnt = condBchState[condBranchLevel].cCFParaInCnt;
+                    cCFParaOutCnt = condBchState[condBranchLevel].cCFParaOutCnt;
                     memcpy(&paraOutArray[0], &cCFParaOutArray[0], MAX_IN_OUT_PUT_NUMBER);
-
+                    // #ifdef DEBUG
+                    // printf("Copying wrapper info: inCnt %d and %d, outCnt %d and %d.\n", paraInCnt, cCFPara paraOutCnt,);
+                    // #endif // DEBUG
                     // restore wrapper function statistic state before conditional branch after poping out BOOLEAN
                     cCFParaCnt = condBchState[condBranchLevel].cCFParaCnt;
                     cCFParaPos = condBchState[condBranchLevel].cCFParaPos;
@@ -550,9 +551,13 @@ and if recursive procedures are involed, it will neglect input and output constr
                         cCFParaInCnt = -1;
                     }
                 }
-                // restore wrapper compiling state
-                if(condBranchLevel == 0)functionCompilingState = condBranchWrapperState;
                 cCFBegin = condBchState[condBranchLevel].cCFBegin;
+                // restore wrapper compiling state
+                condBranchLevel--;
+                #ifdef DEBUG
+                printf("condBranchLevel on exiting one cond branch is %d.\n", condBranchLevel);
+                #endif // DEBUG
+                if(condBranchLevel == -1)functionCompilingState = condBranchWrapperState;
             } else if (posSymbolC == recurseposSymbol) {
                 #ifdef DEBUG
                 printf("Encounter recurse, abandoning type statistic.\n");

@@ -1,5 +1,21 @@
 1 2 = 
 if
-    " 1 == 2 is true" count type
+    1 1 =
+    if
+        " 1 == 2 && 1 == 1" count type
+    else 
+        " 1 == 2 && 1 != 1" count type
+    then
+else
+    1 1 =
+    if
+        " 1 != 2 && 1 == 1"
+        2 3 =
+        if
+            " 1 != 2 && 1 == 1 && 2 == 3" count type
+        then
+    else 
+        " 1 != 2 && 1 != 1"
+    then
+count type
 then
-" Returning nothing valuable." cr count type count type
