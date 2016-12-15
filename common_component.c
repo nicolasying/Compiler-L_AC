@@ -186,6 +186,17 @@ int findStringLength (char * string) {
 int convertLexeme2Number (char * code, lexeme_Element * lexeme, int * number) {
     int pos = lexeme->begin;
     *number = 0;
+    int sign = 1; // -1 for negative
+
+    if(code[pos] == '+') {
+        sign = 1;
+        pos++;
+    }
+    else if (code[pos] == '-') {
+        sign = -1;
+        pos++;
+    }
+
     while (pos <= lexeme->end) {
         int bitCheck = code[pos++] - '0';
         if (bitCheck > 9 || bitCheck < 0) {
@@ -195,6 +206,7 @@ int convertLexeme2Number (char * code, lexeme_Element * lexeme, int * number) {
         *number *= 10;
         *number += bitCheck;
     }
+    *number *= sign
     return 0;
 }
 

@@ -1,3 +1,48 @@
+" SECTION -1 Factorielle.lac"
+
+\ Fichier "factorielle.lac"
+
+( Ce fichier est un "exemple" étudié pour tester l'analyseur lexical
+écrit en phase 1 du projet)
+
+: 0= 0 = ;
+
+: fact ( n -- n!)
+    dup 0= 
+    if
+        drop 1
+    else 
+        dup 1 - recurse *
+    then ;
+
+: go ( n -- )
+   " Factorielle" count type
+    dup .
+    " vaut : " count type
+    fact cr cout type ;
+
+6 go
+
+" SECTION 0 Calculate and normal operations"
+
+" -(3+4)x(3x(5-3))" calculate -42 = .
+
+" SECTION 1 Beginning single conditional branch test" count type
+4 3 = 
+if
+    " 4 == 3"
+else
+    " 4 != 3"
+then
+count type
+
+" SECTION 1.1 testing if then structure" count type
+4 3 + 7 =
+if 
+    " 4 + 3 == 7" count type ( no input no output)
+then
+
+" SECTION 2 Beginning nested conditional branch test" count type
 1 2 = 
 if
     1 1 =
@@ -19,3 +64,4 @@ else
     then
 count type
 then
+1 1 + .
