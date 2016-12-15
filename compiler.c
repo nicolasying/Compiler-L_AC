@@ -29,17 +29,17 @@ int cCFBeginLAC = 0; // a container for the beginning symbol table position for 
 int cCFNameLexPos = 0, cCFParaInCnt = 0, cCFParaOutCnt = 0, cCFParaCnt = 0, cCFParaPos = MAX_IN_OUT_PUT_NUMBER; // to simulate stack change
 int cCFParaInArray[MAX_IN_OUT_PUT_NUMBER] = {0}, cCFParaOutArray[MAX_IN_OUT_PUT_NUMBER] = {0}, cCFParaArray[MAX_IN_OUT_PUT_NUMBER * 2] = {0};
 static int litposVM = 0, strposVM = 0, finposVM = 0, recurseposSymbol = 0, mainPosVM = 0, ifposSymbol = 0, ifposVM = 0, thenposSymbol = 0, elseposSymbol = 0, elseposVM = 0;
-static int condBranchLevel = -1， condBranchWrapperState = COMPILING_FUN;
+static int condBranchLevel = -1, condBranchWrapperState = COMPILING_FUN, cCFBranchN = 0;
 static int anyTracking[MAX_IN_OUT_PUT_NUMBER] = {0}, anyNumeration = 0; // for linking ANY resolutions
 
 struct condBranchSavedStateStruct { // struct to store current compiling information
-    int cCFBegin = 0, cCFBranchN = 0;
-    int cCFParaInCnt = 0, cCFParaOutCnt = 0, cCFParaCnt = 0, cCFParaPos = MAX_IN_OUT_PUT_NUMBER;
-    int cCFParaInArray[MAX_IN_OUT_PUT_NUMBER] = {0}, cCFParaOutArray[MAX_IN_OUT_PUT_NUMBER] = {0}, cCFParaArray[MAX_IN_OUT_PUT_NUMBER * 2] = {0};
-}
+    int cCFBegin, cCFBranchN;
+    int cCFParaInCnt, cCFParaOutCnt, cCFParaCnt, cCFParaPos;
+    int cCFParaInArray[MAX_IN_OUT_PUT_NUMBER], cCFParaOutArray[MAX_IN_OUT_PUT_NUMBER], cCFParaArray[MAX_IN_OUT_PUT_NUMBER * 2];
+};
 
 typedef struct condBranchSavedStateStruct condBchSState;
-static condBchState[MAX_COND_BRANCH_LEVEL]; // acting like a stack
+static condBchSState condBchState[MAX_COND_BRANCH_LEVEL]; // acting like a stack
 
 void initLacCompile(int * symbolTable, int * VM, int * posSymbol, int * posVM) {
     // Cleaning the tables
@@ -560,19 +560,19 @@ and if recursive procedures are involed, it will neglect input and output constr
                 // put the pos_begin VM of current compiled function into VM
                 if (functionCompilingState == COMPILING_FUN) VM[posVM++] = cCFBegin;
                 else if (functionCompilingState == COMPILING_MAIN) VM[posVM++] = mainPosVM;
-                else if (functionCompilingState == COMPILING_COND && cCFBranchN = 1) VM[posVM++] = condBchState[condBranchLevel - 1].cCFBegin; // condBranchLevel -> SIVRAI, -1 -> Wrapper
-                else if (functionCompilingState == COMPILING_COND && cCFBranchN = 0) VM[posVM++] = condBchState[condBranchLevel].cCFBegin; // condBranchLevel -> Wrapper
+                else if (functionCompilingState == COMPILING_COND && cCFBranchN == 1) VM[posVM++] = condBchState[condBranchLevel - 1].cCFBegin; // condBranchLevel -> SIVRAI, -1 -> Wrapper
+                else if (functionCompilingState == COMPILING_COND && cCFBranchN == 0) VM[posVM++] = condBchState[condBranchLevel].cCFBegin; // condBranchLevel -> Wrapper
                 else {
                     printf("It should not be possible to display this message, it must be the C compiler that's wrong.\n");
                     return(744);
                 }
             } else if (posSymbolC > 0){ // a function is found, find it's VM position
                 if (functionCompilingState == COMPILING_FUN || functionCompilingState == COMPILING_MAIN || functionCompilingState == COMPILING_COND) {
+                    int lenName = symbolTable[posSymbolC];
+                    int paraInCnt = symbolTable[posSymbolC + lenName + 1];
+                    int paraOutCnt = symbolTable[posSymbolC + lenName + paraInCnt + 2];
+                    int posVMC = symbolTable[posSymbolC + lenName + paraInCnt + paraOutCnt + 3];
                     if (cCFParaOutCnt >= 0 && cCFParaInCnt >= 0) { // if the state is still valid, update parameter statistics
-                        int lenName = symbolTable[posSymbolC];
-                        int paraInCnt = symbolTable[posSymbolC + lenName + 1];
-                        int paraOutCnt = symbolTable[posSymbolC + lenName + paraInCnt + 2];
-                        int posVMC = symbolTable[posSymbolC + lenName + paraInCnt + paraOutCnt + 3];
                         if (paraInCnt >= 0 && paraOutCnt >= 0) { // a normal function
                             // simulate executing the function
                             int i = 0;
@@ -607,9 +607,9 @@ and if recursive procedures are involed, it will neglect input and output constr
                             cCFParaInCnt = -1;
                         }
                     }
+                    // add function VM address into VM
+                    VM[posVM++] = posVMC;
                 }
-                // add function VM address into VM
-                VM[posVM++] = posVMC;
             } else { // then it must be a number
                 int number;
                 if (convertLexeme2Number(texte, &lexemeList[posLexeme], &number) == 0) {

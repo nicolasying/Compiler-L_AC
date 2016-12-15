@@ -108,7 +108,7 @@ void affichage(void) { // qui empile une element, l'affichier sur output
         printf("any\n");
         break;
     case BOOLEAN:
-        printf("bool\n");
+        printf("bool, 8900 TRUE, 8901 FALSE\n");
         break;
     case CHAINECHAR:
         printf("address of string\n");
