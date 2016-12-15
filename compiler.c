@@ -30,9 +30,7 @@ int cCFParaInArray[MAX_IN_OUT_PUT_NUMBER] = {0}, cCFParaOutArray[MAX_IN_OUT_PUT_
 static int litposVM = 0, strposVM = 0, finposVM = 0, recurseposSymbol = 0, mainPosVM = 0, ifposSymbol = 0, thenposSymbol = 0, elseposSymbol = 0;
 static int condBranchLevel = 0;
 
-struct condBranchSavedState {
-    cCF
-}
+
 
 void initLacCompile(int * symbolTable, int * VM, int * posSymbol, int * posVM) {
     // Cleaning the tables
@@ -343,11 +341,12 @@ and if recursive procedures are involed, it will neglect input and output constr
                     return(744);
                 }
             } else if (posSymbolC > 0){ // a function is found, find it's VM position
+                
+                int lenName = symbolTable[posSymbolC];
+                int paraInCnt = symbolTable[posSymbolC + lenName + 1];
+                int paraOutCnt = symbolTable[posSymbolC + lenName + paraInCnt + 2];
+                int posVMC = symbolTable[posSymbolC + lenName + paraInCnt + paraOutCnt + 3];
                 if (cCFParaOutCnt >= 0 && cCFParaInCnt >= 0) { // if the state is still valid, update parameter statistics
-                    int lenName = symbolTable[posSymbolC];
-                    int paraInCnt = symbolTable[posSymbolC + lenName + 1];
-                    int paraOutCnt = symbolTable[posSymbolC + lenName + paraInCnt + 2];
-                    int posVMC = symbolTable[posSymbolC + lenName + paraInCnt + paraOutCnt + 3];
                     if (paraInCnt >= 0 && paraOutCnt >= 0) { // a normal function
                         // simulate executing the function
                         int i = 0;

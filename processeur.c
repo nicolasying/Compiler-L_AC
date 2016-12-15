@@ -236,8 +236,8 @@ void swap(void) {
 void count(void) {
     int op1 = popStack(data), opt1 = popStack(type);
     if(opt1 == CHAINECHAR) {
-        int length = stringMem[op1];
-        for (int i = 0; i <= length; i++) {
+        int length = stringMem[op1], i = 0;
+        for (i = 0; i <= length; i++) {
             stringMem[(op1 + i) % MAX_STRING_SIZE] = stringMem[(op1 + i + 1) % MAX_STRING_SIZE]; 
         }
         pushStack(op1, data); pushStack(CHAINECHARNOHEADER, type);
