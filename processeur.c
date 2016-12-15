@@ -152,7 +152,7 @@ void substraction(void) {
         pushStack(ENTIER, type);
     } else {
         printf("CPU: substraction error\n");
-        // exit(505);
+        exit(505);
         // reverting to previous state.
         pushStack(op2, data); pushStack(opt2, type);
         pushStack(op1, data); pushStack(opt1, type);

@@ -288,7 +288,7 @@ and if recursive procedures are involed, it will neglect input and output constr
             symbolTable[posSymbol++] = cCFParaOutCnt;
             i = 0;
             while (i < cCFParaOutCnt) {
-                symbolTable[posSymbol++] = cCFParaInArray[i++];
+                symbolTable[posSymbol++] = cCFParaOutArray[i++];
             }
             symbolTable[posSymbol++] = cCFBegin; // VM association
             symbolTable[posSymbol] = cCFBeginLAC; // symbol table pos_begin
@@ -341,9 +341,9 @@ and if recursive procedures are involed, it will neglect input and output constr
                 condBranchLevel++; // move the index to 0 to store current flags
                 condBchState[condBranchLevel].cCFBranchN = cCFBranchN;
                 cCFBranchN = 0;
-                condBchState[condBranchLevel].cCFBegin = cCFBegin;
+                condBchState[condBranchLevel].cCFBegin = cCFBegin; 
                 #ifdef DEBUG
-                printf("Entering if with cdBranchLevel %d, cCFBranchN %d.", condBranchLevel, cCFBranchN);
+                printf("Entering if with cdBranchLevel %d, cCFBranchN %d.\n", condBranchLevel, cCFBranchN);
                 #endif // DEBUG
                 // update current compiling function state if outside is still predictable
                 if(cCFParaInCnt > -1 && cCFParaOutCnt > -1) { // still have to update type counters
@@ -391,7 +391,7 @@ and if recursive procedures are involed, it will neglect input and output constr
                 printf("Entering else with cdBranchLevel %d, cCFBranchN %d.", condBranchLevel, cCFBranchN);
                 #endif // DEBUG
                 // examnine current state
-                if(condBranchLevel != COMPILING_COND) {
+                if(functionCompilingState != COMPILING_COND) {
                     printf("Error code 715: Else in non conditional branch.\n");
                     printf("%.*s (pos: %d)\n", 10, texte + lexemeList[posLexeme].begin, lexemeList[posLexeme].begin);
                     return(715);
@@ -426,7 +426,7 @@ and if recursive procedures are involed, it will neglect input and output constr
                 printf("Entering then with cdBranchLevel %d, cCFBranchN %d.\n", condBranchLevel, cCFBranchN);
                 #endif // DEBUG
                 // examnine current state
-                if(condBranchLevel != COMPILING_COND) {
+                if(functionCompilingState != COMPILING_COND) {
                     printf("Error code 716: Then in non conditional branch.\n");
                     printf("%.*s (pos: %d)\n", 10, texte + lexemeList[posLexeme].begin, lexemeList[posLexeme].begin);
                     return(716);
@@ -457,12 +457,12 @@ and if recursive procedures are involed, it will neglect input and output constr
                         // condBchState[condBranchLevel].cCFParaCnt = cCFParaCnt; 
                         // condBchState[condBranchLevel].cCFParaPos = cCFParaPos;
                         
-                        // Type checked, pop index from SavedStateStruct, assuming the two branches are the same
-                        condBranchLevel--;
-                        // update if and else jumping address into VM
-                        VM[cCFBegin] = posVM - 1; // else jump
-                        VM[condBchState[condBranchLevel].cCFBegin] = cCFBegin; // if jump
                     }
+                    // update if and else jumping address into VM
+                    VM[cCFBegin] = posVM - 1; // else jump
+                    VM[condBchState[condBranchLevel].cCFBegin] = cCFBegin; // if jump
+                    // Type checked, pop index from SavedStateStruct, assuming the two branches are the same
+                    condBranchLevel--;
                 } else if (cCFBranchN == 0) { // there is no SIFAUX branch
                     if(cCFParaInCnt > -1 && cCFParaOutCnt > -1) { // compare statistics
                         // compare current flags to the struct 
@@ -488,9 +488,10 @@ and if recursive procedures are involed, it will neglect input and output constr
                         // BUT ASSUME this part does not need checking
                         // condBchState[condBranchLevel].cCFParaCnt = cCFParaCnt; 
                         // condBchState[condBranchLevel].cCFParaPos = cCFParaPos;
-                        // update if jumping address into VM
-                        VM[cCFBegin] = posVM - 1; // if jump
                     }
+                    // update if jumping address into VM
+                    VM[cCFBegin] = posVM - 1; // if jump
+
                 } else {
                     printf("Error code 720: You're in the middle of nowhere, cCFBranchN is %d.\n", cCFBranchN);
                     printf("%.*s (pos: %d)\n", 10, texte + lexemeList[posLexeme].begin, lexemeList[posLexeme].begin);
@@ -549,6 +550,9 @@ and if recursive procedures are involed, it will neglect input and output constr
                         cCFParaInCnt = -1;
                     }
                 }
+                // restore wrapper compiling state
+                if(condBranchLevel == 0)functionCompilingState = condBranchWrapperState;
+                cCFBegin = condBchState[condBranchLevel].cCFBegin;
             } else if (posSymbolC == recurseposSymbol) {
                 #ifdef DEBUG
                 printf("Encounter recurse, abandoning type statistic.\n");
@@ -570,8 +574,8 @@ and if recursive procedures are involed, it will neglect input and output constr
                 if (functionCompilingState == COMPILING_FUN || functionCompilingState == COMPILING_MAIN || functionCompilingState == COMPILING_COND) {
                     int lenName = symbolTable[posSymbolC];
                     int paraInCnt = symbolTable[posSymbolC + lenName + 1];
-                    int paraOutCnt = symbolTable[posSymbolC + lenName + paraInCnt + 2];
-                    int posVMC = symbolTable[posSymbolC + lenName + paraInCnt + paraOutCnt + 3];
+                    int paraOutCnt = symbolTable[posSymbolC + lenName + ((paraInCnt > 0) ? paraInCnt : 0) + 2];
+                    int posVMC = symbolTable[posSymbolC + lenName + ((paraInCnt > 0) ? paraInCnt : 0) + ((paraOutCnt > 0) ? paraOutCnt : 0) + 3];
                     if (cCFParaOutCnt >= 0 && cCFParaInCnt >= 0) { // if the state is still valid, update parameter statistics
                         if (paraInCnt >= 0 && paraOutCnt >= 0) { // a normal function
                             // simulate executing the function
@@ -636,7 +640,7 @@ and if recursive procedures are involed, it will neglect input and output constr
         }
         posLexeme++;
     } while (posLexeme < lexemeNumber);
-    if (cCFParaInCnt != 0) {
+    if (cCFParaInCnt > 0) {
         printf("Error code 713: input not sufficient.\n"); 
         return 713;
     } else printf("\nCompilation logic finished.\n"); 
