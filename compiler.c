@@ -81,7 +81,7 @@ void initLacCompile(int * symbolTable, int * VM, int * posSymbol, int * posVM) {
     addBaseFunction (symbolTable, VM, posSymbol, posVM, 23, "<=", 2, (int[]){ENTIER, ENTIER}, 1, (int[]){BOOLEAN});
     recurseposSymbol = *posSymbol + 1;
     addBaseFunction (symbolTable, VM, posSymbol, posVM, 25, "recurse", -1, (int[]){}, -1, (int[]){}); 
-    addBaseFunction (symbolTable, VM, posSymbol, posVM, 28, "calculate", 1, (int[]){CHAINECHAR}, 0, (int[]){}); 
+    addBaseFunction (symbolTable, VM, posSymbol, posVM, 28, "calculate", 1, (int[]){CHAINECHAR}, 1, (int[]){ENTIER}); 
     addBaseFunction (symbolTable, VM, posSymbol, posVM, 29, "catenate", 1, (int[]){CHAINECHAR}, 0, (int[]){}); 
     addBaseFunction (symbolTable, VM, posSymbol, posVM, 30, "cr", 0, (int[]){}, 0, (int[]){}); 
 
