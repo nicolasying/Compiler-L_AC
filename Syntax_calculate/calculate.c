@@ -61,9 +61,9 @@ int calculateString (int * string) {
                 add_divers(PARENT_F);
                 break;
                 
-//            case ' ': case '\t':
-//                j++;
-//                break;
+           case ' ': case '\t':
+                j++;
+               break;
                 
             default:
                 printf("Error 9001! Unrecognized word: %c\n", s[i]);

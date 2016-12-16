@@ -19,7 +19,7 @@
 
 #define MAX_STRING_SIZE 500
 #define SYMBOL_TABLE_SIZE 700
-#define VM_SIZE 500
+#define VM_SIZE 2000
 #define PROCESS_FUN_QUAN 40
 
 // About processor, symbol table and VM

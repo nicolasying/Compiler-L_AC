@@ -83,7 +83,7 @@ void initLacCompile(int * symbolTable, int * VM, int * posSymbol, int * posVM) {
     addBaseFunction (symbolTable, VM, posSymbol, posVM, 25, "recurse", -1, (int[]){}, -1, (int[]){}); 
     addBaseFunction (symbolTable, VM, posSymbol, posVM, 28, "calculate", 1, (int[]){CHAINECHAR}, 0, (int[]){}); 
     addBaseFunction (symbolTable, VM, posSymbol, posVM, 29, "catenate", 1, (int[]){CHAINECHAR}, 0, (int[]){}); 
-    addBaseFunction (symbolTable, VM, posSymbol, posVM, 30, "cr", 0, (int[]){}, 1, (int[]){CHAINECHAR}); 
+    addBaseFunction (symbolTable, VM, posSymbol, posVM, 30, "cr", 0, (int[]){}, 0, (int[]){}); 
 
     #ifdef DEBUG
     printf("mode_compilé:\nSymbol table and VM constructed.\n");
@@ -190,6 +190,9 @@ and if recursive procedures are involed, it will neglect input and output constr
         printf("functionCompilingState: %d\n", functionCompilingState);
         if(symbolTable[55] != 1) {
             printf("Symbol table [55] changed.\n");
+        }
+        if (posSymbol >= SYMBOL_TABLE_SIZE || posVM >= VM_SIZE) {
+            printf("Symbol table / VM overflow.\n Size is now %d and %d, should be %d and %d.\n", posSymbol, posVM, SYMBOL_TABLE_SIZE, VM_SIZE);
         }
         #endif // DEBUG
         if(lexemeList[posLexeme].type == C) {
@@ -632,7 +635,19 @@ and if recursive procedures are involed, it will neglect input and output constr
                     }
                     #endif // DEBUG
                     VM[posVM++] = posVMC;
+                    #ifdef DEBUG
+                    printf("Exiting normal function internal treatment.\n");
+                    if (symbolTable[55] != 1) {
+                        printf("Warning. symbolTable[55]\n");
+                    }
+                    #endif // DEBUG
                 }
+                #ifdef DEBUG
+                printf("Exiting normal function treatment.\n");
+                if (symbolTable[55] != 1) {
+                        printf("Warning. symbolTable[55]\n");
+                }
+                #endif // DEBUG
             } else { // then it must be a number
                 #ifdef DEBUG
                 printf("Trace 701\n");

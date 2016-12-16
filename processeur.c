@@ -257,11 +257,11 @@ void typeProc(void) {
     int op2 = popStack(data), opt2 = popStack(type);
     if (opt1 == ENTIER && opt2 == CHAINECHARNOHEADER) {
         int i = 0;
-        printf("L_AC_TYPE: ");
+        // printf("L_AC_TYPE: ");
         while (i < op1) {
             printf("%c", stringMem[op2 + i++ % MAX_STRING_SIZE]);
         }
-        printf("\n");
+        // printf("\n");
     } else {
         printf("CPU: type, type error. Poping out.\n");
     }
@@ -458,15 +458,8 @@ void catenate(void) {
     #endif // DEBUG
 }
 
-void cr(void) { // add a string with "\n" in data stack
-    // put string info in stacks
-    pushStack(*posMem, data);
-    pushStack(CHAINECHAR, type); 
-
-    // copy string actually into stringMem
-    stringMem[(*posMem)++ % MAX_STRING_SIZE] = 1; // length
-    stringMem[(*posMem)++ % MAX_STRING_SIZE] = '\n'; // content
-    
+void cr(void) { // print a "\n"
+    printf("\n");
     #ifdef DEBUG
     printf("CPU: cr.\n");
     #endif

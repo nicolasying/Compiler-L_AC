@@ -12,9 +12,9 @@
    " Factorielle" count type
     dup .
     " vaut : " count type
-    fact cr count type ;
+    fact cr . ;
 
-" SECTION -1 Factorielle.lac" count type
+" SECTION -1 Factorielle.lac" count type cr
 
 \ Fichier "factorielle.lac"
 
@@ -24,26 +24,26 @@
 
 6 go
 
-" SECTION 0 Calculate and normal operations"
+" SECTION 0 Calculate and normal operations" count type cr
 
 " -(3+4)x(3x(5-3))" calculate -42 = .
 
-" SECTION 1 Beginning single conditional branch test" count type
+" SECTION 1 Beginning single conditional branch test" count type cr
 4 3 = 
 if ( symbolTable instablity)
     " 4 == 3"
 else
     " 4 != 3"
 then
-count type
+count type  cr
 
-" SECTION 1.1 testing if then structure" count type
+" SECTION 1.1 testing if then structure" count type cr
 4 3 + 7 =
 if 
-    " 4 + 3 == 7" count type ( no input no output)
+    " 4 + 3 == 7" count type ( no input no output) cr
 then
 
-" SECTION 2 Beginning nested conditional branch test" count type
+" SECTION 2 Beginning nested conditional branch test" count type cr
 1 2 = 
 if
     1 1 =
@@ -52,17 +52,18 @@ if
     else 
         " 1 == 2 && 1 != 1" count type
     then
+    cr
 else
     1 1 =
     if
         " 1 != 2 && 1 == 1"
         2 3 =
         if
-            " 1 != 2 && 1 == 1 && 2 == 3" count type
+            " 1 != 2 && 1 == 1 && 2 == 3" count type cr
         then
     else 
         " 1 != 2 && 1 != 1"
     then
-count type
+count type cr
 then
 1 1 + .
