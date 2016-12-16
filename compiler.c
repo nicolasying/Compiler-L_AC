@@ -48,7 +48,7 @@ void initLacCompile(int * symbolTable, int * VM, int * posSymbol, int * posVM) {
 
     // Adding funtions allowed in compile mode
     // It should be exactly the same in executer
-    VM[(*posVM)++] = VM_VERSION; // VM version 1004, correspongding to VM_LAC_hugolonicolasien 1.4
+    VM[(*posVM)++] = VM_VERSION; // VM version 1005, correspongding to VM_LAC_hugolonicolasien 1.5
     VM[(*posVM)++] = 0; // For point d'entree
     litposVM = *posVM;
     addBaseFunction (symbolTable, VM, posSymbol, posVM, 0, "lit", 0, (int[]){}, 0, (int[]){});
