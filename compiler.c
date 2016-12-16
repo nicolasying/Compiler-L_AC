@@ -635,7 +635,7 @@ and if recursive procedures are involed, it will neglect input and output constr
                 }
             } else { // then it must be a number
                 #ifdef DEBUG
-                printf("Trace 01\n");
+                printf("Trace 701\n");
                 #endif // DEBUG
                 int number;
                 if (convertLexeme2Number(texte, &lexemeList[posLexeme], &number) == 0) {
