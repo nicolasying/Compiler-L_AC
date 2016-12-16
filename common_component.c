@@ -53,15 +53,16 @@ void addBaseFunction (int * symbolTable, int * VM, int *posSymbol, int* posVM, c
     
     // Adding info to symbol table
     symbolTable[*posSymbol + 1] = findStringLength(name);
-    for (int i = 0; i < symbolTable[*posSymbol + 1]; i++) {
+    int i = 0;
+    for (i = 0; i < symbolTable[*posSymbol + 1]; i++) {
         symbolTable[*posSymbol + 2 + i] = name[i];
     }
     symbolTable[*posSymbol + 2 + symbolTable[*posSymbol + 1]] = paraIn;
-    for (int i = 0; i < paraIn; i++) {
+    for (i = 0; i < paraIn; i++) {
         symbolTable[*posSymbol + 3 + i + symbolTable[*posSymbol + 1]] = typeIn[i];
     }
     symbolTable[*posSymbol + 3 + symbolTable[*posSymbol + 1] + paraIn] = paraOut;
-    for (int i = 0; i < paraOut; i++) {
+    for (i = 0; i < paraOut; i++) {
         symbolTable[*posSymbol + 4 + symbolTable[*posSymbol + 1] + paraIn + i] = typeOut[i];
     }
     symbolTable[*posSymbol + 4 + symbolTable[*posSymbol + 1] + paraIn + paraOut] = *posVM; // VM position;
