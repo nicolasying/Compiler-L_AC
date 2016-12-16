@@ -87,9 +87,17 @@ int findFunction (int sizeSymbolTable, int * symbolTable, lexeme_Element * lexem
         printf("%c",code[lexeme->begin + i++]);
     }
     printf("\n");
+    int ite = 0;
     #endif // DEBUG
 
     while (position >= 0) {
+        #ifdef DEBUG
+        ite++;
+        printf("findingFunction, ite %d, position %d.\n", ite, position);
+        if(ite > 50) {
+            printf("Too much iterations.\n");
+        }
+        #endif // DEBUG
         if (symbolTable[position + 1] != length) {
             // if the length doesn't match
             position = symbolTable[position] - 1;
@@ -206,7 +214,7 @@ int convertLexeme2Number (char * code, lexeme_Element * lexeme, int * number) {
         *number *= 10;
         *number += bitCheck;
     }
-    *number *= sign
+    *number *= sign;
     return 0;
 }
 

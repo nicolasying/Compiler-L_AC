@@ -1,10 +1,3 @@
-" SECTION -1 Factorielle.lac"
-
-\ Fichier "factorielle.lac"
-
-( Ce fichier est un "exemple" étudié pour tester l'analyseur lexical
-écrit en phase 1 du projet)
-
 : 0= 0 = ;
 
 : fact ( n -- n!)
@@ -19,7 +12,15 @@
    " Factorielle" count type
     dup .
     " vaut : " count type
-    fact cr cout type ;
+    fact cr count type ;
+
+" SECTION -1 Factorielle.lac" count type
+
+\ Fichier "factorielle.lac"
+
+( Ce fichier est un "exemple" étudié pour tester l'analyseur lexical
+écrit en phase 1 du projet)
+
 
 6 go
 
@@ -29,7 +30,7 @@
 
 " SECTION 1 Beginning single conditional branch test" count type
 4 3 = 
-if
+if ( symbolTable instablity)
     " 4 == 3"
 else
     " 4 != 3"

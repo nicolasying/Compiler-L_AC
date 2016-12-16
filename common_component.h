@@ -15,11 +15,11 @@
 // #define DEBUG // debugging flag
 
 #define MAX_LINE_LENGTH 1000
-#define MAX_LEXEME_NUMBER 300
+#define MAX_LEXEME_NUMBER 500
 
 #define MAX_STRING_SIZE 500
-#define SYMBOL_TABLE_SIZE 500
-#define VM_SIZE 300
+#define SYMBOL_TABLE_SIZE 700
+#define VM_SIZE 500
 #define PROCESS_FUN_QUAN 40
 
 // About processor, symbol table and VM

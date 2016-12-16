@@ -155,9 +155,9 @@ int main(int argc, char * argv[]) { // argv[1] = fileURL
     initLacCompile(symbolTable, VM, &posSymbol, &posVM);
 
     // Regular Expressions Definition
-    const char expr[] = "((^| )\" ([^()\"]*[\\].*|[^()\\]*[\\(][^()\\]*[\\)][^()\\]*)\")|((^|[ \t\n])[\\]( |\t)[^\n]*($|\n))|((^|[ \t\n])[(] [^)]*[)])|((^|[ \t\n])[\"] [^\"]*[\"])|([-+/:;.\\=\\*0-9a-zA-Z[:punct:]]+)";
+    const char expr[] = "((^|[ \t\n])[\\]( |\t)[^\n]*($|\n))|((^|[ \t\n])[(] [^)]*[)])|((^|[ \t\n])[\"] [^\"]*[\"])|([-+/:;.\\=\\*0-9a-zA-Z[:punct:]]+)";
     // ordre:
-    // char chaine containing " and \, "(^|[ \t\n])[\"]((^|[ \t\n])[\\] [^()\n]*($|\n))*((^|[ \t\n])[(] [^)]*[)])*[\"]"
+    // char chaine containing " and \, ((^| |\t)\"[ ]([^()\"]*[\\].*|[^()\\]*[\\(][^()\\]*[\\)][^()\\\"]*)\")|   "(^|[ \t\n])[\"]((^|[ \t\n])[\\] [^()\n]*($|\n))*((^|[ \t\n])[(] [^)]*[)])*[\"]"
     // single line comment, "(^|[ \t\n])[\\] [^()\n]*($|\n)"
     // multiline comment, "(^|[ \t\n])[(] [^)]*[)]"
     // char chaine, "(^|[ \t\n])[\"] [^\"]*[\"]"
@@ -188,6 +188,9 @@ and if recursive procedures are involed, it will neglect input and output constr
     do {
         #ifdef DEBUG
         printf("functionCompilingState: %d\n", functionCompilingState);
+        if(symbolTable[55] != 1) {
+            printf("Symbol table [55] changed.\n");
+        }
         #endif // DEBUG
         if(lexemeList[posLexeme].type == C) {
             #ifdef DEBUG
@@ -576,6 +579,12 @@ and if recursive procedures are involed, it will neglect input and output constr
                     return(744);
                 }
             } else if (posSymbolC > 0){ // a function is found, find it's VM position
+                #ifdef DEBUG
+                printf("Entering normal function treatment.\n");
+                if (symbolTable[55] != 1) {
+                        printf("Warning. symbolTable[55]\n");
+                }
+                #endif // DEBUG
                 if (functionCompilingState == COMPILING_FUN || functionCompilingState == COMPILING_MAIN || functionCompilingState == COMPILING_COND) {
                     int lenName = symbolTable[posSymbolC];
                     int paraInCnt = symbolTable[posSymbolC + lenName + 1];
@@ -595,7 +604,7 @@ and if recursive procedures are involed, it will neglect input and output constr
                                     if(cCFParaCnt < 0) {
                                         // an additional input is needed
                                         cCFParaInArray[cCFParaInCnt++] = typeCheck;
-                                        cCFParaCnt++;  
+                                        cCFParaCnt++;
                                     }
                                     i++;
                                 } else { // type is incompatible
@@ -617,9 +626,17 @@ and if recursive procedures are involed, it will neglect input and output constr
                         }
                     }
                     // add function VM address into VM
+                    #ifdef DEBUG
+                    if (symbolTable[55] != 1) {
+                        printf("Warning. symbolTable[55]\n");
+                    }
+                    #endif // DEBUG
                     VM[posVM++] = posVMC;
                 }
             } else { // then it must be a number
+                #ifdef DEBUG
+                printf("Trace 01\n");
+                #endif // DEBUG
                 int number;
                 if (convertLexeme2Number(texte, &lexemeList[posLexeme], &number) == 0) {
                     // Update parameter statistics
