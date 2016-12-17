@@ -32,4 +32,11 @@ verbose:
 	@printf "Verbose version compiled in Debug folder.\n"
 
 clean: 
-	rm Release/runtime Release/compiler Release/interpreter
+	@if [ -f Release/runtime ]; then @rm Release/runtime; fi
+	@if [ -f Release/compiler ]; then @rm Release/compiler; fi
+	@if [ -f Release/interpreter ]; then @rm Release/interpreter; fi
+	@if [ -f Debug/runtime ]; then @rm Debug/runtime; fi
+	@if [ -f Debug/compiler ]; then @rm Debug/compiler; fi
+	@if [ -f Debug/interpreter ]; then @rm Debug/interpreter; fi
+	
+	@rm -f test/*.lacc

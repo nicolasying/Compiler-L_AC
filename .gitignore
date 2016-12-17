@@ -34,8 +34,8 @@
 Debug/*
 Release/*
 Build/*
-Release/
 log/*
+test/*.lacc
 
 # System files
 .DS_Store

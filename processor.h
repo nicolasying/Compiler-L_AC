@@ -68,5 +68,6 @@ void recurse(void);
 void calculate(void);
 void catenate(void);
 void cr(void);
+void notdefined(void);
 
 #endif // !PROCESSOR
