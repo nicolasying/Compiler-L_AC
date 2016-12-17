@@ -404,13 +404,9 @@ void smaller(void) {
     #endif
 }
 
-void recurse(void) { // TO BE MODIFIED
-    // the function calls it self
-    // findout currently running userdefined function
-    int tmp = 0;
-    // calling out the function
-    pushStack(tmp , retourne);
-    
+void recurse(void) {
+    int temp = popStack(retourne);
+    pushStack(temp + 1, retourne);
     #ifdef DEBUG
     printf("CPU: recurse\n");
     #endif // DEBUG
@@ -463,4 +459,8 @@ void cr(void) { // print a "\n"
     #ifdef DEBUG
     printf("CPU: cr.\n");
     #endif
+}
+
+void notdefined(void) {
+    printf("CPU: Fonction is not implemented in this runtime.\n");
 }

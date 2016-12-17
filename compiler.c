@@ -21,7 +21,7 @@
 #define COMPILING_MAIN 7317
 #define COMPILING_COND 7704
 #define MAX_IN_OUT_PUT_NUMBER 100
-#define MAX_COND_BRANCH_LEVEL 10
+#define MAX_COND_BRANCH_LEVEL 20
 
 int functionCompilingState = NOT_COMPILING; // a flag used to avoid nested definition
 int cCFBegin = 0; // a container for the beginning VM position for this function, for recurse.
@@ -175,11 +175,11 @@ int main(int argc, char * argv[]) { // argv[1] = fileURL
     #endif // DEBUG
 
     printf("Welcome. Compiler is running.\nIt is written by Nicolas YING following the course of TPLA presented by Alain Chillès.\n \
-\nThis compiler follows the standard Hugolonicolasien 1.4.\nIt is very sensitive to code error. \
-\nPlease review the code before compiling.\n\nThis compiler supports up to 10 levels of nesting conditional branch, \
+\nThis compiler follows the standard Hugolonicolasien 1.5.\nIt is very sensitive to code error. \
+\nPlease review the code before compiling.\n\nThis compiler supports up to %d levels of nesting conditional branch, \
 and if recursive procedures are involed, it will neglect input and output constraints. So good luck with that. \
 \n\nINPUT_FILE is %s, \
-\nOUTPUT_FILE will be %sc\nEnjoy.\n", argv[1], argv[1]);
+\nOUTPUT_FILE will be %sc\nEnjoy.\n",MAX_COND_BRANCH_LEVEL, argv[1], argv[1]);
 
     // Pass to lexcial analysis, which is a common component
     int lexemeNumber = analyseLexical(texte, lexemeList, &regExp);

@@ -35,10 +35,10 @@ void initProcessor (basicFunc * processor) {
     processor[21] = &lor;
     processor[22] = &lnot;
     processor[23] = &smaller;
-    // processor[24] = &defer;
+    processor[24] = &notdefined;
     processor[25] = &recurse;
-    // processor[26] = &prime;
-    // processor[27] = &is;
+    processor[26] = &notdefined;
+    processor[27] = &notdefined;
     processor[28] = &calculate;
     processor[29] = &catenate;
     processor[30] = &cr;

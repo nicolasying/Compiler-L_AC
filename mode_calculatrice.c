@@ -72,9 +72,9 @@ int main(int argc, char * argv[]) { // it should not take any input
     initLacInterprete(symbolTable, VM, &posSymbol, &posVM);
 
     // Regular Expressions Definition
-    const char expr[] = "((^| )\" ([^()\"]*[\\].*|[^()\\]*[\\(][^()\\]*[\\)][^()\\]*)\")|((^|[ \t\n])[\\]( |\t)[^\n]*($|\n))|((^|[ \t\n])[(] [^)]*[)])|((^|[ \t\n])[\"] [^\"]*[\"])|([-+/:;.\\=\\*0-9a-zA-Z[:punct:]]+)";
+    const char expr[] = "((^|[ \t\n])\" ([^()\"]*[\\].*|[^()\\]*[\\(][^()\\]*[\\)][^()\\]*)\")|((^|[ \t\n])[\\]( |\t)[^\n]*($|\n))|((^|[ \t\n])[(] [^)]*[)])|((^|[ \t\n])[\"] [^\"]*[\"])|([-+/:;.\\=\\*0-9a-zA-Z[:punct:]]+)";
     // ordre:
-    // char chaine containing " and \, "(^|[ \t\n])[\"]((^|[ \t\n])[\\] [^()\n]*($|\n))*((^|[ \t\n])[(] [^)]*[)])*[\"]"
+    // char chaine containing () and \, "(^|[ \t\n])[\"]((^|[ \t\n])[\\] [^()\n]*($|\n))*((^|[ \t\n])[(] [^)]*[)])*[\"]"
     // single line comment, "(^|[ \t\n])[\\] [^()\n]*($|\n)"
     // multiline comment, "(^|[ \t\n])[(] [^)]*[)]"
     // char chaine, "(^|[ \t\n])[\"] [^\"]*[\"]"
