@@ -26,17 +26,15 @@ Runtime: runtime.c processeur.c common_component.c Syntax_calculate/BNF_C.c Synt
 	@gcc -Wall -o Release/runtime runtime.c processeur.c common_component.c Syntax_calculate/BNF_C.c Syntax_calculate/calculate.c
 
 verbose: 
+	@if [ ! -d Debug ]; then mkdir Debug; fi
 	@gcc -DDEBUG -Wall -g -o Debug/interpreter mode_calculatrice.c processeur.c common_component.c analyse_lexical.c Syntax_calculate/BNF_C.c Syntax_calculate/calculate.c
 	@gcc -DDEBUG -Wall -g -o Debug/compiler compiler.c processeur.c common_component.c analyse_lexical.c Syntax_calculate/BNF_C.c Syntax_calculate/calculate.c
 	@gcc -DDEBUG -Wall -g -o Debug/runtime runtime.c processeur.c common_component.c Syntax_calculate/BNF_C.c Syntax_calculate/calculate.c
 	@printf "Verbose version compiled in Debug folder.\n"
 
 clean: 
-	@if [ -f Release/runtime ]; then @rm Release/runtime; fi
-	@if [ -f Release/compiler ]; then @rm Release/compiler; fi
-	@if [ -f Release/interpreter ]; then @rm Release/interpreter; fi
-	@if [ -f Debug/runtime ]; then @rm Debug/runtime; fi
-	@if [ -f Debug/compiler ]; then @rm Debug/compiler; fi
-	@if [ -f Debug/interpreter ]; then @rm Debug/interpreter; fi
-	
+	@if [ -f Release/runtime ]; then rm Release/runtime; fi
+	@if [ -f Release/compiler ]; then rm Release/compiler; fi
+	@if [ -f Release/interpreter ]; then rm Release/interpreter; fi
+	@if [ -d Debug ]; then rm -r Debug/*; fi
 	@rm -f test/*.lacc
