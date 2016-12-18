@@ -269,7 +269,12 @@ and if recursive procedures are involed, it will neglect input and output constr
             cCFBeginLAC = posSymbol + 1;
             memset(cCFParaInArray, 0, MAX_IN_OUT_PUT_NUMBER);
             memset(cCFParaOutArray, 0, MAX_IN_OUT_PUT_NUMBER);
-            memset(cCFParaArray, 0, 2 * MAX_IN_OUT_PUT_NUMBER);
+            // memset(cCFParaArray, 0, 2 * MAX_IN_OUT_PUT_NUMBER);
+            size_t i = 0;
+            for (i = 0; i < 2 * MAX_IN_OUT_PUT_NUMBER; i++)
+            {
+                cCFParaArray[i] = 0;
+            }
             functionCompilingState = COMPILING_FUN;
             cCFParaPos = MAX_IN_OUT_PUT_NUMBER;
             // Writing into VM
@@ -627,9 +632,9 @@ and if recursive procedures are involed, it will neglect input and output constr
                                     }
                                     i++;
                                 } else { // type is incompatible
-                                    printf("Error code 711: type incompatible.\n");
+                                    printf("Error code 719: type incompatible.\n");
                                     printf("%.*s (pos: %d)\n", 10, texte + lexemeList[posLexeme].begin, lexemeList[posLexeme].begin);
-                                    return(711);
+                                    return(719);
                                 }
                             }
                             i = 0;
