@@ -1,5 +1,9 @@
 : 0= 0 = ;
 
+ " SECTION -2 typeconversion test" count type cr
+
+1 " 1+2" swap +
+
 " SECTION -1 Factorielle.lac" count type cr
 
 \ Fichier "factorielle.lac"

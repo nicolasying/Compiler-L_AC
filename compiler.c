@@ -30,7 +30,7 @@ int cCFNameLexPos = 0, cCFParaInCnt = 0, cCFParaOutCnt = 0, cCFParaCnt = 0, cCFP
 int cCFParaInArray[MAX_IN_OUT_PUT_NUMBER] = {0}, cCFParaOutArray[MAX_IN_OUT_PUT_NUMBER] = {0}, cCFParaArray[MAX_IN_OUT_PUT_NUMBER * 2] = {0};
 static int litposVM = 0, strposVM = 0, finposVM = 0, recurseposSymbol = 0, mainPosVM = 0, ifposSymbol = 0, ifposVM = 0, thenposSymbol = 0, elseposSymbol = 0, elseposVM = 0;
 static int condBranchLevel = -1, condBranchWrapperState = COMPILING_FUN, cCFBranchN = 0;
-// static int anyTracking[MAX_IN_OUT_PUT_NUMBER] = {0}, anyNumeration = 0; // for linking ANY resolutions
+static int anyTracking[MAX_IN_OUT_PUT_NUMBER] = {0}, anyNumeration = 0; // for linking ANY resolutions
 
 struct condBranchSavedStateStruct { // struct to store current compiling information
     int cCFBegin, cCFBranchN;
@@ -107,9 +107,21 @@ int typeConversion(int type1, int type2) { // Evaluate ANY type
         type2 ^= type1;
         type1 ^= type2;
     } // so type1 <= type2
-    if (type1 <= ANY || type1 == type2) return type2;
-    if (type1 != type2) return 10; // only ANY can be resolved to other types
+    if (type2 <= ANY) { // two anys evaluated to same type, noting in anyTracking
+        anyTracking[-type2] = type1;
+        return type1;
+    } else if (type1 == type2) return type2; // type2 not any, and type1 not any
+    else if (type1 <= ANY) { // type1 is any but type2 isn't
+        anyTracking[-type1] = type2;
+        return type2;
+    }
+    else if (type1 != type2) return 10; // only ANY can be resolved to other types
     return 11; // to resolve warning message
+}
+
+int typeResolve(int type) {
+    if (type > ANY) return type;
+    else return anyTracking[-type];
 }
 
 int main(int argc, char * argv[]) { // argv[1] = fileURL
@@ -127,6 +139,7 @@ int main(int argc, char * argv[]) { // argv[1] = fileURL
     FILE *fp;
     long size_file;
     fp = fopen(argv[1], "r");
+    if (fp == NULL) printf("INPUT FILE NOT VALID.\n");
     fseek(fp, 0L, SEEK_END);
     size_file = ftell(fp);
     rewind(fp);
@@ -353,6 +366,7 @@ and if recursive procedures are involed, it will neglect input and output constr
                 #endif // DEBUG
                 // update current compiling function state if outside is still predictable
                 if(cCFParaInCnt > -1 && cCFParaOutCnt > -1) { // still have to update type counters
+                    memset(anyTracking, 0, MAX_IN_OUT_PUT_NUMBER);
                     int typeCheck = typeConversion(cCFParaArray[cCFParaPos-1], BOOLEAN);
                     if (typeCheck < 6 ) { // type is compatible
                         if(cCFParaOutCnt > 0) cCFParaOutCnt--; // reduce from outputs
@@ -528,6 +542,7 @@ and if recursive procedures are involed, it will neglect input and output constr
                         int i = 0;
                         while (i < paraInCnt) { // inputs
                             // for cCFParaArray that is not yet used, it is initialised to 0 - ANY
+                            memset(anyTracking, 0, MAX_IN_OUT_PUT_NUMBER);
                             int typeCheck = typeConversion(cCFParaArray[cCFParaPos-1], paraInArray[i]);
                             if (typeCheck < 6 ) { // type is compatible
                                 if(cCFParaOutCnt > 0) cCFParaOutCnt--; // reduce from outputs
@@ -547,8 +562,8 @@ and if recursive procedures are involed, it will neglect input and output constr
                         }
                         i = 0;
                         while (i < paraOutCnt) { // generate outputs
-                            cCFParaOutArray[cCFParaOutCnt++] = paraOutArray[i]; 
-                            cCFParaArray[cCFParaPos++] = paraOutArray[i]; 
+                            cCFParaOutArray[cCFParaOutCnt++] = typeResolve(paraOutArray[i]); 
+                            cCFParaArray[cCFParaPos++] = typeResolve(paraOutArray[i]); 
                             cCFParaCnt++;
                             i++;
                         }
@@ -597,6 +612,7 @@ and if recursive procedures are involed, it will neglect input and output constr
                         if (paraInCnt >= 0 && paraOutCnt >= 0) { // a normal function
                             // simulate executing the function
                             int i = 0;
+                            memset(anyTracking, 0, MAX_IN_OUT_PUT_NUMBER);
                             while (i < paraInCnt) { // inputs
                                 // for cCFParaArray that is not yet used, it is initialised to 0 - ANY
                                 int typeCheck = typeConversion(cCFParaArray[cCFParaPos-1], symbolTable[posSymbolC + lenName + i + 2]);
@@ -618,8 +634,8 @@ and if recursive procedures are involed, it will neglect input and output constr
                             }
                             i = 0;
                             while (i < paraOutCnt) { // generate outputs
-                                cCFParaOutArray[cCFParaOutCnt++] = symbolTable[posSymbolC + lenName + paraInCnt + i + 3]; 
-                                cCFParaArray[cCFParaPos++] = symbolTable[posSymbolC + lenName + paraInCnt + i + 3]; 
+                                cCFParaOutArray[cCFParaOutCnt++] = typeResolve(symbolTable[posSymbolC + lenName + paraInCnt + i + 3]); 
+                                cCFParaArray[cCFParaPos++] = typeResolve(symbolTable[posSymbolC + lenName + paraInCnt + i + 3]); 
                                 cCFParaCnt++;
                                 i++;
                             }

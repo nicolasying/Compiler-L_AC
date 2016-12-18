@@ -57,7 +57,7 @@ int analyseLexical(char * textToAnalyse, lexeme_Element * lexeme_List, regex_t *
             #endif // DEBUG
             
             // Register this lexeme into lexeme_List without _"_ and  "
-            if (textToAnalyse[beginGlobal] == '\"') lexeme_List[t_c].begin = begin + offset + 2;
+            if (textToAnalyse[beginGlobal] == '\"') lexeme_List[t_c].begin = begin + offset + 3;
             else lexeme_List[t_c].begin = begin + offset + 3;
             lexeme_List[t_c].end = end + offset - 2;
             lexeme_List[t_c].type = C;
