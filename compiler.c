@@ -30,7 +30,7 @@ int cCFNameLexPos = 0, cCFParaInCnt = 0, cCFParaOutCnt = 0, cCFParaCnt = 0, cCFP
 int cCFParaInArray[MAX_IN_OUT_PUT_NUMBER] = {0}, cCFParaOutArray[MAX_IN_OUT_PUT_NUMBER] = {0}, cCFParaArray[MAX_IN_OUT_PUT_NUMBER * 2] = {0};
 static int litposVM = 0, strposVM = 0, finposVM = 0, recurseposSymbol = 0, mainPosVM = 0, ifposSymbol = 0, ifposVM = 0, thenposSymbol = 0, elseposSymbol = 0, elseposVM = 0;
 static int condBranchLevel = -1, condBranchWrapperState = COMPILING_FUN, cCFBranchN = 0;
-static int anyTracking[MAX_IN_OUT_PUT_NUMBER] = {0}, anyNumeration = 0; // for linking ANY resolutions
+static int anyTracking[MAX_IN_OUT_PUT_NUMBER] = {0}; // anyNumeration = 0 for linking ANY resolutions
 
 struct condBranchSavedStateStruct { // struct to store current compiling information
     int cCFBegin, cCFBranchN;
