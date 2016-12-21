@@ -17,12 +17,15 @@ Compilateur-L_AC: Interpreter Compiler Runtime
 	@printf "Get the verbose version by running\n$$: make verbose\n"
 
 Interpreter: mode_calculatrice.c processeur.c common_component.c analyse_lexical.c Syntax_calculate/BNF_C.c Syntax_calculate/calculate.c
+	@if [ ! -d Release ]; then mkdir Release; fi
 	@gcc -Wall -o Release/interpreter mode_calculatrice.c processeur.c common_component.c analyse_lexical.c Syntax_calculate/BNF_C.c Syntax_calculate/calculate.c
 
 Compiler: compiler.c processeur.c common_component.c analyse_lexical.c Syntax_calculate/BNF_C.c Syntax_calculate/calculate.c
+	@if [ ! -d Release ]; then mkdir Release; fi
 	@gcc -Wall -o Release/compiler compiler.c processeur.c common_component.c analyse_lexical.c Syntax_calculate/BNF_C.c Syntax_calculate/calculate.c
 
 Runtime: runtime.c processeur.c common_component.c Syntax_calculate/BNF_C.c Syntax_calculate/calculate.c
+	@if [ ! -d Release ]; then mkdir Release; fi
 	@gcc -Wall -o Release/runtime runtime.c processeur.c common_component.c Syntax_calculate/BNF_C.c Syntax_calculate/calculate.c
 
 verbose: 
