@@ -20,6 +20,7 @@ extern struct noeud ARBRE_ZERO;
 
 int calculateString (int * string) {
     i = 0;
+    j = 0;
     #ifdef DEBUG
     printf("calculateString: \n");
     printString(string, 0);
@@ -36,6 +37,10 @@ int calculateString (int * string) {
     }
     s = &stemp[0];
     
+    #ifdef DEBUG
+    printf("calculate: %s\n",s);
+    #endif // DEBUG
+
     // lexicale
     resultat.N = 0;
     ARBRE_ZERO = (struct noeud) { &((struct lexeme){NOMBRE, "0\0"}), NULL, NULL};
@@ -62,7 +67,8 @@ int calculateString (int * string) {
                 break;
                 
            case ' ': case '\t':
-                j++;
+                s = &stemp[1];
+                i--;
                break;
                 
             default:

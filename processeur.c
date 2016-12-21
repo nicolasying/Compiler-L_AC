@@ -416,6 +416,8 @@ void calculate(void) {
     int op1 = popStack(data), opt1 = popStack(type);
     if (opt1 != CHAINECHAR) {
         printf("CPU: calculate, type error.\n");
+        pushStack(op1, data); pushStack(opt1, type);
+        return;
     }
     int result = calculateString (&stringMem[op1 % MAX_STRING_SIZE]);
     pushStack(result, data); pushStack(ENTIER, type);
