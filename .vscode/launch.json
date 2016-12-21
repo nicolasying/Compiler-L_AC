@@ -24,6 +24,28 @@
             }
         },
         {
+            "name": "Debug_runtime_non",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceRoot}/Debug/runtime_nonb",
+            "args": ["/Users/soshy/Downloads/basic.lacc"],
+            "stopAtEntry": false,
+            "cwd": "${workspaceRoot}/Debug",
+            "environment": [],
+            "externalConsole": true,
+            "internalConsoleOptions": "openOnFirstSessionStart",
+            // "preLaunchTask": "Debug_runtime",
+            "linux": {
+                "MIMode": "gdb"
+            },
+            "osx": {
+                "MIMode": "lldb"
+            },
+            "windows": {
+                "MIMode": "gdb"
+            }
+        },
+        {
             "name": "Debug_interpreter",
             "type": "cppdbg",
             "request": "launch",

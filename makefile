@@ -30,6 +30,7 @@ verbose:
 	@gcc -DDEBUG -Wall -g -o Debug/interpreter mode_calculatrice.c processeur.c common_component.c analyse_lexical.c Syntax_calculate/BNF_C.c Syntax_calculate/calculate.c
 	@gcc -DDEBUG -Wall -g -o Debug/compiler compiler.c processeur.c common_component.c analyse_lexical.c Syntax_calculate/BNF_C.c Syntax_calculate/calculate.c
 	@gcc -DDEBUG -Wall -g -o Debug/runtime runtime.c processeur.c common_component.c Syntax_calculate/BNF_C.c Syntax_calculate/calculate.c
+	@gcc -DDEBUG -Wall -g -o Debug/runtime_nonb runtime_nonbinary.c processeur.c common_component.c Syntax_calculate/BNF_C.c Syntax_calculate/calculate.c
 	@printf "Verbose version compiled in Debug folder.\n"
 
 clean: 
